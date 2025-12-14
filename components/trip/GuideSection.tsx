@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, MapPin, Users } from "lucide-react";
+import { Heart, MapPin, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export default function GuideSection() {
@@ -30,60 +30,107 @@ export default function GuideSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="py-16 sm:py-24 bg-white">
+    <section
+      ref={sectionRef}
+      id="guide"
+      className="py-12 sm:py-16 bg-gradient-to-b from-earth-50 to-sage-50"
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className={`order-2 lg:order-1 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              מי המדריך שלכם
-            </h2>
-            <div className="prose prose-lg text-gray-700 space-y-4">
-              <p>
-                שמי יוסי כהן, ואני מדריך טיולים מוסמך עם למעלה מ-15 שנות ניסיון
-                בהדרכת קבוצות בכל רחבי הארץ. התחלתי את דרכי כמדריך צעיר בתנועת
-                הנוער, והמשכתי להתמחות בטיולי משפחות וחברים.
-              </p>
-              <p>
-                המומחיות שלי היא בשילוב בין היסטוריה מרתקת, טבע עוצר נשימה
-                וחוויות בלתי נשכחות. אני מאמין שכל טיול צריך להיות חוויה
-                משמעותית שנשארת עם המשתתפים הרבה אחרי שהם חוזרים הביתה.
-              </p>
-              <p>
-                ליוויתי מאות קבוצות, ואני גאה לומר שרבים מהמשתתפים הופכים
-                ל"לקוחות קבועים" ומצטרפים לטיולים נוספים שלי.
-              </p>
-            </div>
+        <div className="text-center mb-8 sm:mb-10">
+          <span className="inline-block text-nature-600 font-medium mb-2 text-sm">
+            מי עומד מאחורי הטיול
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-900 mb-3">
+            היי, אני תמיר 👋
+          </h2>
+        </div>
 
-            <div className="grid sm:grid-cols-3 gap-6 mt-8">
-              <div className="text-center p-4">
-                <Award className="w-12 h-12 text-primary-600 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">15+</div>
-                <div className="text-sm text-gray-600">שנות ניסיון</div>
-              </div>
-              <div className="text-center p-4">
-                <Users className="w-12 h-12 text-primary-600 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">500+</div>
-                <div className="text-sm text-gray-600">קבוצות מרוצות</div>
-              </div>
-              <div className="text-center p-4">
-                <MapPin className="w-12 h-12 text-primary-600 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">100+</div>
-                <div className="text-sm text-gray-600">יעדים בארץ</div>
-              </div>
-            </div>
-          </div>
-
-          <div className={`order-1 lg:order-2 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-center max-w-6xl mx-auto">
+          {/* Image */}
+          <div
+            className={`transition-all duration-1000 ${
+              isVisible
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 -translate-x-10"
+            }`}
+          >
             <div className="relative">
-              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
+              <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src="/images/trip/guide.jpg"
-                  alt="המדריך"
+                  src="/images/trip/tamir.jpg"
+                  alt="תמיר - המארגן"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-accent-500 rounded-2xl -z-10" />
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-primary-200 rounded-2xl -z-10" />
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-nature-200 rounded-3xl -z-10" />
+              <div className="absolute -top-6 -left-6 w-24 h-24 bg-heritage-200 rounded-3xl -z-10" />
+            </div>
+          </div>
+
+          {/* Content */}
+          <div
+            className={`transition-all duration-1000 delay-200 ${
+              isVisible
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 translate-x-10"
+            }`}
+          >
+            <div className="space-y-4 text-sage-700 leading-relaxed text-base">
+              <p>
+                אחרי שנים של מגורים באנגליה, הבנתי שרוב הישראלים שמגיעים ללונדון
+                רואים רק את העיר הגדולה — את הביג בן, את הארמונות, את הרחובות הסואנים.
+              </p>
+              <p>
+                אבל אני התאהבתי בצד אחר לגמרי: בכפרים הקטנים עם בתי האבן,
+                בגבעות הירוקות שמשתרעות עד האופק, בפאבים המקומיים שבהם עוד מדברים
+                על מזג האוויר כאילו זה הדבר הכי מרגש בעולם.
+              </p>
+              <p className="font-medium text-sage-800">
+                יצרתי את הטיול הזה כי רציתי לחשוף את לונדון האחרת — זו שגרמה לי
+                להתאהב במקום. לשלב טבע, מורשת, ואפילו שופינג מטורף באאוטלטים
+                שהמקומיים מכירים.
+              </p>
+              <p>
+                כל טיול הוא עבורי הזדמנות לחלוק את המקומות האהובים עליי,
+                לספר סיפורים, ולתת לכם לחוות את אנגליה כמו שאני חווה אותה — אותנטית, ירוקה ומפתיעה.
+              </p>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4 mt-6">
+              <div className="text-center">
+                <div className="w-11 h-11 rounded-xl bg-nature-100 flex items-center justify-center mx-auto mb-2">
+                  <MapPin className="w-5 h-5 text-nature-600" />
+                </div>
+                <div className="text-xl font-bold text-sage-900">5+</div>
+                <div className="text-xs text-sage-600">שנים באנגליה</div>
+              </div>
+              <div className="text-center">
+                <div className="w-11 h-11 rounded-xl bg-heritage-100 flex items-center justify-center mx-auto mb-2">
+                  <Users className="w-5 h-5 text-heritage-600" />
+                </div>
+                <div className="text-xl font-bold text-sage-900">50+</div>
+                <div className="text-xs text-sage-600">משתתפים מרוצים</div>
+              </div>
+              <div className="text-center">
+                <div className="w-11 h-11 rounded-xl bg-earth-100 flex items-center justify-center mx-auto mb-2">
+                  <Heart className="w-5 h-5 text-earth-600" />
+                </div>
+                <div className="text-xl font-bold text-sage-900">100%</div>
+                <div className="text-xs text-sage-600">אהבה לטבע</div>
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="mt-6">
+              <a
+                href="https://wa.me/972501234567"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                <span>יש שאלות? דברו איתי</span>
+              </a>
             </div>
           </div>
         </div>

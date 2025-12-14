@@ -8,15 +8,15 @@ export default function GallerySection() {
   const [currentImage, setCurrentImage] = useState(0);
 
   const images = [
-    { src: "/images/trip/gallery-1.jpg", alt: "נוף הרים מרהיב" },
-    { src: "/images/trip/gallery-2.jpg", alt: "קבוצת המטיילים" },
-    { src: "/images/trip/gallery-3.jpg", alt: "שביל ביער" },
-    { src: "/images/trip/gallery-4.jpg", alt: "שקיעה במדבר" },
-    { src: "/images/trip/gallery-5.jpg", alt: "מפל מים" },
-    { src: "/images/trip/gallery-6.jpg", alt: "פריחה באביב" },
-    { src: "/images/trip/gallery-7.jpg", alt: "טיפוס לפסגה" },
-    { src: "/images/trip/gallery-8.jpg", alt: "חניית לילה" },
-    { src: "/images/trip/gallery-9.jpg", alt: "ארוחה משותפת" },
+    { src: "/images/trip/gallery-1.jpg", alt: "נופי טבע אנגליים" },
+    { src: "/images/trip/gallery-2.jpg", alt: "כפר מורשת היסטורי" },
+    { src: "/images/trip/gallery-3.jpg", alt: "גבעות ירוקות" },
+    { src: "/images/trip/gallery-4.jpg", alt: "שביל בטבע" },
+    { src: "/images/trip/gallery-5.jpg", alt: "נקודת תצפית" },
+    { src: "/images/trip/gallery-6.jpg", alt: "אווירה כפרית" },
+    { src: "/images/trip/gallery-7.jpg", alt: "בית אבן עתיק" },
+    { src: "/images/trip/gallery-8.jpg", alt: "שקיעה בכפר" },
+    { src: "/images/trip/gallery-9.jpg", alt: "טבע אנגלי" },
   ];
 
   const openLightbox = (index: number) => {
@@ -37,70 +37,104 @@ export default function GallerySection() {
   };
 
   return (
-    <section id="gallery" className="py-16 sm:py-24 bg-gray-50">
+    <section id="gallery" className="py-12 sm:py-16 bg-sage-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            גלריית תמונות
+        <div className="text-center mb-8 sm:mb-10">
+          <span className="inline-block text-nature-600 font-medium mb-2 text-sm">
+            גלריה
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-900 mb-3">
+            רגעים מהטיולים
+            <span className="text-nature-600"> שלנו</span>
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-            תמונות מהטיולים הקודמים שלנו
+          <p className="text-base sm:text-lg text-sage-600 max-w-2xl mx-auto">
+            תמונות אמיתיות מהטיולים — טבע, נופים וחוויות בלתי נשכחות
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 max-w-6xl mx-auto">
           {images.map((image, index) => (
             <div
               key={index}
               onClick={() => openLightbox(index)}
-              className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300"
+              className={`group relative rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 ${
+                index === 0 ? "md:col-span-2 md:row-span-2" : ""
+              }`}
             >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
+              <div className={`${index === 0 ? "aspect-square" : "aspect-[4/3]"}`}>
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-nature-950/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute bottom-0 left-0 right-0 p-3 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                <p className="text-xs font-medium">{image.alt}</p>
+              </div>
             </div>
           ))}
         </div>
+
+        {/* CTA Button */}
+        <div className="mt-6 text-center">
+          <a
+            href="#booking-form-section"
+            className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            מתרגשים? הצטרפו לטיול
+          </a>
+        </div>
       </div>
 
+      {/* Lightbox */}
       {lightboxOpen && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-50 bg-nature-950/95 flex items-center justify-center p-4"
+          onClick={closeLightbox}
+        >
           <button
             onClick={closeLightbox}
-            className="absolute top-4 left-4 sm:top-8 sm:left-8 text-white hover:text-gray-300 transition-colors z-10"
+            className="absolute top-4 left-4 sm:top-8 sm:left-8 text-white hover:text-sage-300 transition-colors z-10"
           >
             <X size={32} />
           </button>
 
           <button
-            onClick={prevImage}
-            className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10 bg-white/10 rounded-full p-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              prevImage();
+            }}
+            className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 text-white hover:text-sage-300 transition-colors z-10 bg-white/10 rounded-full p-2 hover:bg-white/20"
           >
             <ChevronRight size={32} />
           </button>
 
           <button
-            onClick={nextImage}
-            className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10 bg-white/10 rounded-full p-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              nextImage();
+            }}
+            className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 text-white hover:text-sage-300 transition-colors z-10 bg-white/10 rounded-full p-2 hover:bg-white/20"
           >
             <ChevronLeft size={32} />
           </button>
 
-          <div className="max-w-6xl max-h-[90vh] w-full">
+          <div
+            className="max-w-6xl max-h-[90vh] w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={images[currentImage].src}
               alt={images[currentImage].alt}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain rounded-lg"
             />
             <p className="text-white text-center mt-4 text-lg">
               {images[currentImage].alt}
             </p>
           </div>
 
-          <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-white text-sm">
+          <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-white/80 text-sm bg-white/10 px-4 py-2 rounded-full">
             {currentImage + 1} / {images.length}
           </div>
         </div>

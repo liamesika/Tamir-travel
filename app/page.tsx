@@ -1,31 +1,31 @@
 import Header from "@/components/trip/Header";
 import HeroSection from "@/components/trip/HeroSection";
-import GuideSection from "@/components/trip/GuideSection";
+import AboutSection from "@/components/trip/AboutSection";
 import ItinerarySection from "@/components/trip/ItinerarySection";
 import IncludedSection from "@/components/trip/IncludedSection";
+import GuideSection from "@/components/trip/GuideSection";
 import GallerySection from "@/components/trip/GallerySection";
-import VideoSection from "@/components/trip/VideoSection";
-import ReviewsSection from "@/components/trip/ReviewsSection";
-import FaqSection from "@/components/trip/FaqSection";
+import ShoppingSection from "@/components/trip/ShoppingSection";
 import CtaSection from "@/components/trip/CtaSection";
 import BookingSection from "@/components/trip/BookingSection";
 import ContactSection from "@/components/trip/ContactSection";
+import FloatingWhatsApp from "@/components/trip/FloatingWhatsApp";
 
 export default function TripPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-sage-50">
       <Header />
       <HeroSection />
-      <GuideSection />
+      <AboutSection />
       <ItinerarySection />
       <IncludedSection />
+      <GuideSection />
       <GallerySection />
-      <VideoSection />
-      <ReviewsSection />
-      <FaqSection />
+      <ShoppingSection />
       <CtaSection />
       <BookingSection />
       <ContactSection />
+      <FloatingWhatsApp />
     </main>
   );
 }
