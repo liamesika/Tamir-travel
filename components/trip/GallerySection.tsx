@@ -37,22 +37,22 @@ export default function GallerySection() {
   };
 
   return (
-    <section id="gallery" className="py-12 sm:py-16 bg-sage-50">
+    <section id="gallery" className="py-8 sm:py-10 bg-sage-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8 sm:mb-10">
-          <span className="inline-block text-nature-600 font-medium mb-2 text-sm">
+        <div className="text-center mb-5 sm:mb-6">
+          <span className="inline-block text-nature-600 font-medium mb-1.5 text-xs">
             גלריה
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-900 mb-3">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-2">
             רגעים מהטיולים
             <span className="text-nature-600"> שלנו</span>
           </h2>
-          <p className="text-base sm:text-lg text-sage-600 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-sage-600 max-w-2xl mx-auto">
             תמונות אמיתיות מהטיולים — טבע, נופים וחוויות בלתי נשכחות
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-3 max-w-5xl mx-auto">
           {images.map((image, index) => (
             <div
               key={index}
@@ -77,10 +77,10 @@ export default function GallerySection() {
         </div>
 
         {/* CTA Button */}
-        <div className="mt-6 text-center">
+        <div className="mt-4 text-center">
           <a
             href="#booking-form-section"
-            className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105"
+            className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-6 py-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-sm"
           >
             מתרגשים? הצטרפו לטיול
           </a>

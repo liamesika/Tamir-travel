@@ -98,21 +98,21 @@ export default function BookingForm() {
 
   if (loadingDates) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary-600" />
-        <p className="text-gray-600">טוען תאריכים זמינים...</p>
+      <div className="bg-white rounded-xl shadow-lg p-6 text-center">
+        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-3 text-primary-600" />
+        <p className="text-sage-600 text-sm">טוען תאריכים זמינים...</p>
       </div>
     );
   }
 
   if (tripDates.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-        <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-        <h3 className="text-xl font-bold text-gray-900 mb-2">
+      <div className="bg-white rounded-xl shadow-lg p-6 text-center">
+        <Calendar className="w-12 h-12 mx-auto mb-3 text-sage-400" />
+        <h3 className="text-lg font-bold text-sage-900 mb-1.5">
           אין תאריכים זמינים כרגע
         </h3>
-        <p className="text-gray-600">
+        <p className="text-sage-600 text-sm">
           אנא צור קשר לפרטים נוספים
         </p>
       </div>
@@ -120,21 +120,21 @@ export default function BookingForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl p-8 sm:p-10">
-      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+    <div className="bg-white rounded-xl shadow-2xl p-5 sm:p-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-sage-900 mb-4">
         טופס הרשמה לטיול
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            <Calendar className="inline w-4 h-4 ml-1" />
+          <label className="block text-sm font-semibold text-sage-700 mb-1.5">
+            <Calendar className="inline w-3.5 h-3.5 ml-1" />
             בחר תאריך טיול
           </label>
           <select
             value={formData.tripDateId}
             onChange={(e) => setFormData({ ...formData, tripDateId: e.target.value })}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition text-lg"
+            className="w-full px-3 py-2.5 border-2 border-sage-200 rounded-lg focus:border-nature-500 focus:outline-none transition text-sm"
             required
           >
             {tripDates.map((date) => {
@@ -158,53 +158,53 @@ export default function BookingForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            <User className="inline w-4 h-4 ml-1" />
+          <label className="block text-sm font-semibold text-sage-700 mb-1.5">
+            <User className="inline w-3.5 h-3.5 ml-1" />
             שם מלא
           </label>
           <input
             type="text"
             value={formData.fullName}
             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition text-lg"
+            className="w-full px-3 py-2.5 border-2 border-sage-200 rounded-lg focus:border-nature-500 focus:outline-none transition text-sm"
             placeholder="שם פרטי ושם משפחה"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            <Mail className="inline w-4 h-4 ml-1" />
+          <label className="block text-sm font-semibold text-sage-700 mb-1.5">
+            <Mail className="inline w-3.5 h-3.5 ml-1" />
             דוא"ל
           </label>
           <input
             type="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition text-lg"
+            className="w-full px-3 py-2.5 border-2 border-sage-200 rounded-lg focus:border-nature-500 focus:outline-none transition text-sm"
             placeholder="example@email.com"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            <Phone className="inline w-4 h-4 ml-1" />
+          <label className="block text-sm font-semibold text-sage-700 mb-1.5">
+            <Phone className="inline w-3.5 h-3.5 ml-1" />
             טלפון
           </label>
           <input
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition text-lg"
+            className="w-full px-3 py-2.5 border-2 border-sage-200 rounded-lg focus:border-nature-500 focus:outline-none transition text-sm"
             placeholder="050-1234567"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            <Users className="inline w-4 h-4 ml-1" />
+          <label className="block text-sm font-semibold text-sage-700 mb-1.5">
+            <Users className="inline w-3.5 h-3.5 ml-1" />
             מספר משתתפים
           </label>
           <input
@@ -215,20 +215,20 @@ export default function BookingForm() {
             onChange={(e) =>
               setFormData({ ...formData, participantsCount: parseInt(e.target.value) || 1 })
             }
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition text-lg"
+            className="w-full px-3 py-2.5 border-2 border-sage-200 rounded-lg focus:border-nature-500 focus:outline-none transition text-sm"
             required
           />
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs text-sage-500 mt-1">
             מקסימום {Math.min(10, availableSpots)} משתתפים
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-accent-50 to-orange-50 rounded-xl p-6 border-2 border-accent-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-700 font-semibold">מקדמה לתשלום:</span>
-            <span className="text-3xl font-bold text-accent-700">₪{depositAmount}</span>
+        <div className="bg-gradient-to-br from-heritage-50 to-earth-50 rounded-lg p-4 border border-heritage-200">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-sage-700 font-semibold text-sm">מקדמה לתשלום:</span>
+            <span className="text-2xl font-bold text-heritage-600">₪{depositAmount}</span>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-xs text-sage-600">
             300 ₪ למשתתף × {formData.participantsCount} משתתפים
           </p>
         </div>
@@ -236,11 +236,11 @@ export default function BookingForm() {
         <button
           type="submit"
           disabled={loading || availableSpots < formData.participantsCount}
-          className="w-full bg-gradient-to-r from-accent-500 to-orange-500 hover:from-accent-600 hover:to-orange-600 text-white font-bold text-xl py-4 rounded-2xl transition-all duration-300 hover:scale-105 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+          className="w-full bg-heritage-500 hover:bg-heritage-600 text-white font-bold text-base py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
-              <Loader2 className="w-6 h-6 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
               מעביר לתשלום...
             </>
           ) : (
@@ -252,19 +252,19 @@ export default function BookingForm() {
           type="button"
           onClick={handleTestBooking}
           disabled={loading || availableSpots < formData.participantsCount}
-          className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold text-lg py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+          className="w-full bg-nature-500 hover:bg-nature-600 text-white font-semibold text-sm py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" />
               שומר...
             </>
           ) : (
-            <>💾 שמור הזמנה ללא תשלום (בדיקה)</>
+            <>שמור הזמנה ללא תשלום (בדיקה)</>
           )}
         </button>
 
-        <p className="text-xs text-gray-500 text-center">
+        <p className="text-xs text-sage-500 text-center">
           לאחר לחיצה על "המשך לתשלום" תועבר לעמוד תשלום מאובטח
         </p>
       </form>

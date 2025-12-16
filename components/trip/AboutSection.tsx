@@ -57,23 +57,23 @@ export default function AboutSection() {
     <section
       ref={sectionRef}
       id="about"
-      className="py-12 sm:py-16 bg-gradient-to-b from-sage-50 to-white"
+      className="py-8 sm:py-10 bg-gradient-to-b from-sage-50 to-white"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div
-          className={`text-center max-w-4xl mx-auto mb-8 sm:mb-12 transition-all duration-1000 ${
+          className={`text-center max-w-4xl mx-auto mb-5 sm:mb-6 transition-all duration-1000 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <span className="inline-block text-nature-600 font-medium mb-2 text-sm">
+          <span className="inline-block text-nature-600 font-medium mb-1.5 text-xs">
             על החוויה
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-900 mb-4">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-2">
             לונדון האחרת —
             <span className="text-nature-600"> הצד שלא הכרתם</span>
           </h2>
-          <p className="text-base sm:text-lg text-sage-600 leading-relaxed">
+          <p className="text-sm sm:text-base text-sage-600 leading-relaxed">
             כולם מכירים את לונדון של הביג בן והארמון.
             אבל מעבר לעיר מתחבא משהו אחר —
             <span className="font-medium text-sage-800"> אנגליה הכפרית והירוקה.</span>
@@ -81,26 +81,26 @@ export default function AboutSection() {
         </div>
 
         {/* Features Grid - Always visible */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-5">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <div
                 key={index}
-                className={`bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-500 border border-sage-100 ${
+                className={`bg-white rounded-lg p-3 shadow-md hover:shadow-lg transition-all duration-500 border border-sage-100 ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
                 }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-nature-100 flex items-center justify-center mb-3">
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-nature-600" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-nature-100 flex items-center justify-center mb-2">
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-nature-600" />
                 </div>
-                <h4 className="text-sm sm:text-base font-bold text-sage-900 mb-1">
+                <h4 className="text-xs sm:text-sm font-bold text-sage-900 mb-0.5">
                   {feature.title}
                 </h4>
-                <p className="text-sage-600 text-xs sm:text-sm leading-relaxed">
+                <p className="text-sage-600 text-xs leading-snug">
                   {feature.description}
                 </p>
               </div>
@@ -112,11 +112,11 @@ export default function AboutSection() {
         <div className="lg:hidden">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full flex items-center justify-center gap-2 py-3 text-nature-600 font-medium"
+            className="w-full flex items-center justify-center gap-1.5 py-2 text-nature-600 font-medium text-sm"
           >
             <span>עוד עליי</span>
             <ChevronDown
-              className={`w-5 h-5 transition-transform duration-300 ${
+              className={`w-4 h-4 transition-transform duration-300 ${
                 isExpanded ? "rotate-180" : ""
               }`}
             />
@@ -124,16 +124,16 @@ export default function AboutSection() {
 
           <div
             className={`overflow-hidden transition-all duration-500 ${
-              isExpanded ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
+              isExpanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <div className="pt-4 space-y-4">
+            <div className="pt-2 space-y-3">
               <img
                 src="/images/trip/gallery-1.jpg"
                 alt="נופי טבע אנגליה"
-                className="rounded-2xl shadow-lg w-full aspect-video object-cover"
+                className="rounded-xl shadow-lg w-full aspect-video object-cover"
               />
-              <div className="space-y-3 text-sage-700 leading-relaxed text-sm">
+              <div className="space-y-2 text-sage-700 leading-relaxed text-xs">
                 <p>
                   אחרי שנים של מגורים באנגליה, גיליתי שרוב הישראלים שמגיעים ללונדון
                   מפספסים את הדבר הכי יפה שיש לה להציע — את הטבע שמקיף אותה.
@@ -147,7 +147,7 @@ export default function AboutSection() {
         </div>
 
         {/* Story Section - Desktop */}
-        <div className="hidden lg:grid lg:grid-cols-2 gap-10 items-center">
+        <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-center">
           <div
             className={`transition-all duration-1000 delay-200 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
@@ -157,7 +157,7 @@ export default function AboutSection() {
               <img
                 src="/images/trip/gallery-1.jpg"
                 alt="נופי טבע אנגליה"
-                className="rounded-2xl shadow-xl w-full aspect-[4/3] object-cover"
+                className="rounded-xl shadow-xl w-full aspect-[4/3] object-cover"
               />
             </div>
           </div>
@@ -167,10 +167,10 @@ export default function AboutSection() {
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
             }`}
           >
-            <h3 className="text-2xl font-bold text-sage-900 mb-4">
+            <h3 className="text-xl font-bold text-sage-900 mb-3">
               למה יצרתי את הטיול הזה?
             </h3>
-            <div className="space-y-3 text-sage-700 leading-relaxed">
+            <div className="space-y-2 text-sage-700 leading-relaxed text-sm">
               <p>
                 אחרי שנים של מגורים באנגליה, גיליתי שרוב הישראלים שמגיעים ללונדון
                 מפספסים את הדבר הכי יפה שיש לה להציע — את הטבע שמקיף אותה.

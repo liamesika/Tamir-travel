@@ -3,23 +3,47 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
-    const users = await prisma.user.findMany({
+    // Get unique customers from bookings
+    const bookings = await prisma.booking.findMany({
       select: {
         id: true,
         email: true,
-        name: true,
+        fullName: true,
         phone: true,
         createdAt: true,
-        _count: {
-          select: {
-            bookings: true,
-          },
-        },
       },
       orderBy: {
         createdAt: 'desc',
       },
     })
+
+    // Group by email to get unique customers with booking count
+    const customerMap = new Map<string, {
+      id: string
+      email: string
+      name: string
+      phone: string
+      createdAt: Date
+      bookingsCount: number
+    }>()
+
+    bookings.forEach((booking) => {
+      const existing = customerMap.get(booking.email)
+      if (existing) {
+        existing.bookingsCount++
+      } else {
+        customerMap.set(booking.email, {
+          id: booking.id,
+          email: booking.email,
+          name: booking.fullName,
+          phone: booking.phone,
+          createdAt: booking.createdAt,
+          bookingsCount: 1,
+        })
+      }
+    })
+
+    const users = Array.from(customerMap.values())
 
     return NextResponse.json({ users })
   } catch (error) {

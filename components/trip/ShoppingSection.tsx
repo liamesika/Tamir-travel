@@ -56,10 +56,10 @@ export default function ShoppingSection() {
     <section
       ref={sectionRef}
       id="shopping"
-      className="py-12 sm:py-16 bg-gradient-to-br from-heritage-50 via-earth-50 to-sage-50"
+      className="py-8 sm:py-10 bg-gradient-to-br from-heritage-50 via-earth-50 to-sage-50"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-center max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 items-center max-w-5xl mx-auto">
           {/* Content */}
           <div
             className={`transition-all duration-1000 ${
@@ -68,39 +68,39 @@ export default function ShoppingSection() {
                 : "opacity-0 translate-x-10"
             }`}
           >
-            <span className="inline-block text-heritage-600 font-medium mb-2 text-sm">
+            <span className="inline-block text-heritage-600 font-medium mb-1.5 text-xs">
               חוויית השופינג
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-900 mb-3">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-2">
               אאוטלטים בלב הטבע —
               <span className="text-heritage-600"> מחירים שלא תמצאו בלונדון</span>
             </h2>
-            <p className="text-base text-sage-700 mb-5 leading-relaxed">
+            <p className="text-sm text-sage-700 mb-4 leading-relaxed">
               יום שלם של שופינג באאוטלטים הגדולים של אנגליה, הממוקמים באזורים כפריים
               מרהיבים. מותגים בינלאומיים במחירים שפשוט לא קיימים בחנויות של מרכז לונדון.
             </p>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-3">
               {benefits.map((benefit, index) => {
                 const Icon = benefit.icon;
                 return (
                   <div
                     key={index}
-                    className={`flex gap-3 items-start transition-all duration-700 ${
+                    className={`flex gap-2.5 items-start transition-all duration-700 ${
                       isVisible
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-5"
                     }`}
                     style={{ transitionDelay: `${(index + 2) * 150}ms` }}
                   >
-                    <div className="w-10 h-10 rounded-lg bg-heritage-100 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-heritage-600" />
+                    <div className="w-9 h-9 rounded-lg bg-heritage-100 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-4 h-4 text-heritage-600" />
                     </div>
                     <div>
                       <h4 className="font-bold text-sage-900 text-sm mb-0.5">
                         {benefit.title}
                       </h4>
-                      <p className="text-sage-600 text-xs leading-relaxed">
+                      <p className="text-sage-600 text-xs leading-snug">
                         {benefit.description}
                       </p>
                     </div>
@@ -128,13 +128,13 @@ export default function ShoppingSection() {
               <div className="absolute -top-6 -right-6 w-24 h-24 bg-nature-200 rounded-3xl -z-10" />
 
               {/* Floating Badge */}
-              <div className="absolute -bottom-4 right-8 bg-white rounded-2xl shadow-xl p-4 flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-heritage-500 flex items-center justify-center">
-                  <Percent className="w-6 h-6 text-white" />
+              <div className="absolute -bottom-3 right-6 bg-white rounded-xl shadow-xl p-3 flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-lg bg-heritage-500 flex items-center justify-center">
+                  <Percent className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-sage-900">עד 70%</div>
-                  <div className="text-sm text-sage-600">הנחה על מותגים</div>
+                  <div className="text-lg font-bold text-sage-900">עד 70%</div>
+                  <div className="text-xs text-sage-600">הנחה על מותגים</div>
                 </div>
               </div>
             </div>

@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'נתונים לא תקינים', details: error.errors },
+        { error: 'נתונים לא תקינים', details: error.issues },
         { status: 400 }
       )
     }
