@@ -48,7 +48,7 @@ export async function POST(
       fullName: booking.fullName,
       email: booking.email,
       tripDate: tripDate.toLocaleDateString('he-IL'),
-      remainingAmount: Math.round(booking.remainingAmount / 100),
+      remainingAmount: Number(Math.round(booking.remainingAmount / 100)),
       remainingDueDate: booking.remainingDueDate
         ? new Date(booking.remainingDueDate).toLocaleDateString('he-IL')
         : tripDate.toLocaleDateString('he-IL'),
