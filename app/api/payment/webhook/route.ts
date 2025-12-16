@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PaymentService } from '@/lib/payment'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.text()

@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma'
 import { PaymentService } from '@/lib/payment'
 import { z } from 'zod'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 const BookingSchema = z.object({
   tripDateId: z.string(),
   fullName: z.string().min(2),
