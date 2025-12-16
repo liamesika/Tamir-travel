@@ -1,6 +1,27 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-11-17.clover',
-  typescript: true,
-})
+let stripeInstance: Stripe | null = null
+
+export function getStripe(): Stripe {
+  if (!stripeInstance) {
+    const apiKey = process.env.STRIPE_SECRET_KEY
+    if (!apiKey) {
+      throw new Error('STRIPE_SECRET_KEY is not configured')
+    }
+    stripeInstance = new Stripe(apiKey, {
+      apiVersion: '2025-11-17.clover',
+      typescript: true,
+    })
+  }
+  return stripeInstance
+}
+
+// For backwards compatibility - lazy getter
+export const stripe = {
+  get checkout() {
+    return getStripe().checkout
+  },
+  get webhooks() {
+    return getStripe().webhooks
+  },
+}
