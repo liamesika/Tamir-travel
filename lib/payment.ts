@@ -1,4 +1,4 @@
-import { stripe } from './stripe'
+import { getStripe } from './stripe'
 import { prisma } from './prisma'
 
 export interface CreateDepositPaymentParams {
@@ -22,6 +22,7 @@ export class PaymentService {
     customerEmail,
     customerName,
   }: CreateDepositPaymentParams) {
+    const stripe = getStripe()
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -65,6 +66,7 @@ export class PaymentService {
     customerEmail,
     customerName,
   }: CreateRemainingPaymentParams) {
+    const stripe = getStripe()
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -104,6 +106,7 @@ export class PaymentService {
   }
 
   static async handleWebhook(payload: string, signature: string) {
+    const stripe = getStripe()
     let event: any
 
     try {

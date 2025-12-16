@@ -15,13 +15,3 @@ export function getStripe(): Stripe {
   }
   return stripeInstance
 }
-
-// For backwards compatibility - lazy getter
-export const stripe = {
-  get checkout() {
-    return getStripe().checkout
-  },
-  get webhooks() {
-    return getStripe().webhooks
-  },
-}
