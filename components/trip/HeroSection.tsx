@@ -30,10 +30,11 @@ export default function HeroSection() {
         muted
         loop
         playsInline
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
       >
+        <source src="/videos/hero-video.mp4" type="video/mp4" />
         <source src="/videos/hero-video.mov" type="video/quicktime" />
-        <source src="/videos/hero-video.mov" type="video/mp4" />
       </video>
 
       {/* Overlay */}
