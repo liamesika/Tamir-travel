@@ -8,6 +8,7 @@ import GallerySection from "@/components/trip/GallerySection";
 import ShoppingSection from "@/components/trip/ShoppingSection";
 import CtaSection from "@/components/trip/CtaSection";
 import BookingSection from "@/components/trip/BookingSection";
+import FaqSection from "@/components/trip/FaqSection";
 import ContactSection from "@/components/trip/ContactSection";
 import FloatingWhatsApp from "@/components/trip/FloatingWhatsApp";
 
@@ -24,6 +25,7 @@ export default function TripPage() {
       <ShoppingSection />
       <CtaSection />
       <BookingSection />
+      <FaqSection />
       <ContactSection />
       <FloatingWhatsApp />
     </main>
