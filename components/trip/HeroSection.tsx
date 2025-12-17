@@ -7,6 +7,7 @@ import { SiWhatsapp } from "react-icons/si";
 export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -29,7 +30,7 @@ export default function HeroSection() {
   useEffect(() => {
     if (videoRef.current && !prefersReducedMotion && !videoFailed) {
       videoRef.current.play().catch(() => {
-        // Autoplay blocked - video will show poster
+        console.error("HERO VIDEO: Autoplay blocked");
       });
     }
   }, [prefersReducedMotion, videoFailed]);
@@ -43,6 +44,7 @@ export default function HeroSection() {
   ];
 
   const showVideo = !prefersReducedMotion && !videoFailed;
+  const videoSrc = "/videos/hero-video.mp4";
 
   return (
     <section
@@ -57,28 +59,47 @@ export default function HeroSection() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           poster="/images/hero-poster.jpg"
-          onError={() => setVideoFailed(true)}
-          className="absolute inset-0 w-full h-full object-cover z-0"
+          onError={(e) => {
+            console.error("HERO VIDEO ERROR", e);
+            setVideoFailed(true);
+          }}
+          onLoadedData={() => console.log("HERO VIDEO LOADED")}
+          onCanPlay={() => console.log("HERO VIDEO CAN PLAY")}
+          onPlaying={() => {
+            console.log("HERO VIDEO PLAYING");
+            setIsPlaying(true);
+          }}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ zIndex: 0 }}
         >
-          <source src="/videos/hero-video.mp4" type="video/mp4" />
+          <source src={videoSrc} type="video/mp4" />
         </video>
       )}
 
-      {/* Fallback Background Image (shows when video fails or reduced motion) */}
-      {!showVideo && (
+      {/* Fallback Background Image (shows when video fails, reduced motion, or not yet playing) */}
+      {(!showVideo || !isPlaying) && (
         <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center z-0"
-          style={{ backgroundImage: "url('/images/hero-poster.jpg')" }}
+          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/images/hero-poster.jpg')",
+            zIndex: 0
+          }}
         />
       )}
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-nature-950/60 via-nature-900/50 to-nature-950/70 z-10" />
+      {/* Overlay - semi-transparent */}
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-nature-950/60 via-nature-900/50 to-nature-950/70"
+        style={{ zIndex: 10 }}
+      />
 
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 sm:pt-20">
+      <div
+        className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 sm:pt-20"
+        style={{ zIndex: 20 }}
+      >
         <div
           className={`transition-all duration-1000 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
