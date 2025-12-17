@@ -1,15 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Calendar, MapPin, Bed, Coffee, Users } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 
 export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     setIsLoaded(true);
+
+    // Check for reduced motion preference
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
+
+  // Attempt to play video on mount (handles mobile autoplay restrictions)
+  useEffect(() => {
+    if (videoRef.current && !prefersReducedMotion && !videoFailed) {
+      videoRef.current.play().catch(() => {
+        // Autoplay blocked - video will show poster
+      });
+    }
+  }, [prefersReducedMotion, videoFailed]);
 
   const highlights = [
     { icon: Calendar, text: "יומיים" },
@@ -19,29 +42,43 @@ export default function HeroSection() {
     { icon: Users, text: "מקומות מוגבלים" },
   ];
 
+  const showVideo = !prefersReducedMotion && !videoFailed;
+
   return (
     <section
       id="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Video Background */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="/videos/hero-video.mp4" type="video/mp4" />
-        <source src="/videos/hero-video.mov" type="video/quicktime" />
-      </video>
+      {showVideo && (
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/images/hero-poster.jpg"
+          onError={() => setVideoFailed(true)}
+          className="absolute inset-0 w-full h-full object-cover z-0"
+        >
+          <source src="/videos/hero-video.mp4" type="video/mp4" />
+        </video>
+      )}
+
+      {/* Fallback Background Image (shows when video fails or reduced motion) */}
+      {!showVideo && (
+        <div
+          className="absolute inset-0 w-full h-full bg-cover bg-center z-0"
+          style={{ backgroundImage: "url('/images/hero-poster.jpg')" }}
+        />
+      )}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-nature-950/60 via-nature-900/50 to-nature-950/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-nature-950/60 via-nature-900/50 to-nature-950/70 z-10" />
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 sm:pt-20">
+      <div className="relative z-20 container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 sm:pt-20">
         <div
           className={`transition-all duration-1000 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
