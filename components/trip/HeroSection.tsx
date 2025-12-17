@@ -1,15 +1,60 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { Calendar, MapPin, Bed, Coffee, Users } from "lucide-react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Calendar, MapPin, Bed, Coffee, Users, Play } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 
 export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Attempt autoplay with all necessary workarounds
+  const attemptAutoplay = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video || prefersReducedMotion || videoFailed) return;
+
+    // Force muted properties (required for autoplay)
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      setTimeout(async () => {
+        try {
+          await video.play();
+          setIsPlaying(true);
+          setAutoplayBlocked(false);
+        } catch (err) {
+          console.warn("HERO VIDEO: Autoplay blocked", err);
+          setAutoplayBlocked(true);
+        }
+      }, 0);
+    });
+  }, [prefersReducedMotion, videoFailed]);
+
+  // Manual play handler for blocked autoplay
+  const handleManualPlay = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.setAttribute("muted", "");
+
+    try {
+      await video.play();
+      setIsPlaying(true);
+      setAutoplayBlocked(false);
+    } catch (err) {
+      console.error("HERO VIDEO: Manual play failed", err);
+    }
+  }, []);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -26,14 +71,12 @@ export default function HeroSection() {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  // Attempt to play video on mount (handles mobile autoplay restrictions)
+  // Attempt autoplay on mount
   useEffect(() => {
-    if (videoRef.current && !prefersReducedMotion && !videoFailed) {
-      videoRef.current.play().catch(() => {
-        console.error("HERO VIDEO: Autoplay blocked");
-      });
+    if (!prefersReducedMotion && !videoFailed) {
+      attemptAutoplay();
     }
-  }, [prefersReducedMotion, videoFailed]);
+  }, [attemptAutoplay, prefersReducedMotion, videoFailed]);
 
   const highlights = [
     { icon: Calendar, text: "יומיים" },
@@ -44,7 +87,8 @@ export default function HeroSection() {
   ];
 
   const showVideo = !prefersReducedMotion && !videoFailed;
-  const videoSrc = "/videos/hero-video.mp4";
+  const showPlayButton = showVideo && autoplayBlocked && !isPlaying;
+  const showPoster = !showVideo || !isPlaying;
 
   return (
     <section
@@ -65,21 +109,25 @@ export default function HeroSection() {
             console.error("HERO VIDEO ERROR", e);
             setVideoFailed(true);
           }}
-          onLoadedData={() => console.log("HERO VIDEO LOADED")}
-          onCanPlay={() => console.log("HERO VIDEO CAN PLAY")}
           onPlaying={() => {
-            console.log("HERO VIDEO PLAYING");
             setIsPlaying(true);
+            setAutoplayBlocked(false);
+          }}
+          onPause={() => {
+            // Only mark as not playing if it wasn't intentional
+            if (videoRef.current && videoRef.current.ended) {
+              setIsPlaying(false);
+            }
           }}
           className="absolute inset-0 w-full h-full object-cover"
           style={{ zIndex: 0 }}
         >
-          <source src={videoSrc} type="video/mp4" />
+          <source src="/videos/hero-video.mp4" type="video/mp4" />
         </video>
       )}
 
-      {/* Fallback Background Image (shows when video fails, reduced motion, or not yet playing) */}
-      {(!showVideo || !isPlaying) && (
+      {/* Fallback Background Image */}
+      {showPoster && (
         <div
           className="absolute inset-0 w-full h-full bg-cover bg-center"
           style={{
@@ -94,6 +142,19 @@ export default function HeroSection() {
         className="absolute inset-0 bg-gradient-to-b from-nature-950/60 via-nature-900/50 to-nature-950/70"
         style={{ zIndex: 10 }}
       />
+
+      {/* Play Button (shows when autoplay blocked) */}
+      {showPlayButton && (
+        <button
+          onClick={handleManualPlay}
+          className="absolute bottom-24 right-6 sm:bottom-8 sm:right-8 flex items-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-full border border-white/30 transition-all duration-300 hover:scale-105"
+          style={{ zIndex: 25 }}
+          aria-label="Play video"
+        >
+          <Play className="w-5 h-5 fill-white" />
+          <span className="text-sm font-medium">Play</span>
+        </button>
+      )}
 
       {/* Content */}
       <div
