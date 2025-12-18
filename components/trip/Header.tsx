@@ -16,9 +16,32 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close menu on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
   const navLinks = [
     { href: "#about", label: "על החוויה" },
-    { href: "#itinerary", label: "מסלול הטיול" },
+    { href: "#itinerary", label: "מסלול" },
     { href: "#included", label: "מה כלול" },
     { href: "#guide", label: "מי אני" },
     { href: "#gallery", label: "גלריה" },
@@ -27,34 +50,34 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-lg py-3"
-          : "bg-transparent py-5"
+      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
+        isScrolled || isMobileMenuOpen
+          ? "bg-white/95 backdrop-blur-md shadow-lg py-2"
+          : "bg-transparent py-3"
       }`}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Logo - Right side for RTL */}
+          {/* Logo */}
           <a
             href="#hero"
-            className={`text-xl sm:text-2xl font-bold transition-all duration-300 ${
-              isScrolled ? "text-nature-800" : "text-white"
+            className={`text-lg sm:text-xl font-bold transition-colors ${
+              isScrolled || isMobileMenuOpen ? "text-nature-800" : "text-white"
             }`}
           >
             <span className="block leading-tight">לונדון</span>
-            <span className={`text-sm font-normal ${isScrolled ? "text-sage-600" : "text-white/80"}`}>
+            <span className={`text-xs font-normal ${isScrolled || isMobileMenuOpen ? "text-sage-600" : "text-white/80"}`}>
               שלא הכרתם
             </span>
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                className={`text-sm font-medium transition-colors ${
                   isScrolled
                     ? "text-sage-700 hover:text-nature-600"
                     : "text-white/90 hover:text-white"
@@ -66,18 +89,18 @@ export default function Header() {
           </nav>
 
           {/* WhatsApp Button - Desktop */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center">
             <a
               href="https://wa.me/972501234567"
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium transition-all duration-300 hover:scale-105 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors text-sm ${
                 isScrolled
-                  ? "bg-green-500 text-white hover:bg-green-600 shadow-md"
+                  ? "bg-green-500 text-white hover:bg-green-600"
                   : "bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30"
               }`}
             >
-              <SiWhatsapp className="w-5 h-5" />
+              <SiWhatsapp className="w-4 h-4" />
               <span>דברו איתי</span>
             </a>
           </div>
@@ -86,52 +109,54 @@ export default function Header() {
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`lg:hidden p-2 rounded-lg transition-colors ${
-              isScrolled ? "text-sage-800" : "text-white"
+              isScrolled || isMobileMenuOpen ? "text-sage-800" : "text-white"
             }`}
+            aria-label={isMobileMenuOpen ? "סגור תפריט" : "פתח תפריט"}
           >
-            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
-        <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ${
-            isMobileMenuOpen ? "max-h-96 mt-4" : "max-h-0"
-          }`}
-        >
-          <nav
-            className={`py-4 px-2 rounded-2xl ${
-              isScrolled ? "bg-sage-50" : "bg-white/10 backdrop-blur-md"
-            }`}
-          >
-            <div className="flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-base font-medium transition-colors py-3 px-4 rounded-xl ${
-                    isScrolled
-                      ? "text-sage-700 hover:bg-sage-100"
-                      : "text-white hover:bg-white/10"
-                  }`}
-                >
-                  {link.label}
-                </a>
-              ))}
+      {/* Mobile Menu - Full Screen Overlay */}
+      <div
+        className={`lg:hidden fixed inset-0 top-[56px] bg-white transition-all duration-300 ${
+          isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        }`}
+        style={{ height: "calc(100vh - 56px)", zIndex: 40 }}
+      >
+        <nav className="h-full overflow-y-auto py-4 px-4">
+          <div className="flex flex-col gap-1">
+            {navLinks.map((link) => (
               <a
-                href="https://wa.me/972501234567"
-                target="_blank"
-                rel="noopener noreferrer"
+                key={link.href}
+                href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 mt-3 py-3 px-4 bg-green-500 text-white rounded-xl font-medium"
+                className="text-base font-medium text-sage-800 hover:text-nature-600 hover:bg-sage-50 py-3 px-4 rounded-xl transition-colors"
               >
-                <SiWhatsapp className="w-5 h-5" />
-                <span>דברו איתי בוואטסאפ</span>
+                {link.label}
               </a>
-            </div>
-          </nav>
-        </div>
+            ))}
+            <div className="border-t border-sage-200 my-3" />
+            <a
+              href="https://wa.me/972501234567"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-center gap-2 py-3 px-4 bg-green-500 text-white rounded-xl font-medium"
+            >
+              <SiWhatsapp className="w-5 h-5" />
+              <span>דברו איתי בוואטסאפ</span>
+            </a>
+            <a
+              href="#booking-form-section"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-center py-3 px-4 bg-heritage-500 text-white rounded-xl font-bold mt-2"
+            >
+              הרשמה לטיול
+            </a>
+          </div>
+        </nav>
       </div>
     </header>
   );

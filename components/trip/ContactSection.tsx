@@ -85,15 +85,15 @@ export default function ContactSection() {
             </div>
 
             {/* Links */}
-            <div className="flex gap-3 text-xs text-sage-400">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 text-xs text-sage-400">
               <a href="#" className="hover:text-white transition-colors">
                 תנאי שימוש
               </a>
-              <span className="text-sage-700">•</span>
+              <span className="text-sage-700 hidden sm:inline">•</span>
               <a href="#" className="hover:text-white transition-colors">
                 מדיניות פרטיות
               </a>
-              <span className="text-sage-700">•</span>
+              <span className="text-sage-700 hidden sm:inline">•</span>
               <a href="#" className="hover:text-white transition-colors">
                 נגישות
               </a>

@@ -54,16 +54,17 @@ export default function GuideSection() {
                 : "opacity-0 -translate-x-10"
             }`}
           >
-            <div className="relative">
-              <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
+            <div className="relative px-4 py-4 lg:px-0 lg:py-0">
+              <div className="aspect-[3/4] rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl lg:shadow-2xl">
                 <img
                   src="/images/trip/tamir.jpg"
                   alt="תמיר - המארגן"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-nature-200 rounded-3xl -z-10" />
-              <div className="absolute -top-6 -left-6 w-24 h-24 bg-heritage-200 rounded-3xl -z-10" />
+              {/* Decorative elements - hidden on mobile to prevent overflow */}
+              <div className="hidden lg:block absolute -bottom-6 -right-6 w-32 h-32 bg-nature-200 rounded-3xl -z-10" />
+              <div className="hidden lg:block absolute -top-6 -left-6 w-24 h-24 bg-heritage-200 rounded-3xl -z-10" />
             </div>
           </div>
 

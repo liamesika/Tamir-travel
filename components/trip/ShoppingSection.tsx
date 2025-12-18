@@ -118,22 +118,23 @@ export default function ShoppingSection() {
                 : "opacity-0 -translate-x-10"
             }`}
           >
-            <div className="relative">
+            <div className="relative pb-4 lg:pb-0">
               <img
                 src="/images/trip/gallery-5.jpg"
                 alt="אאוטלט בטבע"
-                className="rounded-3xl shadow-2xl w-full aspect-[4/3] object-cover"
+                className="rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl w-full aspect-[4/3] object-cover"
               />
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-heritage-200 rounded-3xl -z-10" />
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-nature-200 rounded-3xl -z-10" />
+              {/* Decorative elements - hidden on mobile */}
+              <div className="hidden lg:block absolute -bottom-6 -left-6 w-32 h-32 bg-heritage-200 rounded-3xl -z-10" />
+              <div className="hidden lg:block absolute -top-6 -right-6 w-24 h-24 bg-nature-200 rounded-3xl -z-10" />
 
               {/* Floating Badge */}
-              <div className="absolute -bottom-3 right-6 bg-white rounded-xl shadow-xl p-3 flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-lg bg-heritage-500 flex items-center justify-center">
-                  <Percent className="w-5 h-5 text-white" />
+              <div className="absolute -bottom-2 right-3 lg:-bottom-3 lg:right-6 bg-white rounded-lg lg:rounded-xl shadow-lg lg:shadow-xl p-2 lg:p-3 flex items-center gap-2">
+                <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-lg bg-heritage-500 flex items-center justify-center">
+                  <Percent className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-sage-900">עד 70%</div>
+                  <div className="text-base lg:text-lg font-bold text-sage-900">עד 70%</div>
                   <div className="text-xs text-sage-600">הנחה על מותגים</div>
                 </div>
               </div>
