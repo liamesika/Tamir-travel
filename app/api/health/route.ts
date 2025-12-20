@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { neon } from '@neondatabase/serverless'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -11,6 +12,17 @@ export async function GET() {
   // Mask the password in URL for debug
   const maskedUrl = dbUrl.replace(/:[^:@]+@/, ':***@')
 
+  let dbTest = 'not_tested'
+  if (dbUrl) {
+    try {
+      const sql = neon(dbUrl)
+      const result = await sql`SELECT 1 as test`
+      dbTest = 'connected'
+    } catch (e: any) {
+      dbTest = `error: ${e.message}`
+    }
+  }
+
   return NextResponse.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -20,6 +32,7 @@ export async function GET() {
       hasSSL,
       isNeon,
       urlPreview: maskedUrl.substring(0, 80) + '...',
-    }
+    },
+    dbTest
   })
 }
