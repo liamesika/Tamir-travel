@@ -201,13 +201,19 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 export async function GET(request: NextRequest) {
   const secret = request.nextUrl.searchParams.get('secret')
   const action = request.nextUrl.searchParams.get('action')
+  const customDbUrl = request.nextUrl.searchParams.get('db')
 
   if (secret !== process.env.SETUP_SECRET && secret !== 'tamir2024setup') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
-    const sql = getDb()
+    // Use custom DB URL if provided, otherwise use env
+    const dbUrl = customDbUrl || process.env.DATABASE_URL
+    if (!dbUrl) {
+      return NextResponse.json({ error: 'No DATABASE_URL available' }, { status: 500 })
+    }
+    const sql = neon(dbUrl)
 
     // Test connection
     if (action === 'test') {
