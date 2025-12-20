@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAdmin } from '@/lib/auth'
-import { serialize } from 'cookie'
+import { cookies } from 'next/headers'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -22,7 +22,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const cookie = serialize('admin-session', JSON.stringify(admin), {
+    const cookieStore = await cookies()
+    cookieStore.set('admin-session', JSON.stringify(admin), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -30,10 +31,7 @@ export async function POST(request: NextRequest) {
       path: '/',
     })
 
-    const response = NextResponse.json({ success: true, admin })
-    response.headers.set('Set-Cookie', cookie)
-
-    return response
+    return NextResponse.json({ success: true, admin })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
