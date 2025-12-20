@@ -133,6 +133,26 @@ export class PaymentService {
         throw new Error('Booking not found')
       }
 
+      // Create Payment record for successful payment
+      const paymentAmount = session.amount_total || (paymentType === 'remaining' ? booking.remainingAmount : booking.depositAmount)
+
+      await prisma.payment.create({
+        data: {
+          bookingId,
+          provider: 'stripe',
+          type: paymentType,
+          amount: paymentAmount,
+          currency: 'ILS',
+          stripeSessionId: session.id,
+          stripePaymentIntentId: session.payment_intent,
+          status: 'succeeded',
+          metadata: JSON.stringify({
+            customerEmail: session.customer_email,
+            paymentMethod: session.payment_method_types?.[0] || 'card',
+          }),
+        },
+      })
+
       if (paymentType === 'remaining') {
         await prisma.booking.update({
           where: { id: bookingId },
@@ -156,6 +176,21 @@ export class PaymentService {
       const availableSpots = tripDate.capacity - tripDate.reservedSpots
 
       if (availableSpots < booking.participantsCount) {
+        // Update payment status to refunded since we'll need to refund
+        await prisma.payment.updateMany({
+          where: {
+            bookingId,
+            stripeSessionId: session.id,
+          },
+          data: {
+            status: 'refunded',
+            metadata: JSON.stringify({
+              reason: 'CAPACITY_EXCEEDED',
+              refundedAt: new Date().toISOString(),
+            }),
+          },
+        })
+
         await prisma.booking.update({
           where: { id: bookingId },
           data: { depositStatus: 'CANCELLED' },
@@ -184,6 +219,29 @@ export class PaymentService {
       const session = event.data.object
       const bookingId = session.metadata.bookingId
       const paymentType = session.metadata.paymentType || 'deposit'
+
+      // Create failed payment record
+      const booking = await prisma.booking.findUnique({
+        where: { id: bookingId },
+      })
+
+      if (booking) {
+        await prisma.payment.create({
+          data: {
+            bookingId,
+            provider: 'stripe',
+            type: paymentType,
+            amount: paymentType === 'remaining' ? booking.remainingAmount : booking.depositAmount,
+            currency: 'ILS',
+            stripeSessionId: session.id,
+            status: 'failed',
+            metadata: JSON.stringify({
+              reason: 'SESSION_EXPIRED',
+              expiredAt: new Date().toISOString(),
+            }),
+          },
+        })
+      }
 
       if (paymentType === 'remaining') {
         return { status: 'REMAINING_EXPIRED' }

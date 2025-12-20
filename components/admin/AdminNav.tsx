@@ -19,10 +19,11 @@ export default function AdminNav() {
   };
 
   const navItems = [
-    { name: 'הזמנות', href: '/admin', icon: Home },
+    { name: 'דשבורד', href: '/admin', icon: Home },
+    { name: 'הזמנות', href: '/admin/bookings', icon: Calendar },
+    { name: 'לקוחות', href: '/admin/users', icon: Users },
     { name: 'טיולים', href: '/admin/trips', icon: Map },
     { name: 'הגדרות', href: '/admin/settings', icon: Settings },
-    { name: 'התראות', href: '/admin/notifications', icon: Bell },
   ];
 
   return (

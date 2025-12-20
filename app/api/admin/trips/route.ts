@@ -1,21 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/admin-guard'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await requireAdmin()
+  if ('error' in auth) {
+    return auth.error
+  }
+
   try {
     const trips = await prisma.trip.findMany({
       include: {
-        tripDates: true,
+        tripDates: {
+          include: {
+            bookings: {
+              select: {
+                id: true,
+                depositStatus: true,
+                participantsCount: true
+              }
+            }
+          },
+          orderBy: {
+            date: 'asc'
+          }
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
     })
 
-    return NextResponse.json({ trips })
+    // Add stats to each trip
+    const tripsWithStats = trips.map(trip => {
+      const totalBookings = trip.tripDates.reduce(
+        (sum, td) => sum + td.bookings.length, 0
+      )
+      const totalParticipants = trip.tripDates.reduce(
+        (sum, td) => sum + td.bookings.reduce((s, b) => s + b.participantsCount, 0), 0
+      )
+      const totalCapacity = trip.tripDates.reduce(
+        (sum, td) => sum + td.capacity, 0
+      )
+
+      return {
+        ...trip,
+        stats: {
+          totalBookings,
+          totalParticipants,
+          totalCapacity,
+          tripDatesCount: trip.tripDates.length
+        }
+      }
+    })
+
+    return NextResponse.json({ trips: tripsWithStats })
   } catch (error) {
     console.error('Error fetching trips:', error)
     return NextResponse.json(
@@ -26,6 +68,11 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin()
+  if ('error' in auth) {
+    return auth.error
+  }
+
   try {
     const data = await request.json()
 

@@ -37,31 +37,64 @@ model TripDate {
   reservedSpots Int       @default(0)
   pricePerPerson Int
   depositAmount Int       @default(300)
+  status        String    @default("OPEN") // OPEN, CLOSED, SOLD_OUT, CANCELLED
   bookings      Booking[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
 
+model User {
+  id          String    @id @default(cuid())
+  fullName    String
+  email       String    @unique
+  phone       String?
+  whatsapp    String?
+  notes       String?
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 model Booking {
-  id                    String   @id @default(cuid())
+  id                    String    @id @default(cuid())
   tripDateId            String
-  tripDate              TripDate @relation(fields: [tripDateId], references: [id])
+  tripDate              TripDate  @relation(fields: [tripDateId], references: [id])
+  userId                String?
+  user                  User?     @relation(fields: [userId], references: [id])
   fullName              String
   email                 String
   phone                 String
   participantsCount     Int
   totalPrice            Int
   depositAmount         Int
-  depositStatus         String   @default("PENDING")
-  remainingAmount       Int      @default(0)
-  remainingStatus       String   @default("PENDING")
+  depositStatus         String    @default("PENDING") // PENDING, PAID, CANCELLED, REFUNDED
+  remainingAmount       Int       @default(0)
+  remainingStatus       String    @default("PENDING") // PENDING, PAID, CANCELLED, REFUNDED
   remainingDueDate      DateTime?
   remainingPaidAt       DateTime?
-  paymentToken          String   @unique @default(cuid())
+  paymentToken          String    @unique @default(cuid())
   paymentIntentId       String?
   remainingPaymentIntentId String?
-  emailSent             Boolean  @default(false)
-  whatsappSent          Boolean  @default(false)
+  emailSent             Boolean   @default(false)
+  whatsappSent          Boolean   @default(false)
+  adminNotes            String?
+  payments              Payment[]
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Payment {
+  id                    String   @id @default(cuid())
+  bookingId             String
+  booking               Booking  @relation(fields: [bookingId], references: [id])
+  provider              String   @default("stripe")
+  type                  String   // deposit, remaining, refund
+  amount                Int
+  currency              String   @default("ILS")
+  stripePaymentIntentId String?
+  stripeSessionId       String?
+  status                String   @default("pending") // pending, succeeded, failed, refunded
+  metadata              String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }
@@ -71,6 +104,7 @@ model Admin {
   email     String   @unique
   password  String
   name      String
+  role      String   @default("admin") // admin, viewer
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

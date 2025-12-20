@@ -1,18 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/admin-guard'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin()
+  if ('error' in auth) {
+    return auth.error
+  }
+
   try {
+    const { id } = await params
+
     const trip = await prisma.trip.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
-        tripDates: true,
+        tripDates: {
+          include: {
+            bookings: {
+              select: {
+                id: true,
+                fullName: true,
+                depositStatus: true,
+                remainingStatus: true,
+                participantsCount: true
+              }
+            }
+          },
+          orderBy: {
+            date: 'asc'
+          }
+        },
       },
     })
 
@@ -35,14 +58,55 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin()
+  if ('error' in auth) {
+    return auth.error
+  }
+
   try {
+    const { id } = await params
     const data = await request.json()
 
+    // Only allow certain fields to be updated
+    const allowedFields = [
+      'name', 'slug', 'heroTitle', 'heroSubtitle', 'heroImage',
+      'guideTitle', 'guideContent', 'guideImage',
+      'includedItems', 'notIncludedItems', 'itinerarySteps',
+      'faqItems', 'galleryImages', 'isActive'
+    ]
+
+    const filteredData: any = {}
+    for (const field of allowedFields) {
+      if (data[field] !== undefined) {
+        filteredData[field] = data[field]
+      }
+    }
+
+    // Check slug uniqueness if changing
+    if (filteredData.slug) {
+      const existingTrip = await prisma.trip.findFirst({
+        where: {
+          slug: filteredData.slug,
+          NOT: { id }
+        }
+      })
+
+      if (existingTrip) {
+        return NextResponse.json(
+          { error: 'סלאג כבר קיים במערכת' },
+          { status: 400 }
+        )
+      }
+    }
+
     const trip = await prisma.trip.update({
-      where: { id: params.id },
-      data,
+      where: { id },
+      data: filteredData,
+      include: {
+        tripDates: true
+      }
     })
 
     return NextResponse.json({ trip })
@@ -57,12 +121,19 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin()
+  if ('error' in auth) {
+    return auth.error
+  }
+
   try {
+    const { id } = await params
+
     // Check if trip has bookings
     const tripDates = await prisma.tripDate.findMany({
-      where: { tripId: params.id },
+      where: { tripId: id },
     })
 
     const tripDateIds = tripDates.map(td => td.id)
@@ -86,12 +157,12 @@ export async function DELETE(
 
     // Delete trip dates first
     await prisma.tripDate.deleteMany({
-      where: { tripId: params.id },
+      where: { tripId: id },
     })
 
     // Delete trip
     await prisma.trip.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
