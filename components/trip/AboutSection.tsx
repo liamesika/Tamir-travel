@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Leaf, Mountain, Castle, Sparkles, ChevronDown } from "lucide-react";
+import { Leaf, Home, ShoppingBag, Sparkles } from "lucide-react";
 
 export default function AboutSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -34,22 +33,22 @@ export default function AboutSection() {
     {
       icon: Leaf,
       title: "טבע אנגלי אותנטי",
-      description: "נופים ירוקים, גבעות מתגלגלות ויערות עתיקים",
+      description: "גבעות ירוקות, כפרים עתיקים, שקט ושלווה",
     },
     {
-      icon: Castle,
-      title: "כפרים היסטוריים",
-      description: "כפרי מורשת בריטיים עם בתי אבן ופאבים מקומיים",
+      icon: Home,
+      title: "כפרים ציוריים",
+      description: "בתי אבן, נחלים ואווירה אנגלית קסומה",
     },
     {
-      icon: Mountain,
-      title: "נקודות תצפית נסתרות",
-      description: "מקומות שרק מקומיים מכירים",
+      icon: ShoppingBag,
+      title: "חנויות ומסעדות מקומיות",
+      description: "פאבים אותנטיים ושווקים כפריים",
     },
     {
       icon: Sparkles,
-      title: "חוויה אישית",
-      description: "קבוצה קטנה וליווי אישי",
+      title: "חוויה אישית ורגועה",
+      description: "קבוצה קטנה, קצב נעים, ליווי צמוד",
     },
   ];
 
@@ -74,14 +73,14 @@ export default function AboutSection() {
             <span className="text-nature-600"> הצד שלא הכרתם</span>
           </h2>
           <p className="text-sm sm:text-base text-sage-600 leading-relaxed">
-            כולם מכירים את לונדון של הביג בן והארמון.
-            אבל מעבר לעיר מתחבא משהו אחר —
-            <span className="font-medium text-sage-800"> אנגליה הכפרית והירוקה.</span>
+            כולם מכירים את לונדון של הביג בן והארמונות.
+            אבל מעבר לעיר הגדולה מחכה עולם אחר —
+            <span className="font-medium text-sage-800"> טבע, כפרים עתיקים, שקט ושלווה.</span>
           </p>
         </div>
 
-        {/* Features Grid - Always visible */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-5">
+        {/* Features Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
@@ -106,84 +105,6 @@ export default function AboutSection() {
               </div>
             );
           })}
-        </div>
-
-        {/* Collapsible Story Section - Mobile */}
-        <div className="lg:hidden">
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full flex items-center justify-center gap-1.5 py-2 text-nature-600 font-medium text-sm"
-          >
-            <span>עוד עליי</span>
-            <ChevronDown
-              className={`w-4 h-4 transition-transform duration-300 ${
-                isExpanded ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-
-          <div
-            className={`overflow-hidden transition-all duration-500 ${
-              isExpanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
-            }`}
-          >
-            <div className="pt-2 space-y-3">
-              <img
-                src="/images/trip/gallery-1.jpg"
-                alt="נופי טבע אנגליה"
-                className="rounded-xl shadow-lg w-full aspect-video object-cover"
-              />
-              <div className="space-y-2 text-sage-700 leading-relaxed text-xs">
-                <p>
-                  אחרי שנים של מגורים באנגליה, גיליתי שרוב הישראלים שמגיעים ללונדון
-                  מפספסים את הדבר הכי יפה שיש לה להציע — את הטבע שמקיף אותה.
-                </p>
-                <p className="font-medium text-sage-800">
-                  הטיול הזה נולד מתוך הרצון לחשוף את לונדון האחרת — זו שגרמה לי להתאהב באנגליה.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Story Section - Desktop */}
-        <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-center">
-          <div
-            className={`transition-all duration-1000 delay-200 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
-            }`}
-          >
-            <div className="relative">
-              <img
-                src="/images/trip/gallery-1.jpg"
-                alt="נופי טבע אנגליה"
-                className="rounded-xl shadow-xl w-full aspect-[4/3] object-cover"
-              />
-            </div>
-          </div>
-
-          <div
-            className={`transition-all duration-1000 delay-400 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
-            }`}
-          >
-            <h3 className="text-xl font-bold text-sage-900 mb-3">
-              למה יצרתי את הטיול הזה?
-            </h3>
-            <div className="space-y-2 text-sage-700 leading-relaxed text-sm">
-              <p>
-                אחרי שנים של מגורים באנגליה, גיליתי שרוב הישראלים שמגיעים ללונדון
-                מפספסים את הדבר הכי יפה שיש לה להציע — את הטבע שמקיף אותה.
-              </p>
-              <p>
-                פעם אחר פעם שמעתי חברים ומשפחות שחוזרים מלונדון עם תמונות מאותם מקומות,
-                בלי לדעת שבנסיעה של שעה-שעתיים מחכה להם עולם אחר לגמרי.
-              </p>
-              <p className="font-medium text-sage-800">
-                הטיול הזה נולד מתוך הרצון לחשוף את לונדון האחרת — זו שגרמה לי להתאהב באנגליה.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </section>

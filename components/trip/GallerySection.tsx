@@ -58,9 +58,6 @@ export default function GallerySection({ galleryImages }: GallerySectionProps) {
             רגעים מהטיולים
             <span className="text-nature-600"> שלנו</span>
           </h2>
-          <p className="text-sm sm:text-base text-sage-600 max-w-2xl mx-auto">
-            תמונות אמיתיות מהטיולים — טבע, נופים וחוויות בלתי נשכחות
-          </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-3 max-w-5xl mx-auto">

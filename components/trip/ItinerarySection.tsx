@@ -33,23 +33,23 @@ const iconMap: Record<string, LucideIcon> = {
 const defaultDays: ItineraryDay[] = [
   {
     day: "יום ראשון",
-    title: "יוצאים לטבע",
+    title: "יוצאים לכפר האנגלי",
     activities: [
-      { icon: "Car", title: "איסוף מלונדון", description: "נקודת מפגש מרכזית בלונדון. יוצאים לדרך!" },
-      { icon: "TreePine", title: "נסיעה לאזורי הטבע", description: "נוסעים צפונה/מערבה לעבר הכפר האנגלי האותנטי" },
-      { icon: "Camera", title: "נקודות תצפית ונופים", description: "עצירות בנקודות מיוחדות עם נופים ירוקים עוצרי נשימה" },
-      { icon: "MapPin", title: "כפרי מורשת היסטוריים", description: "סיור בכפרים עתיקים, בתי אבן, פאבים מקומיים ואווירה אנגלית אותנטית" },
-      { icon: "Home", title: "לינה במקום קסום", description: "לינה באווירה כפרית, מוקפים בטבע ושקט" },
+      { icon: "Car", title: "איסוף מ-Tower Hill", description: "נקודת מפגש מרכזית בלונדון. יוצאים לדרך!" },
+      { icon: "TreePine", title: "נסיעה לכפרים", description: "נוסעים לעבר הכפר האנגלי האותנטי — נופים ירוקים לאורך כל הדרך" },
+      { icon: "MapPin", title: "סיור בכפרים ציוריים", description: "בתי אבן עתיקים, נחלים, פאבים מקומיים ואווירה אנגלית קסומה" },
+      { icon: "Coffee", title: "זמן חופשי", description: "זמן לקפה, מסעדה מקומית או סיבוב עצמאי" },
+      { icon: "Home", title: "לינה במקום מוקף טבע", description: "לילה באווירה כפרית, מוקפים בשקט ושלווה" },
     ],
   },
   {
     day: "יום שני",
-    title: "טבע ושופינג",
+    title: "בוקר בטבע + שופינג",
     activities: [
-      { icon: "Coffee", title: "ארוחת בוקר", description: "ארוחת בוקר אנגלית מלאה במקום הלינה" },
-      { icon: "Sunrise", title: "בוקר בטבע", description: "המשך גילוי אזורי הטבע והנופים הירוקים" },
-      { icon: "ShoppingBag", title: "אאוטלטים בלב הטבע", description: "יום שופינג מלא באאוטלטים גדולים באזורים כפריים — מחירים שלא תמצאו בלונדון!" },
-      { icon: "Car", title: "חזרה ללונדון", description: "חוזרים עמוסים בחוויות, תמונות ושקיות קניות" },
+      { icon: "Coffee", title: "ארוחת בוקר במלון", description: "ארוחת בוקר אנגלית מלאה — התחלה טובה ליום" },
+      { icon: "Sunrise", title: "קפה בכפר", description: "עצירה נוספת בכפר ציורי להנאה אחרונה מהנוף" },
+      { icon: "ShoppingBag", title: "שופינג באאוטלט מותגים", description: "יום קניות מפנק — Nike, Adidas, Tommy Hilfiger, Burberry ועוד" },
+      { icon: "Car", title: "חזרה ל-Tower Hill", description: "חוזרים עמוסים בחוויות, תמונות ושקיות קניות" },
     ],
   },
 ];
@@ -98,7 +98,7 @@ export default function ItinerarySection({ itinerarySteps }: ItinerarySectionPro
             <span className="text-nature-600"> בלתי נשכחות</span>
           </h2>
           <p className="text-sm sm:text-base text-sage-600 max-w-2xl mx-auto">
-            מסלול מתוכנן בקפידה שמשלב טבע, היסטוריה ושופינג — הכל בקצב נעים ובלי לחץ
+            מסלול רגוע, מתוכנן בקפידה, בלי לחץ
           </p>
         </div>
 

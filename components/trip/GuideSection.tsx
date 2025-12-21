@@ -9,12 +9,10 @@ interface GuideSectionProps {
   guideImage?: string | null;
 }
 
-const defaultGuideTitle = "היי, אני תמיר";
-const defaultGuideContent = `אחרי שנים של מגורים באנגליה, הבנתי שרוב הישראלים שמגיעים ללונדון רואים רק את העיר הגדולה — את הביג בן, את הארמונות, את הרחובות הסואנים.
+const defaultGuideTitle = "תמיר ארמאני";
+const defaultGuideContent = `חי על הקו תל אביב–לונדון כבר למעלה מעשור. מגיע לאנגליה מספר פעמים בשנה, מכיר כל פינה — ויודע בדיוק לאן לקחת אתכם כדי לראות את מה שהתיירים לא רואים.
 
-אבל אני התאהבתי בצד אחר לגמרי: בכפרים הקטנים עם בתי האבן, בגבעות הירוקות שמשתרעות עד האופק, בפאבים המקומיים שבהם עוד מדברים על מזג האוויר כאילו זה הדבר הכי מרגש בעולם.
-
-יצרתי את הטיול הזה כי רציתי לחשוף את לונדון האחרת — זו שגרמה לי להתאהב במקום. לשלב טבע, מורשת, ואפילו שופינג מטורף באאוטלטים שהמקומיים מכירים.
+אחרי שנים של טיולים עצמאיים בכפרים, בשווקים ובאאוטלטים הסודיים — הבנתי שחייב לשתף את החוויות האלה גם עם אחרים.
 
 כל טיול הוא עבורי הזדמנות לחלוק את המקומות האהובים עליי, לספר סיפורים, ולתת לכם לחוות את אנגליה כמו שאני חווה אותה — אותנטית, ירוקה ומפתיעה.`;
 const defaultGuideImage = "/images/trip/tamir.jpg";
@@ -110,14 +108,14 @@ export default function GuideSection({
                 <div className="w-9 h-9 rounded-lg bg-nature-100 flex items-center justify-center mx-auto mb-1.5">
                   <MapPin className="w-4 h-4 text-nature-600" />
                 </div>
-                <div className="text-lg font-bold text-sage-900">5+</div>
+                <div className="text-lg font-bold text-sage-900">10+</div>
                 <div className="text-xs text-sage-600">שנים באנגליה</div>
               </div>
               <div className="text-center">
                 <div className="w-9 h-9 rounded-lg bg-heritage-100 flex items-center justify-center mx-auto mb-1.5">
                   <Users className="w-4 h-4 text-heritage-600" />
                 </div>
-                <div className="text-lg font-bold text-sage-900">50+</div>
+                <div className="text-lg font-bold text-sage-900">100+</div>
                 <div className="text-xs text-sage-600">משתתפים מרוצים</div>
               </div>
               <div className="text-center">
@@ -125,14 +123,14 @@ export default function GuideSection({
                   <Heart className="w-4 h-4 text-earth-600" />
                 </div>
                 <div className="text-lg font-bold text-sage-900">100%</div>
-                <div className="text-xs text-sage-600">אהבה לטבע</div>
+                <div className="text-xs text-sage-600">אהבה</div>
               </div>
             </div>
 
             {/* CTA Button */}
             <div className="mt-4">
               <a
-                href="https://wa.me/972501234567"
+                href="https://wa.me/972502823333"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-5 py-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-sm"

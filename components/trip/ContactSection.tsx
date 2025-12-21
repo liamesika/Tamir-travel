@@ -21,7 +21,7 @@ export default function ContactSection() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto">
             {/* WhatsApp - Primary */}
             <a
-              href="https://wa.me/972501234567"
+              href="https://wa.me/972502823333"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-green-500 hover:bg-green-600 rounded-lg p-3 text-white transition-all duration-300 hover:scale-105 text-center"
@@ -35,26 +35,26 @@ export default function ContactSection() {
 
             {/* Phone */}
             <a
-              href="tel:0501234567"
+              href="tel:0502823333"
               className="bg-sage-800 hover:bg-sage-700 rounded-lg p-3 text-white transition-all duration-300 hover:scale-105 text-center"
             >
               <div className="w-8 h-8 rounded-full bg-nature-500/20 flex items-center justify-center mx-auto mb-1.5">
                 <Phone className="w-4 h-4 text-nature-400" />
               </div>
               <h3 className="text-xs font-bold mb-0.5">טלפון</h3>
-              <p className="text-sage-300 text-xs">050-123-4567</p>
+              <p className="text-sage-300 text-xs">050-282-3333</p>
             </a>
 
             {/* Email */}
             <a
-              href="mailto:info@london-trip.co.il"
+              href="mailto:tamirtours-uk@gmail.com"
               className="bg-sage-800 hover:bg-sage-700 rounded-lg p-3 text-white transition-all duration-300 hover:scale-105 text-center"
             >
               <div className="w-8 h-8 rounded-full bg-heritage-500/20 flex items-center justify-center mx-auto mb-1.5">
                 <Mail className="w-4 h-4 text-heritage-400" />
               </div>
               <h3 className="text-xs font-bold mb-0.5">דוא"ל</h3>
-              <p className="text-sage-300 text-xs hidden sm:block">info@london-trip.co.il</p>
+              <p className="text-sage-300 text-xs hidden sm:block">tamirtours-uk@gmail.com</p>
               <p className="text-sage-300 text-xs sm:hidden">שלחו מייל</p>
             </a>
 
@@ -64,7 +64,7 @@ export default function ContactSection() {
                 <MapPin className="w-4 h-4 text-earth-400" />
               </div>
               <h3 className="text-xs font-bold mb-0.5">נקודת מפגש</h3>
-              <p className="text-sage-300 text-xs">מרכז לונדון</p>
+              <p className="text-sage-300 text-xs">Tower Hill, London</p>
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function ContactSection() {
 
             {/* WhatsApp Button */}
             <a
-              href="https://wa.me/972501234567"
+              href="https://wa.me/972502823333"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300"

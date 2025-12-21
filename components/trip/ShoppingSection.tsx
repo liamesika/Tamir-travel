@@ -33,7 +33,7 @@ export default function ShoppingSection() {
     {
       icon: Tag,
       title: "מותגים בינלאומיים",
-      description: "Nike, Adidas, Coach, Michael Kors, Tommy Hilfiger ועוד עשרות מותגים",
+      description: "Nike, Adidas, New Balance, The North Face, Tommy Hilfiger, Burberry, Jimmy Choo, Clarins, Breitling, Lululemon ועוד",
     },
     {
       icon: Percent,

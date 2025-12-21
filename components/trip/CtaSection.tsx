@@ -53,14 +53,14 @@ export default function CtaSection() {
             <div className="text-center mb-4">
               <span className="inline-flex items-center gap-1.5 bg-nature-100 text-nature-700 px-2.5 py-1 rounded-full text-xs font-medium mb-2">
                 <Calendar className="w-3 h-3" />
-                <span>מקומות מוגבלים</span>
+                <span>מספר המקומות מוגבל</span>
               </span>
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-1.5">
                 מוכנים לגלות את
                 <span className="text-nature-600"> לונדון האחרת?</span>
               </h2>
               <p className="text-sm text-sage-600 max-w-2xl mx-auto">
-                שמרו את מקומכם עכשיו וצאו איתי לחוויה בלתי נשכחת
+                שמרו מקום עכשיו
               </p>
             </div>
 
@@ -139,10 +139,10 @@ export default function CtaSection() {
                 href="#booking-form-section"
                 className="w-full sm:w-auto bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-6 py-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-sm"
               >
-                הבטחת מקום לטיול
+                שריינו מקום עכשיו
               </a>
               <a
-                href="https://wa.me/972501234567"
+                href="https://wa.me/972502823333"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-2.5 rounded-full shadow-lg transition-all duration-300 text-sm"

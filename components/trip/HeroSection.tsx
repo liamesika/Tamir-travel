@@ -11,8 +11,8 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({
-  heroTitle = "לונדון?\nלא זו שאתם מכירים.",
-  heroSubtitle = "טיול בן יומיים לצד הנסתר של לונדון — טבע עוצר נשימה, כפרים היסטוריים, נופים ירוקים ויום שופינג באאוטלטים במחירים שלא תמצאו בעיר",
+  heroTitle = "לונדון האחרת —\nחוויה שתישאר בלב",
+  heroSubtitle = "חופשה של יומיים בכפרים האנגליים + לילה במלון כפרי + יום שופינג באאוטלט מותגים",
   heroImage = "/images/hero-poster.jpg",
 }: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -183,8 +183,12 @@ export default function HeroSection({
             )}
           </h1>
 
-          <p className="text-sm sm:text-base lg:text-lg text-white/85 mb-4 sm:mb-5 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base lg:text-lg text-white/85 mb-2 max-w-2xl mx-auto leading-relaxed">
             {heroSubtitle}
+          </p>
+
+          <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-5 max-w-xl mx-auto">
+            מתאים לחופשה של 3–4 לילות בלונדון | כולל הסעה, לינה וליווי מלא
           </p>
 
           <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-5">
@@ -216,10 +220,10 @@ export default function HeroSection({
               href="#booking"
               className="w-full sm:w-auto bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-6 py-2.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-sm sm:text-base"
             >
-              הבטחת מקום לטיול
+              שריינו מקום לטיול
             </a>
             <a
-              href="https://wa.me/972501234567"
+              href="https://wa.me/972502823333"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-bold px-6 py-2.5 rounded-full border-2 border-white/30 transition-all duration-300 text-sm sm:text-base"
