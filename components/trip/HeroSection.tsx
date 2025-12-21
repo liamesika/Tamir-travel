@@ -4,7 +4,17 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { Calendar, MapPin, Bed, Coffee, Users, Play } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: string | null;
+}
+
+export default function HeroSection({
+  heroTitle = "לונדון?\nלא זו שאתם מכירים.",
+  heroSubtitle = "טיול בן יומיים לצד הנסתר של לונדון — טבע עוצר נשימה, כפרים היסטוריים, נופים ירוקים ויום שופינג באאוטלטים במחירים שלא תמצאו בעיר",
+  heroImage = "/images/hero-poster.jpg",
+}: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -12,19 +22,20 @@ export default function HeroSection() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Parse hero title for styling
+  const titleLines = heroTitle.split('\n').filter(Boolean);
+
   // Attempt autoplay with all necessary workarounds
   const attemptAutoplay = useCallback(async () => {
     const video = videoRef.current;
     if (!video || prefersReducedMotion || videoFailed) return;
 
-    // Force muted properties (required for autoplay)
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
 
-    // Use requestAnimationFrame to ensure DOM is ready
     requestAnimationFrame(() => {
       setTimeout(async () => {
         try {
@@ -39,7 +50,6 @@ export default function HeroSection() {
     });
   }, [prefersReducedMotion, videoFailed]);
 
-  // Manual play handler for blocked autoplay
   const handleManualPlay = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
@@ -58,8 +68,6 @@ export default function HeroSection() {
 
   useEffect(() => {
     setIsLoaded(true);
-
-    // Check for reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
 
@@ -71,7 +79,6 @@ export default function HeroSection() {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  // Attempt autoplay on mount
   useEffect(() => {
     if (!prefersReducedMotion && !videoFailed) {
       attemptAutoplay();
@@ -89,13 +96,13 @@ export default function HeroSection() {
   const showVideo = !prefersReducedMotion && !videoFailed;
   const showPlayButton = showVideo && autoplayBlocked && !isPlaying;
   const showPoster = !showVideo || !isPlaying;
+  const posterImage = heroImage || "/images/hero-poster.jpg";
 
   return (
     <section
       id="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Video Background */}
       {showVideo && (
         <video
           ref={videoRef}
@@ -104,17 +111,13 @@ export default function HeroSection() {
           loop
           playsInline
           preload="metadata"
-          poster="/images/hero-poster.jpg"
-          onError={(e) => {
-            console.error("HERO VIDEO ERROR", e);
-            setVideoFailed(true);
-          }}
+          poster={posterImage}
+          onError={() => setVideoFailed(true)}
           onPlaying={() => {
             setIsPlaying(true);
             setAutoplayBlocked(false);
           }}
           onPause={() => {
-            // Only mark as not playing if it wasn't intentional
             if (videoRef.current && videoRef.current.ended) {
               setIsPlaying(false);
             }
@@ -126,24 +129,21 @@ export default function HeroSection() {
         </video>
       )}
 
-      {/* Fallback Background Image */}
       {showPoster && (
         <div
           className="absolute inset-0 w-full h-full bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/hero-poster.jpg')",
+            backgroundImage: `url('${posterImage}')`,
             zIndex: 0
           }}
         />
       )}
 
-      {/* Overlay - semi-transparent */}
       <div
         className="absolute inset-0 bg-gradient-to-b from-nature-950/60 via-nature-900/50 to-nature-950/70"
         style={{ zIndex: 10 }}
       />
 
-      {/* Play Button (shows when autoplay blocked) */}
       {showPlayButton && (
         <button
           onClick={handleManualPlay}
@@ -156,7 +156,6 @@ export default function HeroSection() {
         </button>
       )}
 
-      {/* Content */}
       <div
         className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 sm:pt-20"
         style={{ zIndex: 20 }}
@@ -166,7 +165,6 @@ export default function HeroSection() {
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/20 mb-4 sm:mb-5">
             <span className="w-2 h-2 bg-heritage-400 rounded-full animate-pulse" />
             <span className="text-white/90 text-xs sm:text-sm font-medium">
@@ -174,20 +172,21 @@ export default function HeroSection() {
             </span>
           </div>
 
-          {/* Main Headline */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 leading-tight">
-            <span className="block">לונדון?</span>
-            <span className="block text-heritage-300">לא זו שאתם מכירים.</span>
+            {titleLines.length > 1 ? (
+              <>
+                <span className="block">{titleLines[0]}</span>
+                <span className="block text-heritage-300">{titleLines.slice(1).join(' ')}</span>
+              </>
+            ) : (
+              <span>{heroTitle}</span>
+            )}
           </h1>
 
-          {/* Subtitle */}
           <p className="text-sm sm:text-base lg:text-lg text-white/85 mb-4 sm:mb-5 max-w-2xl mx-auto leading-relaxed">
-            טיול בן יומיים לצד הנסתר של לונדון —
-            <span className="text-nature-300 font-medium"> טבע עוצר נשימה, כפרים היסטוריים, נופים ירוקים </span>
-            ויום שופינג באאוטלטים במחירים שלא תמצאו בעיר
+            {heroSubtitle}
           </p>
 
-          {/* Highlights */}
           <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {highlights.map((item, index) => {
               const Icon = item.icon;
@@ -208,7 +207,6 @@ export default function HeroSection() {
             })}
           </div>
 
-          {/* CTA Buttons */}
           <div
             className={`flex flex-col sm:flex-row gap-2.5 justify-center items-center transition-all duration-1000 delay-500 ${
               isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
@@ -232,7 +230,6 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
         <div
           className={`absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 transition-all duration-1000 delay-700 ${
             isLoaded ? "opacity-100" : "opacity-0"

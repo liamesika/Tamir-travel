@@ -3,21 +3,32 @@
 import { useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function GallerySection() {
+interface GalleryImage {
+  src: string;
+  alt: string;
+}
+
+interface GallerySectionProps {
+  galleryImages?: GalleryImage[];
+}
+
+const defaultImages: GalleryImage[] = [
+  { src: "/images/trip/gallery-1.jpg", alt: "נופי טבע אנגליים" },
+  { src: "/images/trip/gallery-2.jpg", alt: "כפר מורשת היסטורי" },
+  { src: "/images/trip/gallery-3.jpg", alt: "גבעות ירוקות" },
+  { src: "/images/trip/gallery-4.jpg", alt: "שביל בטבע" },
+  { src: "/images/trip/gallery-5.jpg", alt: "נקודת תצפית" },
+  { src: "/images/trip/gallery-6.jpg", alt: "אווירה כפרית" },
+  { src: "/images/trip/gallery-7.jpg", alt: "בית אבן עתיק" },
+  { src: "/images/trip/gallery-8.jpg", alt: "שקיעה בכפר" },
+  { src: "/images/trip/gallery-9.jpg", alt: "טבע אנגלי" },
+];
+
+export default function GallerySection({ galleryImages }: GallerySectionProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
 
-  const images = [
-    { src: "/images/trip/gallery-1.jpg", alt: "נופי טבע אנגליים" },
-    { src: "/images/trip/gallery-2.jpg", alt: "כפר מורשת היסטורי" },
-    { src: "/images/trip/gallery-3.jpg", alt: "גבעות ירוקות" },
-    { src: "/images/trip/gallery-4.jpg", alt: "שביל בטבע" },
-    { src: "/images/trip/gallery-5.jpg", alt: "נקודת תצפית" },
-    { src: "/images/trip/gallery-6.jpg", alt: "אווירה כפרית" },
-    { src: "/images/trip/gallery-7.jpg", alt: "בית אבן עתיק" },
-    { src: "/images/trip/gallery-8.jpg", alt: "שקיעה בכפר" },
-    { src: "/images/trip/gallery-9.jpg", alt: "טבע אנגלי" },
-  ];
+  const images = galleryImages && galleryImages.length > 0 ? galleryImages : defaultImages;
 
   const openLightbox = (index: number) => {
     setCurrentImage(index);

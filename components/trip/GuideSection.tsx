@@ -3,7 +3,27 @@
 import { Heart, MapPin, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-export default function GuideSection() {
+interface GuideSectionProps {
+  guideTitle?: string;
+  guideContent?: string;
+  guideImage?: string | null;
+}
+
+const defaultGuideTitle = "היי, אני תמיר";
+const defaultGuideContent = `אחרי שנים של מגורים באנגליה, הבנתי שרוב הישראלים שמגיעים ללונדון רואים רק את העיר הגדולה — את הביג בן, את הארמונות, את הרחובות הסואנים.
+
+אבל אני התאהבתי בצד אחר לגמרי: בכפרים הקטנים עם בתי האבן, בגבעות הירוקות שמשתרעות עד האופק, בפאבים המקומיים שבהם עוד מדברים על מזג האוויר כאילו זה הדבר הכי מרגש בעולם.
+
+יצרתי את הטיול הזה כי רציתי לחשוף את לונדון האחרת — זו שגרמה לי להתאהב במקום. לשלב טבע, מורשת, ואפילו שופינג מטורף באאוטלטים שהמקומיים מכירים.
+
+כל טיול הוא עבורי הזדמנות לחלוק את המקומות האהובים עליי, לספר סיפורים, ולתת לכם לחוות את אנגליה כמו שאני חווה אותה — אותנטית, ירוקה ומפתיעה.`;
+const defaultGuideImage = "/images/trip/tamir.jpg";
+
+export default function GuideSection({
+  guideTitle = defaultGuideTitle,
+  guideContent = defaultGuideContent,
+  guideImage = defaultGuideImage,
+}: GuideSectionProps) {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -41,7 +61,7 @@ export default function GuideSection() {
             מי עומד מאחורי הטיול
           </span>
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-2">
-            היי, אני תמיר 👋
+            {guideTitle} 👋
           </h2>
         </div>
 
@@ -57,7 +77,7 @@ export default function GuideSection() {
             <div className="relative px-4 py-4 lg:px-0 lg:py-0">
               <div className="aspect-[3/4] rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl lg:shadow-2xl">
                 <img
-                  src="/images/trip/tamir.jpg"
+                  src={guideImage || defaultGuideImage}
                   alt="תמיר - המארגן"
                   className="w-full h-full object-cover"
                 />
@@ -77,24 +97,11 @@ export default function GuideSection() {
             }`}
           >
             <div className="space-y-3 text-sage-700 leading-relaxed text-sm">
-              <p>
-                אחרי שנים של מגורים באנגליה, הבנתי שרוב הישראלים שמגיעים ללונדון
-                רואים רק את העיר הגדולה — את הביג בן, את הארמונות, את הרחובות הסואנים.
-              </p>
-              <p>
-                אבל אני התאהבתי בצד אחר לגמרי: בכפרים הקטנים עם בתי האבן,
-                בגבעות הירוקות שמשתרעות עד האופק, בפאבים המקומיים שבהם עוד מדברים
-                על מזג האוויר כאילו זה הדבר הכי מרגש בעולם.
-              </p>
-              <p className="font-medium text-sage-800">
-                יצרתי את הטיול הזה כי רציתי לחשוף את לונדון האחרת — זו שגרמה לי
-                להתאהב במקום. לשלב טבע, מורשת, ואפילו שופינג מטורף באאוטלטים
-                שהמקומיים מכירים.
-              </p>
-              <p>
-                כל טיול הוא עבורי הזדמנות לחלוק את המקומות האהובים עליי,
-                לספר סיפורים, ולתת לכם לחוות את אנגליה כמו שאני חווה אותה — אותנטית, ירוקה ומפתיעה.
-              </p>
+              {guideContent.split('\n\n').map((paragraph, index) => (
+                <p key={index} className={index === 2 ? "font-medium text-sage-800" : ""}>
+                  {paragraph}
+                </p>
+              ))}
             </div>
 
             {/* Stats */}

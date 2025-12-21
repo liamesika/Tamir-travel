@@ -1,11 +1,64 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MapPin, TreePine, Home, Sunrise, ShoppingBag, Camera, Coffee, Car } from "lucide-react";
+import { MapPin, TreePine, Home, Sunrise, ShoppingBag, Camera, Coffee, Car, LucideIcon } from "lucide-react";
 
-export default function ItinerarySection() {
+interface ItineraryActivity {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface ItineraryDay {
+  day: string;
+  title: string;
+  activities: ItineraryActivity[];
+}
+
+interface ItinerarySectionProps {
+  itinerarySteps?: ItineraryDay[];
+}
+
+const iconMap: Record<string, LucideIcon> = {
+  MapPin,
+  TreePine,
+  Home,
+  Sunrise,
+  ShoppingBag,
+  Camera,
+  Coffee,
+  Car,
+};
+
+const defaultDays: ItineraryDay[] = [
+  {
+    day: "יום ראשון",
+    title: "יוצאים לטבע",
+    activities: [
+      { icon: "Car", title: "איסוף מלונדון", description: "נקודת מפגש מרכזית בלונדון. יוצאים לדרך!" },
+      { icon: "TreePine", title: "נסיעה לאזורי הטבע", description: "נוסעים צפונה/מערבה לעבר הכפר האנגלי האותנטי" },
+      { icon: "Camera", title: "נקודות תצפית ונופים", description: "עצירות בנקודות מיוחדות עם נופים ירוקים עוצרי נשימה" },
+      { icon: "MapPin", title: "כפרי מורשת היסטוריים", description: "סיור בכפרים עתיקים, בתי אבן, פאבים מקומיים ואווירה אנגלית אותנטית" },
+      { icon: "Home", title: "לינה במקום קסום", description: "לינה באווירה כפרית, מוקפים בטבע ושקט" },
+    ],
+  },
+  {
+    day: "יום שני",
+    title: "טבע ושופינג",
+    activities: [
+      { icon: "Coffee", title: "ארוחת בוקר", description: "ארוחת בוקר אנגלית מלאה במקום הלינה" },
+      { icon: "Sunrise", title: "בוקר בטבע", description: "המשך גילוי אזורי הטבע והנופים הירוקים" },
+      { icon: "ShoppingBag", title: "אאוטלטים בלב הטבע", description: "יום שופינג מלא באאוטלטים גדולים באזורים כפריים — מחירים שלא תמצאו בלונדון!" },
+      { icon: "Car", title: "חזרה ללונדון", description: "חוזרים עמוסים בחוויות, תמונות ושקיות קניות" },
+    ],
+  },
+];
+
+export default function ItinerarySection({ itinerarySteps }: ItinerarySectionProps) {
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const days = itinerarySteps && itinerarySteps.length > 0 ? itinerarySteps : defaultDays;
 
   useEffect(() => {
     const observers = itemRefs.current.map((ref, index) => {
@@ -28,67 +81,7 @@ export default function ItinerarySection() {
     return () => {
       observers.forEach((observer) => observer.disconnect());
     };
-  }, []);
-
-  const days = [
-    {
-      day: "יום ראשון",
-      title: "יוצאים לטבע",
-      activities: [
-        {
-          icon: Car,
-          title: "איסוף מלונדון",
-          description: "נקודת מפגש מרכזית בלונדון. יוצאים לדרך!",
-        },
-        {
-          icon: TreePine,
-          title: "נסיעה לאזורי הטבע",
-          description: "נוסעים צפונה/מערבה לעבר הכפר האנגלי האותנטי",
-        },
-        {
-          icon: Camera,
-          title: "נקודות תצפית ונופים",
-          description: "עצירות בנקודות מיוחדות עם נופים ירוקים עוצרי נשימה",
-        },
-        {
-          icon: MapPin,
-          title: "כפרי מורשת היסטוריים",
-          description: "סיור בכפרים עתיקים, בתי אבן, פאבים מקומיים ואווירה אנגלית אותנטית",
-        },
-        {
-          icon: Home,
-          title: "לינה במקום קסום",
-          description: "לינה באווירה כפרית, מוקפים בטבע ושקט",
-        },
-      ],
-    },
-    {
-      day: "יום שני",
-      title: "טבע ושופינג",
-      activities: [
-        {
-          icon: Coffee,
-          title: "ארוחת בוקר",
-          description: "ארוחת בוקר אנגלית מלאה במקום הלינה",
-        },
-        {
-          icon: Sunrise,
-          title: "בוקר בטבע",
-          description: "המשך גילוי אזורי הטבע והנופים הירוקים",
-        },
-        {
-          icon: ShoppingBag,
-          title: "אאוטלטים בלב הטבע",
-          description: "יום שופינג מלא באאוטלטים גדולים באזורים כפריים — מחירים שלא תמצאו בלונדון!",
-        },
-        {
-          icon: Car,
-          title: "חזרה ללונדון",
-          description: "חוזרים עמוסים בחוויות, תמונות ושקיות קניות",
-        },
-      ],
-    },
-  ];
+  }, [days]);
 
   return (
     <section
@@ -122,7 +115,6 @@ export default function ItinerarySection() {
                 }`}
                 style={{ transitionDelay: `${dayIndex * 200}ms` }}
               >
-                {/* Day Header */}
                 <div className="bg-gradient-to-r from-nature-600 to-nature-700 rounded-t-xl p-3 text-white">
                   <span className="text-nature-200 text-xs font-medium">
                     {day.day}
@@ -130,10 +122,9 @@ export default function ItinerarySection() {
                   <h3 className="text-lg sm:text-xl font-bold">{day.title}</h3>
                 </div>
 
-                {/* Activities */}
                 <div className="bg-white rounded-b-xl shadow-lg border border-sage-100 p-3 space-y-2.5">
                   {day.activities.map((activity, actIndex) => {
-                    const Icon = activity.icon;
+                    const Icon = iconMap[activity.icon] || MapPin;
                     return (
                       <div
                         key={actIndex}
@@ -158,7 +149,6 @@ export default function ItinerarySection() {
             ))}
           </div>
 
-          {/* Note */}
           <div className="mt-4 text-center">
             <div className="inline-flex items-center gap-1.5 bg-heritage-100 text-heritage-800 px-3 py-1.5 rounded-full text-xs font-medium">
               <span>*</span>
@@ -166,7 +156,6 @@ export default function ItinerarySection() {
             </div>
           </div>
 
-          {/* CTA Button */}
           <div className="mt-4 text-center">
             <a
               href="#booking-form-section"
