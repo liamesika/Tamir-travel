@@ -29,18 +29,20 @@ model Trip {
 }
 
 model TripDate {
-  id            String    @id @default(cuid())
-  tripId        String?
-  trip          Trip?     @relation(fields: [tripId], references: [id])
-  date          DateTime
-  capacity      Int
-  reservedSpots Int       @default(0)
-  pricePerPerson Int
-  depositAmount Int       @default(300)
-  status        String    @default("OPEN") // OPEN, CLOSED, SOLD_OUT, CANCELLED
-  bookings      Booking[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  tripId          String?
+  trip            Trip?     @relation(fields: [tripId], references: [id])
+  date            DateTime
+  capacity        Int       @default(30)
+  reservedSpots   Int       @default(0)
+  pricePerPerson  Int
+  depositAmount   Int       @default(30000) // 300 ILS in agorot
+  minParticipants Int       @default(15)
+  minReachedAt    DateTime? // Timestamp when minimum was reached
+  status          String    @default("OPEN") // OPEN, CLOSED, SOLD_OUT, CANCELLED
+  bookings        Booking[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model User {
