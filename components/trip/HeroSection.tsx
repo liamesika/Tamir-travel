@@ -234,18 +234,6 @@ export default function HeroSection({
           </div>
         </div>
 
-        <div
-          className={`absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 transition-all duration-1000 delay-700 ${
-            isLoaded ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-white/60 text-xs">גלו עוד</span>
-            <div className="w-5 h-8 border-2 border-white/40 rounded-full flex justify-center pt-1.5">
-              <div className="w-1 h-2 bg-white/60 rounded-full animate-bounce" />
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
