@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Leaf, Home, ShoppingBag, Sparkles } from "lucide-react";
+import { Leaf, Home, ShoppingBag, Heart } from "lucide-react";
 
 export default function AboutSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -33,22 +33,22 @@ export default function AboutSection() {
     {
       icon: Leaf,
       title: "טבע אנגלי אותנטי",
-      description: "גבעות ירוקות, כפרים עתיקים, שקט ושלווה",
+      description: "נופים ירוקים, נחלים וחיות משק חופשיות",
     },
     {
       icon: Home,
       title: "כפרים ציוריים",
-      description: "בתי אבן, נחלים ואווירה אנגלית קסומה",
+      description: "כפרים עתיקים עם בתי אבן שהזמן פסק מלכת",
     },
     {
       icon: ShoppingBag,
       title: "חנויות ומסעדות מקומיות",
-      description: "פאבים אותנטיים ושווקים כפריים",
+      description: "עסקים מיוחדים המציעים תוצרת מקומית כפרית",
     },
     {
-      icon: Sparkles,
-      title: "חוויה אישית ורגועה",
-      description: "קבוצה קטנה, קצב נעים, ליווי צמוד",
+      icon: Heart,
+      title: "חוויה אישית",
+      description: "להתרגש, לחוות, ליהנות",
     },
   ];
 
@@ -69,13 +69,13 @@ export default function AboutSection() {
             על החוויה
           </span>
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-2">
-            לונדון האחרת —
+            החיים מחוץ ללונדון —
             <span className="text-nature-600"> הצד שלא הכרתם</span>
           </h2>
           <p className="text-sm sm:text-base text-sage-600 leading-relaxed">
-            כולם מכירים את לונדון של הביג בן והארמונות.
-            אבל מעבר לעיר הגדולה מחכה עולם אחר —
-            <span className="font-medium text-sage-800"> טבע, כפרים עתיקים, שקט ושלווה.</span>
+            כולם מכירים בלונדון את הביג בן, אוקספורד הסואן והארמון. אבל מחוץ לעיר מתחבא
+            משהו אחר —
+            <span className="font-medium text-sage-800"> אנגליה הכפרית, העתיקה והירוקה.</span>
           </p>
         </div>
 

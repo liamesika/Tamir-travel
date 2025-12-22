@@ -13,15 +13,15 @@ interface GallerySectionProps {
 }
 
 const defaultImages: GalleryImage[] = [
-  { src: "/images/trip/gallery-1.jpg", alt: "נופי טבע אנגליים" },
-  { src: "/images/trip/gallery-2.jpg", alt: "כפר מורשת היסטורי" },
-  { src: "/images/trip/gallery-3.jpg", alt: "גבעות ירוקות" },
-  { src: "/images/trip/gallery-4.jpg", alt: "שביל בטבע" },
-  { src: "/images/trip/gallery-5.jpg", alt: "נקודת תצפית" },
-  { src: "/images/trip/gallery-6.jpg", alt: "אווירה כפרית" },
-  { src: "/images/trip/gallery-7.jpg", alt: "בית אבן עתיק" },
-  { src: "/images/trip/gallery-8.jpg", alt: "שקיעה בכפר" },
-  { src: "/images/trip/gallery-9.jpg", alt: "טבע אנגלי" },
+  { src: "/images/trip/gallery-1.jpg", alt: "" },
+  { src: "/images/trip/gallery-2.jpg", alt: "" },
+  { src: "/images/trip/gallery-3.jpg", alt: "" },
+  { src: "/images/trip/gallery-4.jpg", alt: "" },
+  { src: "/images/trip/gallery-5.jpg", alt: "" },
+  { src: "/images/trip/gallery-6.jpg", alt: "" },
+  { src: "/images/trip/gallery-7.jpg", alt: "" },
+  { src: "/images/trip/gallery-8.jpg", alt: "" },
+  { src: "/images/trip/gallery-9.jpg", alt: "" },
 ];
 
 export default function GallerySection({ galleryImages }: GallerySectionProps) {
@@ -58,6 +58,9 @@ export default function GallerySection({ galleryImages }: GallerySectionProps) {
             רגעים מהטיולים
             <span className="text-nature-600"> שלנו</span>
           </h2>
+          <p className="text-sm sm:text-base text-sage-600 max-w-2xl mx-auto">
+            תמונות אמיתיות מהכפרים שאנו מבקרים בהם — טבע, נופים וחוויות בלתי נשכחות
+          </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-3 max-w-5xl mx-auto">
@@ -72,14 +75,11 @@ export default function GallerySection({ galleryImages }: GallerySectionProps) {
               <div className={`${index === 0 ? "aspect-square" : "aspect-[4/3]"}`}>
                 <img
                   src={image.src}
-                  alt={image.alt}
+                  alt="תמונה מהטיול"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-nature-950/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute bottom-0 left-0 right-0 p-3 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                <p className="text-xs font-medium">{image.alt}</p>
-              </div>
             </div>
           ))}
         </div>
@@ -134,12 +134,9 @@ export default function GallerySection({ galleryImages }: GallerySectionProps) {
           >
             <img
               src={images[currentImage].src}
-              alt={images[currentImage].alt}
+              alt="תמונה מהטיול"
               className="w-full h-full object-contain rounded-lg"
             />
-            <p className="text-white text-center mt-4 text-lg">
-              {images[currentImage].alt}
-            </p>
           </div>
 
           <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-white/80 text-sm bg-white/10 px-4 py-2 rounded-full">

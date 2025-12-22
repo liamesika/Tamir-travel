@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Calendar, CreditCard } from "lucide-react";
+import { Check, Calendar, CreditCard, Shield, Wallet } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { useEffect, useRef, useState } from "react";
 
@@ -53,14 +53,14 @@ export default function CtaSection() {
             <div className="text-center mb-4">
               <span className="inline-flex items-center gap-1.5 bg-nature-100 text-nature-700 px-2.5 py-1 rounded-full text-xs font-medium mb-2">
                 <Calendar className="w-3 h-3" />
-                <span>מספר המקומות מוגבל</span>
+                <span>מס' המקומות מוגבל</span>
               </span>
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-1.5">
                 מוכנים לגלות את
                 <span className="text-nature-600"> לונדון האחרת?</span>
               </h2>
               <p className="text-sm text-sage-600 max-w-2xl mx-auto">
-                שמרו מקום עכשיו
+                שמרו את מקומכם עכשיו וצאו איתנו לחוויה בלתי נשכחת
               </p>
             </div>
 
@@ -85,7 +85,9 @@ export default function CtaSection() {
                     <p className="text-sage-600 text-xs">
                       תשלום מקדמה של{" "}
                       <span className="font-bold text-nature-700">300 ₪</span>{" "}
-                      לאדם לשמירת המקום שלכם
+                      לאדם מתוך המחיר הכולל לשמירת המקום שלכם.
+                      <br />
+                      <span className="text-sage-500">אל דאגה, המקדמה תוחזר במלואה במידה ולא נגיע למינימום משתתפים</span>
                     </p>
                   </div>
                 </div>
@@ -95,10 +97,9 @@ export default function CtaSection() {
                     2
                   </div>
                   <div>
-                    <h4 className="font-bold text-sage-900 text-sm">המחיר הסופי</h4>
+                    <h4 className="font-bold text-sage-900 text-sm">השלמת התשלום</h4>
                     <p className="text-sage-600 text-xs">
-                      המחיר הסופי משתנה לפי העונה והתאריך — תקבלו קישור אישי
-                      להשלמת התשלום
+                      מיד בהצטרפות מינימום משתתפים תקבלו קישור אישי להשלמת התשלום (המקדמה מקוזזת) תוך 7 ימים מקבלת ההודעה.
                     </p>
                   </div>
                 </div>
@@ -110,7 +111,7 @@ export default function CtaSection() {
                   <div>
                     <h4 className="font-bold text-sage-900 text-sm">יוצאים לדרך!</h4>
                     <p className="text-sage-600 text-xs">
-                      לאחר התשלום תקבלו את כל הפרטים ונצא לחוויה משותפת
+                      לאחר השלמת התשלום תקבלו את כל הפרטים ונצא לחוויה משותפת
                     </p>
                   </div>
                 </div>
@@ -118,18 +119,14 @@ export default function CtaSection() {
             </div>
 
             {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-1.5 mb-4">
-              <div className="flex items-center gap-1 justify-center bg-sage-50 rounded-lg py-1.5 px-1.5">
-                <Check className="w-3.5 h-3.5 text-nature-600" />
+            <div className="grid grid-cols-2 gap-1.5 mb-4">
+              <div className="flex items-center gap-1.5 justify-center bg-sage-50 rounded-lg py-2 px-2">
+                <Shield className="w-4 h-4 text-nature-600" />
                 <span className="text-xs text-sage-700">תשלום מאובטח</span>
               </div>
-              <div className="flex items-center gap-1 justify-center bg-sage-50 rounded-lg py-1.5 px-1.5">
-                <Check className="w-3.5 h-3.5 text-nature-600" />
-                <span className="text-xs text-sage-700">ביטול גמיש</span>
-              </div>
-              <div className="flex items-center gap-1 justify-center bg-sage-50 rounded-lg py-1.5 px-1.5">
-                <Check className="w-3.5 h-3.5 text-nature-600" />
-                <span className="text-xs text-sage-700">קבוצות קטנות</span>
+              <div className="flex items-center gap-1.5 justify-center bg-sage-50 rounded-lg py-2 px-2">
+                <Wallet className="w-4 h-4 text-nature-600" />
+                <span className="text-xs text-sage-700">אפשרות תשלומים ללא ריבית</span>
               </div>
             </div>
 
@@ -139,7 +136,7 @@ export default function CtaSection() {
                 href="#booking-form-section"
                 className="w-full sm:w-auto bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-6 py-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-sm"
               >
-                שריינו מקום עכשיו
+                הבטחת מקום לטיול
               </a>
               <a
                 href="https://wa.me/972502823333"

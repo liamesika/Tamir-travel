@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Calendar, MapPin, Bed, Coffee, Users, Play } from "lucide-react";
+import { Calendar, MapPin, Bed, ShoppingBag, Users, Play, HelpCircle, Check, Bus } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 
 interface HeroSectionProps {
@@ -11,8 +11,8 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({
-  heroTitle = "לונדון האחרת —\nחוויה שתישאר בלב",
-  heroSubtitle = "חופשה של יומיים בכפרים האנגליים + לילה במלון כפרי + יום שופינג באאוטלט מותגים",
+  heroTitle = "החוויה הזאת תיכנס לליבכם ותישאר שם",
+  heroSubtitle = "",
   heroImage = "/images/hero-poster.jpg",
 }: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -21,9 +21,6 @@ export default function HeroSection({
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Parse hero title for styling
-  const titleLines = heroTitle.split('\n').filter(Boolean);
 
   // Attempt autoplay with all necessary workarounds
   const attemptAutoplay = useCallback(async () => {
@@ -86,11 +83,14 @@ export default function HeroSection({
   }, [attemptAutoplay, prefersReducedMotion, videoFailed]);
 
   const highlights = [
-    { icon: Calendar, text: "יומיים" },
-    { icon: MapPin, text: "איסוף מלונדון" },
-    { icon: Bed, text: "לינה כלולה" },
-    { icon: Coffee, text: "ארוחת בוקר" },
-    { icon: Users, text: "מקומות מוגבלים" },
+    { icon: Calendar, text: "יומיים חווייתיים" },
+    { icon: MapPin, text: "איסוף מלונדון וחזרה ללונדון" },
+    { icon: Bus, text: "מיניבוס ונהג צמוד" },
+    { icon: Bed, text: "לינה באזור הכפרים" },
+    { icon: ShoppingBag, text: "יום שופינג באאוטלט מותגים" },
+    { icon: Users, text: "מס' המקומות מוגבל" },
+    { icon: Check, text: "הבטחת מקום לטיול" },
+    { icon: HelpCircle, text: "שאלות ותשובות" },
   ];
 
   const showVideo = !prefersReducedMotion && !videoFailed;
@@ -166,30 +166,30 @@ export default function HeroSection({
           }`}
         >
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/20 mb-4 sm:mb-5">
-            <span className="w-2 h-2 bg-heritage-400 rounded-full animate-pulse" />
+            <span className="text-xl">❤️</span>
             <span className="text-white/90 text-xs sm:text-sm font-medium">
               חוויה ייחודית שלא תמצאו במקום אחר
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 leading-tight">
-            {titleLines.length > 1 ? (
-              <>
-                <span className="block">{titleLines[0]}</span>
-                <span className="block text-heritage-300">{titleLines.slice(1).join(' ')}</span>
-              </>
-            ) : (
-              <span>{heroTitle}</span>
-            )}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+            {heroTitle}
           </h1>
 
-          <p className="text-sm sm:text-base lg:text-lg text-white/85 mb-2 max-w-2xl mx-auto leading-relaxed">
-            {heroSubtitle}
-          </p>
-
-          <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-5 max-w-xl mx-auto">
-            מתאים לחופשה של 3–4 לילות בלונדון | כולל הסעה, לינה וליווי מלא
-          </p>
+          <div className="text-sm sm:text-base lg:text-lg text-white/90 mb-4 max-w-3xl mx-auto leading-relaxed space-y-3">
+            <p>
+              מתכננים חופשה של 3-4 לילות בלונדון?
+            </p>
+            <p>
+              למה שלא תחליפו לילה אחד יקר במלון בלונדון, בטיול בן יומיים עם לינה של לילה במלון כפרי? טיול שמתאים בדיוק לנו הישראלים!
+            </p>
+            <p>
+              רק שעתיים נסיעה מלונדון, לנשום את הטבע עוצר הנשימה, לבקר בכפרים ציוריים שהזמן פסק מלכת, לטייל בין בתי אבן עתיקים ונופים ירוקים ללון במלון מפנק בכפרים
+            </p>
+            <p className="font-medium text-heritage-300">
+              ולמחרת יום קניות מרוכז באאוטלט עם כל המותגים במחירים שאין בלונדון. השילוב המנצח, חוויה וחיסכון.
+            </p>
+          </div>
 
           <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {highlights.map((item, index) => {

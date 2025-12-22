@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MapPin, TreePine, Home, Sunrise, ShoppingBag, Camera, Coffee, Car, LucideIcon } from "lucide-react";
+import { MapPin, TreePine, Home, Sunrise, ShoppingBag, Camera, Coffee, Car, LucideIcon, Utensils } from "lucide-react";
 
 interface ItineraryActivity {
   icon: string;
@@ -28,28 +28,28 @@ const iconMap: Record<string, LucideIcon> = {
   Camera,
   Coffee,
   Car,
+  Utensils,
 };
 
 const defaultDays: ItineraryDay[] = [
   {
     day: "יום ראשון",
-    title: "יוצאים לכפר האנגלי",
+    title: "יוצאים לטבע",
     activities: [
-      { icon: "Car", title: "איסוף מ-Tower Hill", description: "נקודת מפגש מרכזית בלונדון. יוצאים לדרך!" },
-      { icon: "TreePine", title: "נסיעה לכפרים", description: "נוסעים לעבר הכפר האנגלי האותנטי — נופים ירוקים לאורך כל הדרך" },
-      { icon: "MapPin", title: "סיור בכפרים ציוריים", description: "בתי אבן עתיקים, נחלים, פאבים מקומיים ואווירה אנגלית קסומה" },
-      { icon: "Coffee", title: "זמן חופשי", description: "זמן לקפה, מסעדה מקומית או סיבוב עצמאי" },
-      { icon: "Home", title: "לינה במקום מוקף טבע", description: "לילה באווירה כפרית, מוקפים בשקט ושלווה" },
+      { icon: "Car", title: "איסוף מלונדון", description: "נקודת מפגש מרכזית ונגישה מאוד, תחנת Tower Hill בלונדון. יוצאים לדרך! (הסבר פשוט איך מגיעים לנקודת המפגש בשאלות ותשובות)" },
+      { icon: "TreePine", title: "נסיעה לאזורי הטבע", description: "נוסעים כשעתיים לכפרים האנגלים האותנטיים. כבר במהלך הנסיעה תראו שהנוף מתחלף מהאורבני הלחוץ לנופים ירוקים עוצרי נשימה" },
+      { icon: "MapPin", title: "כפרים ציוריים", description: "סיור בכפרים עתיקים, בתי אבן, נחלים, תוכלו ליהנות ממסעדות אותנטיות בטבע, חנויות כפריות ואווירה אנגלית מסורתית" },
+      { icon: "Home", title: "לינה במקום קסום", description: "לינה באווירה כפרית, מוקפים בטבע ושקט" },
     ],
   },
   {
     day: "יום שני",
-    title: "בוקר בטבע + שופינג",
+    title: "טבע ושופינג",
     activities: [
-      { icon: "Coffee", title: "ארוחת בוקר במלון", description: "ארוחת בוקר אנגלית מלאה — התחלה טובה ליום" },
-      { icon: "Sunrise", title: "קפה בכפר", description: "עצירה נוספת בכפר ציורי להנאה אחרונה מהנוף" },
-      { icon: "ShoppingBag", title: "שופינג באאוטלט מותגים", description: "יום קניות מפנק — Nike, Adidas, Tommy Hilfiger, Burberry ועוד" },
-      { icon: "Car", title: "חזרה ל-Tower Hill", description: "חוזרים עמוסים בחוויות, תמונות ושקיות קניות" },
+      { icon: "Utensils", title: "ארוחת בוקר", description: "ארוחת בוקר אנגלית מלאה במקום הלינה" },
+      { icon: "Coffee", title: "קפה בעיירה קסומה", description: "סיור התרעננות בעיירה מקסימה, אפשר ליהנות מחנויות מקומיות וקפה משובח" },
+      { icon: "ShoppingBag", title: "אאוטלט מותגים", description: "יום שופינג באאוטלט גדול יפיפה שנמצא באזור הכפרים — מחירים שלא תמצאו בלונדון!" },
+      { icon: "Car", title: "חזרה ללונדון", description: "חוזרים לתחנת Tower Hill בלונדון עמוסים בחוויות, תמונות ושקיות קניות :)" },
     ],
   },
 ];
@@ -98,7 +98,7 @@ export default function ItinerarySection({ itinerarySteps }: ItinerarySectionPro
             <span className="text-nature-600"> בלתי נשכחות</span>
           </h2>
           <p className="text-sm sm:text-base text-sage-600 max-w-2xl mx-auto">
-            מסלול רגוע, מתוכנן בקפידה, בלי לחץ
+            מסלול מתוכנן בקפידה שמשלב טבע, נוסטלגיה, פשטות ושופינג — הכל בקצב נעים, רגוע ובלי לחץ
           </p>
         </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ShoppingBag, Tag, Percent, MapPin } from "lucide-react";
+import { ShoppingBag, Tag, Percent, Clock } from "lucide-react";
 
 export default function ShoppingSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -32,23 +32,18 @@ export default function ShoppingSection() {
   const benefits = [
     {
       icon: Tag,
-      title: "מותגים בינלאומיים",
-      description: "Nike, Adidas, New Balance, The North Face, Tommy Hilfiger, Burberry, Jimmy Choo, Clarins, Breitling, Lululemon ועוד",
+      title: "מותגים בינלאומיים (אופנה, קוסמטיקה, נעליים, תיקים, ספורט)",
+      description: "Nike, Adidas, New Balance, The North Face, Tommy Hilfiger, Burberry, Jimmy Choo, Clarins, Breitling, Lululemon ועוד מעל ל-100 מותגים נוספים",
     },
     {
       icon: Percent,
       title: "הנחות משמעותיות",
-      description: "מחירים נמוכים משמעותית מחנויות לונדון — חיסכון של עשרות אחוזים",
+      description: "מחירים נמוכים משמעותית מחנויות בלונדון — חיסכון ענק של עד 70%",
     },
     {
-      icon: MapPin,
-      title: "באמצע הטבע",
-      description: "אאוטלטים גדולים באזורים כפריים יפהפיים — שופינג בנוף ירוק",
-    },
-    {
-      icon: ShoppingBag,
+      icon: Clock,
       title: "זמן מלא לקניות",
-      description: "יום שלם של שופינג בקצב שלכם, בלי לחץ ובלי ריצות",
+      description: "יום של שופינג מרוכז בקצב שלכם, בלי לחץ ובלי ריצות",
     },
   ];
 
@@ -72,15 +67,14 @@ export default function ShoppingSection() {
               חוויית השופינג
             </span>
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-2">
-              אאוטלטים בלב הטבע —
-              <span className="text-heritage-600"> מחירים שלא תמצאו בלונדון</span>
+              אאוטלט ענק עם כל המותגים שאנחנו אוהבים —
+              <span className="text-heritage-600"> במחירים שלא תמצאו בלונדון</span>
             </h2>
             <p className="text-sm text-sage-700 mb-4 leading-relaxed">
-              יום שלם של שופינג באאוטלטים הגדולים של אנגליה, הממוקמים באזורים כפריים
-              מרהיבים. מותגים בינלאומיים במחירים שפשוט לא קיימים בחנויות של מרכז לונדון.
+              יום מרוכז של שופינג באאוטלט ענק, אחד הנחשבים באנגליה, יש בו 150-160 חנויות, האאוטלט ממוקם באזור הכפרים שנבקר בהם. מותגים בינלאומיים במחירים שפשוט לא קיימים בחנויות של מרכז לונדון.
             </p>
 
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-3">
               {benefits.map((benefit, index) => {
                 const Icon = benefit.icon;
                 return (
