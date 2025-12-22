@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import {
   ArrowRight,
   Users,
@@ -66,8 +67,9 @@ interface TripDateDetail {
   };
 }
 
-export default function TripDateDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
+export default function TripDateDetailPage() {
+  const params = useParams();
+  const id = params.id as string;
   const [tripDate, setTripDate] = useState<TripDateDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,7 +79,7 @@ export default function TripDateDetailPage({ params }: { params: Promise<{ id: s
 
   const fetchData = async () => {
     try {
-      const res = await fetch(`/api/admin/trip-dates-dashboard/${resolvedParams.id}`);
+      const res = await fetch(`/api/admin/trip-dates-dashboard/${id}`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       setTripDate(data.tripDate);
@@ -91,7 +93,7 @@ export default function TripDateDetailPage({ params }: { params: Promise<{ id: s
 
   useEffect(() => {
     fetchData();
-  }, [resolvedParams.id]);
+  }, [id]);
 
   const formatCurrency = (amount: number) => {
     return `₪${(amount / 100).toLocaleString('he-IL', { maximumFractionDigits: 0 })}`;
