@@ -39,6 +39,7 @@ model TripDate {
   depositAmount   Int       @default(30000) // 300 ILS in agorot
   minParticipants Int       @default(15)
   minReachedAt    DateTime? // Timestamp when minimum was reached
+  maxReachedAt    DateTime? // Timestamp when capacity was reached (SOLD OUT)
   status          String    @default("OPEN") // OPEN, CLOSED, SOLD_OUT, CANCELLED
   bookings        Booking[]
   createdAt       DateTime  @default(now())

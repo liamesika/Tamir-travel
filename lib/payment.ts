@@ -1,5 +1,6 @@
 import { getStripe } from './stripe'
 import { prisma } from './prisma'
+import { EmailService } from './email'
 
 export interface CreateDepositPaymentParams {
   bookingId: string
@@ -102,6 +103,97 @@ export class PaymentService {
     return {
       url: session.url,
       sessionId: session.id,
+    }
+  }
+
+  /**
+   * Check and send alerts for min/max participants reached
+   * Uses atomic updates to ensure alerts are sent only once
+   */
+  private static async checkAndSendAlerts(tripDateId: string) {
+    // Get fresh trip date data with stats
+    const tripDate = await prisma.tripDate.findUnique({
+      where: { id: tripDateId },
+      include: {
+        bookings: {
+          where: {
+            depositStatus: 'PAID'
+          }
+        }
+      }
+    })
+
+    if (!tripDate) {
+      console.error('Trip date not found for alerts:', tripDateId)
+      return
+    }
+
+    // Calculate confirmed participant count (sum of participantsCount from paid bookings)
+    const confirmedParticipants = tripDate.bookings.reduce(
+      (sum, b) => sum + b.participantsCount,
+      0
+    )
+
+    const paidDeposits = tripDate.bookings.length
+    const totalBookings = await prisma.booking.count({
+      where: { tripDateId, depositStatus: { not: 'CANCELLED' } }
+    })
+
+    const alertData = {
+      tripDateId: tripDate.id,
+      tripDate: tripDate.date.toISOString(),
+      currentCount: confirmedParticipants,
+      capacity: tripDate.capacity,
+      minParticipants: tripDate.minParticipants,
+      paidDeposits,
+      totalBookings
+    }
+
+    // Check MIN reached (atomic update to prevent duplicate alerts)
+    if (confirmedParticipants >= tripDate.minParticipants && !tripDate.minReachedAt) {
+      const minUpdate = await prisma.tripDate.updateMany({
+        where: {
+          id: tripDateId,
+          minReachedAt: null  // Only update if not already set
+        },
+        data: {
+          minReachedAt: new Date()
+        }
+      })
+
+      // Only send email if we were the one to set minReachedAt (race condition safety)
+      if (minUpdate.count === 1) {
+        console.log(`✅ MIN REACHED: Trip ${tripDateId} - ${confirmedParticipants}/${tripDate.minParticipants}`)
+        try {
+          await EmailService.sendMinReachedAlert(alertData)
+        } catch (err) {
+          console.error('Failed to send min reached alert:', err)
+        }
+      }
+    }
+
+    // Check MAX reached / SOLD OUT (atomic update to prevent duplicate alerts)
+    if (confirmedParticipants >= tripDate.capacity && !tripDate.maxReachedAt) {
+      const maxUpdate = await prisma.tripDate.updateMany({
+        where: {
+          id: tripDateId,
+          maxReachedAt: null  // Only update if not already set
+        },
+        data: {
+          maxReachedAt: new Date(),
+          status: 'SOLD_OUT'
+        }
+      })
+
+      // Only send email if we were the one to set maxReachedAt (race condition safety)
+      if (maxUpdate.count === 1) {
+        console.log(`🎉 SOLD OUT: Trip ${tripDateId} - ${confirmedParticipants}/${tripDate.capacity}`)
+        try {
+          await EmailService.sendSoldOutAlert(alertData)
+        } catch (err) {
+          console.error('Failed to send sold out alert:', err)
+        }
+      }
     }
   }
 
@@ -213,6 +305,12 @@ export class PaymentService {
           },
         }),
       ])
+
+      // After successful deposit payment, check for min/max alerts
+      // Run asynchronously to not block the webhook response
+      this.checkAndSendAlerts(booking.tripDateId).catch(err => {
+        console.error('Error checking alerts:', err)
+      })
 
       return { status: 'DEPOSIT_PAID' }
     } else if (event.type === 'checkout.session.expired') {
