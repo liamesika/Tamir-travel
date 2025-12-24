@@ -99,7 +99,7 @@ export default function ShoppingSection() {
     {
       icon: Percent,
       title: "הנחות משמעותיות",
-      description: "מחירים נמוכים משמעותית מחנויות בלונדון — חיסכון ענק של עד 70%",
+      description: "מחירים נמוכים משמעותית מחנויות בלונדון — חיסכון ענק של עד 40%",
     },
     {
       icon: Clock,
@@ -235,7 +235,7 @@ export default function ShoppingSection() {
                   <Percent className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-base lg:text-lg font-bold text-sage-900">עד 70%</div>
+                  <div className="text-base lg:text-lg font-bold text-sage-900">עד 40%</div>
                   <div className="text-xs text-sage-600">הנחה על מותגים</div>
                 </div>
               </div>
