@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Calendar, MapPin, Bed, ShoppingBag, Users, Play, HelpCircle, Check, Bus } from "lucide-react";
+import { Calendar, MapPin, Bed, ShoppingBag, Users, Play, Bus } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 
 interface HeroSectionProps {
@@ -89,8 +89,6 @@ export default function HeroSection({
     { icon: Bed, text: "לינה באזור הכפרים" },
     { icon: ShoppingBag, text: "יום שופינג באאוטלט מותגים" },
     { icon: Users, text: "מס' המקומות מוגבל" },
-    { icon: Check, text: "הבטחת מקום לטיול" },
-    { icon: HelpCircle, text: "שאלות ותשובות" },
   ];
 
   const showVideo = !prefersReducedMotion && !videoFailed;
@@ -165,13 +163,7 @@ export default function HeroSection({
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/20 mb-4 sm:mb-5">
-            <span className="text-xl">❤️</span>
-            <span className="text-white/90 text-xs sm:text-sm font-medium">
-              חוויה ייחודית שלא תמצאו במקום אחר
-            </span>
-          </div>
-
+  
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
             {heroTitle}
           </h1>

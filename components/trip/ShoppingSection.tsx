@@ -1,11 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ShoppingBag, Tag, Percent, Clock } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { ShoppingBag, Tag, Percent, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+
+const outletImages = [
+  "/outlet_/first.JPG",
+  "/outlet_/IMG_0487.JPG",
+  "/outlet_/IMG_0488.JPG",
+  "/outlet_/IMG_0489.JPG",
+  "/outlet_/IMG_0491.JPG",
+  "/outlet_/IMG_0492.JPG",
+  "/outlet_/IMG_0493.JPG",
+  "/outlet_/IMG_0494.JPG",
+];
 
 export default function ShoppingSection() {
   const [isVisible, setIsVisible] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -28,6 +42,53 @@ export default function ShoppingSection() {
       }
     };
   }, []);
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % outletImages.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + outletImages.length) % outletImages.length);
+  }, []);
+
+  const goToSlide = useCallback((index: number) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
+  }, []);
+
+  // Auto-play slideshow
+  useEffect(() => {
+    if (isAutoPlaying && isVisible) {
+      autoPlayRef.current = setInterval(() => {
+        nextSlide();
+      }, 4000);
+    }
+
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+      }
+    };
+  }, [isAutoPlaying, isVisible, nextSlide]);
+
+  // Resume auto-play after 10 seconds of inactivity
+  useEffect(() => {
+    if (!isAutoPlaying) {
+      const resumeTimer = setTimeout(() => {
+        setIsAutoPlaying(true);
+      }, 10000);
+      return () => clearTimeout(resumeTimer);
+    }
+  }, [isAutoPlaying, currentSlide]);
+
+  const handleNavClick = (direction: 'prev' | 'next') => {
+    setIsAutoPlaying(false);
+    if (direction === 'prev') {
+      prevSlide();
+    } else {
+      nextSlide();
+    }
+  };
 
   const benefits = [
     {
@@ -104,7 +165,7 @@ export default function ShoppingSection() {
             </div>
           </div>
 
-          {/* Image */}
+          {/* Slideshow */}
           <div
             className={`transition-all duration-1000 delay-300 ${
               isVisible
@@ -113,11 +174,57 @@ export default function ShoppingSection() {
             }`}
           >
             <div className="relative pb-4 lg:pb-0">
-              <img
-                src="/images/trip/gallery-5.jpg"
-                alt="אאוטלט בטבע"
-                className="rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl w-full aspect-[4/3] object-cover"
-              />
+              {/* Slideshow Container */}
+              <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl aspect-[4/3]">
+                {/* Images */}
+                <div
+                  className="flex transition-transform duration-500 ease-out h-full"
+                  style={{ transform: `translateX(${currentSlide * 100}%)` }}
+                >
+                  {outletImages.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`אאוטלט ${index + 1}`}
+                      className="w-full h-full object-cover flex-shrink-0"
+                      style={{ marginRight: index === 0 ? 0 : undefined }}
+                    />
+                  ))}
+                </div>
+
+                {/* Navigation Arrows */}
+                <button
+                  onClick={() => handleNavClick('next')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
+                  aria-label="תמונה הבאה"
+                >
+                  <ChevronRight className="w-5 h-5 text-sage-800" />
+                </button>
+                <button
+                  onClick={() => handleNavClick('prev')}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
+                  aria-label="תמונה קודמת"
+                >
+                  <ChevronLeft className="w-5 h-5 text-sage-800" />
+                </button>
+
+                {/* Dots Indicator */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {outletImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === currentSlide
+                          ? "bg-white w-6"
+                          : "bg-white/50 hover:bg-white/75"
+                      }`}
+                      aria-label={`עבור לתמונה ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
               {/* Decorative elements - hidden on mobile */}
               <div className="hidden lg:block absolute -bottom-6 -left-6 w-32 h-32 bg-heritage-200 rounded-3xl -z-10" />
               <div className="hidden lg:block absolute -top-6 -right-6 w-24 h-24 bg-nature-200 rounded-3xl -z-10" />
