@@ -22,29 +22,55 @@ export default function HeroSection({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Attempt autoplay with all necessary workarounds
+  // Attempt autoplay with all necessary workarounds for iOS
   const attemptAutoplay = useCallback(async () => {
     const video = videoRef.current;
     if (!video || prefersReducedMotion || videoFailed) return;
 
+    // iOS requires these to be set before play attempt
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
-    video.setAttribute("muted", "");
-    video.setAttribute("playsinline", "");
+    video.setAttribute("muted", "true");
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("webkit-playsinline", "true");
+    video.volume = 0;
 
-    requestAnimationFrame(() => {
-      setTimeout(async () => {
-        try {
-          await video.play();
-          setIsPlaying(true);
-          setAutoplayBlocked(false);
-        } catch (err) {
-          console.warn("HERO VIDEO: Autoplay blocked", err);
-          setAutoplayBlocked(true);
+    // Small delay for iOS to recognize the attributes
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    try {
+      // Load the video first
+      video.load();
+
+      // Wait for video to be ready
+      await new Promise<void>((resolve, reject) => {
+        const onCanPlay = () => {
+          video.removeEventListener('canplay', onCanPlay);
+          video.removeEventListener('error', onError);
+          resolve();
+        };
+        const onError = () => {
+          video.removeEventListener('canplay', onCanPlay);
+          video.removeEventListener('error', onError);
+          reject(new Error('Video load error'));
+        };
+
+        if (video.readyState >= 3) {
+          resolve();
+        } else {
+          video.addEventListener('canplay', onCanPlay);
+          video.addEventListener('error', onError);
         }
-      }, 0);
-    });
+      });
+
+      await video.play();
+      setIsPlaying(true);
+      setAutoplayBlocked(false);
+    } catch (err) {
+      console.warn("HERO VIDEO: Autoplay blocked", err);
+      setAutoplayBlocked(true);
+    }
   }, [prefersReducedMotion, videoFailed]);
 
   const handleManualPlay = useCallback(async () => {
@@ -108,9 +134,17 @@ export default function HeroSection({
           muted
           loop
           playsInline
-          preload="metadata"
+          // @ts-ignore - webkit-playsinline is needed for older iOS
+          webkit-playsinline="true"
+          preload="auto"
           poster={posterImage}
           onError={() => setVideoFailed(true)}
+          onCanPlayThrough={() => {
+            // Try to play when video is ready
+            if (videoRef.current && !isPlaying) {
+              videoRef.current.play().catch(() => {});
+            }
+          }}
           onPlaying={() => {
             setIsPlaying(true);
             setAutoplayBlocked(false);
