@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Calendar, MapPin, Bed, ShoppingBag, Users, Play, Bus } from "lucide-react";
-import { SiWhatsapp } from "react-icons/si";
 
 interface HeroSectionProps {
   heroTitle?: string;
@@ -238,24 +237,15 @@ export default function HeroSection({
           </div>
 
           <div
-            className={`flex flex-col sm:flex-row gap-2.5 justify-center items-center transition-all duration-1000 delay-500 ${
+            className={`transition-all duration-1000 delay-500 ${
               isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
             <a
               href="#booking"
-              className="w-full sm:w-auto bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-6 py-2.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-sm sm:text-base"
+              className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-6 py-2.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-sm sm:text-base"
             >
               שריינו מקום לטיול
-            </a>
-            <a
-              href="https://wa.me/972502823333"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-bold px-6 py-2.5 rounded-full border-2 border-white/30 transition-all duration-300 text-sm sm:text-base"
-            >
-              <SiWhatsapp className="w-4 h-4" />
-              <span>שאלות? דברו איתי</span>
             </a>
           </div>
         </div>
