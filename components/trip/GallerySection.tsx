@@ -13,17 +13,17 @@ interface GallerySectionProps {
 }
 
 const defaultImages: GalleryImage[] = [
-  { src: "/images/new/IMG_9843.JPG", alt: "נופי טבע אנגליים" },
-  { src: "/images/new/IMG_0348.JPG", alt: "כפר אנגלי ציורי" },
-  { src: "/images/new/IMG_0349.JPG", alt: "בתי אבן עתיקים" },
-  { src: "/images/new/IMG_0350.JPG", alt: "אווירה כפרית אותנטית" },
-  { src: "/images/new/IMG_0351.JPG", alt: "רחובות הכפר" },
-  { src: "/images/new/IMG_0352.JPG", alt: "מורשת אנגלית" },
-  { src: "/images/new/IMG_0353.JPG", alt: "נופים ירוקים" },
-  { src: "/images/new/IMG_0354.JPG", alt: "אדריכלות כפרית" },
-  { src: "/images/new/IMG_0355.JPG", alt: "קסם הכפר האנגלי" },
-  { src: "/images/new/IMG_0356.JPG", alt: "חוויה בלתי נשכחת" },
-  { src: "/images/new/IMG_0357.JPG", alt: "הכפרים האנגליים" },
+  { src: "/new/IMG_9843.JPG", alt: "נופי טבע אנגליים" },
+  { src: "/new/IMG_0348.JPG", alt: "כפר אנגלי ציורי" },
+  { src: "/new/IMG_0349.JPG", alt: "בתי אבן עתיקים" },
+  { src: "/new/IMG_0350.JPG", alt: "אווירה כפרית אותנטית" },
+  { src: "/new/IMG_0351.JPG", alt: "רחובות הכפר" },
+  { src: "/new/IMG_0352.JPG", alt: "מורשת אנגלית" },
+  { src: "/new/IMG_0353.JPG", alt: "נופים ירוקים" },
+  { src: "/new/IMG_0354.JPG", alt: "אדריכלות כפרית" },
+  { src: "/new/IMG_0355.JPG", alt: "קסם הכפר האנגלי" },
+  { src: "/new/IMG_0356.JPG", alt: "חוויה בלתי נשכחת" },
+  { src: "/new/IMG_0357.JPG", alt: "הכפרים האנגליים" },
 ];
 
 export default function GallerySection({ galleryImages }: GallerySectionProps) {
