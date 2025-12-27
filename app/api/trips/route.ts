@@ -12,7 +12,6 @@ export async function GET() {
       include: {
         tripDates: {
           where: {
-            date: { gte: new Date() },
             status: { not: 'CANCELLED' },
           },
           orderBy: { date: 'asc' },
@@ -31,7 +30,6 @@ export async function GET() {
           include: {
             tripDates: {
               where: {
-                date: { gte: new Date() },
                 status: { not: 'CANCELLED' },
               },
               orderBy: { date: 'asc' },
@@ -40,11 +38,10 @@ export async function GET() {
           orderBy: { updatedAt: 'desc' },
         })
         fallbackReason = 'no_active_trips_showing_all'
-        console.log(`[TRIPS] No active trips, showing all ${trips.length} trips`)
       }
     }
 
-    // Parse JSON fields for each trip
+    // Parse JSON fields for each trip with full tripDates
     const parsedTrips = trips.map(trip => ({
       id: trip.id,
       name: trip.name,
@@ -53,24 +50,44 @@ export async function GET() {
       heroSubtitle: trip.heroSubtitle,
       heroImage: trip.heroImage,
       isActive: trip.isActive,
-      tripDates: trip.tripDates,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+      tripDates: trip.tripDates.map(td => ({
+        id: td.id,
+        date: td.date,
+        capacity: td.capacity,
+        reservedSpots: td.reservedSpots,
+        pricePerPerson: td.pricePerPerson,
+        status: td.status,
+      })),
       tripDatesCount: trip.tripDates.length,
     }))
 
-    console.log(`[TRIPS] Returning ${parsedTrips.length} trips`)
-
-    return NextResponse.json({
-      trips: parsedTrips,
-      debug: {
-        totalTrips: parsedTrips.length,
-        fallbackReason,
+    return new NextResponse(
+      JSON.stringify({
+        trips: parsedTrips,
+        meta: {
+          totalTrips: parsedTrips.length,
+          fallbackReason,
+        }
+      }, null, 2),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
       }
-    })
-  } catch (error: any) {
-    console.error('Error fetching trips:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch trips', details: error.message },
-      { status: 500 }
+    )
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    return new NextResponse(
+      JSON.stringify({ error: 'Failed to fetch trips', details: errorMessage }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      }
     )
   }
 }
