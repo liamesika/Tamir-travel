@@ -173,12 +173,10 @@ export default function GuideSection({
             {/* CTA Button */}
             <div className="mt-4">
               <a
-                href="https://wa.me/972502823333"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-5 py-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-sm"
+                href="#faq"
+                className="inline-flex items-center gap-2 bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-5 py-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-sm"
               >
-                <span>יש שאלות? דברו איתי</span>
+                <span>יש שאלות? לשאלות נפוצות</span>
               </a>
             </div>
           </div>

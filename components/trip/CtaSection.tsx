@@ -1,7 +1,6 @@
 "use client";
 
-import { Check, Calendar, CreditCard, Shield, Wallet } from "lucide-react";
-import { SiWhatsapp } from "react-icons/si";
+import { Calendar, CreditCard, Shield, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export default function CtaSection() {
@@ -139,13 +138,10 @@ export default function CtaSection() {
                 הבטחת מקום לטיול
               </a>
               <a
-                href="https://wa.me/972502823333"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-2.5 rounded-full shadow-lg transition-all duration-300 text-sm"
+                href="#faq"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-sage-600 hover:bg-sage-700 text-white font-bold px-6 py-2.5 rounded-full shadow-lg transition-all duration-300 text-sm"
               >
-                <SiWhatsapp className="w-4 h-4" />
-                <span>שאלות? דברו איתי</span>
+                <span>יש שאלות? לשאלות נפוצות</span>
               </a>
             </div>
           </div>
