@@ -13,15 +13,17 @@ interface GallerySectionProps {
 }
 
 const defaultImages: GalleryImage[] = [
-  { src: "/images/trip/gallery-1.jpg", alt: "" },
-  { src: "/images/trip/gallery-2.jpg", alt: "" },
-  { src: "/images/trip/gallery-3.jpg", alt: "" },
-  { src: "/images/trip/gallery-4.jpg", alt: "" },
-  { src: "/images/trip/gallery-5.jpg", alt: "" },
-  { src: "/images/trip/gallery-6.jpg", alt: "" },
-  { src: "/images/trip/gallery-7.jpg", alt: "" },
-  { src: "/images/trip/gallery-8.jpg", alt: "" },
-  { src: "/images/trip/gallery-9.jpg", alt: "" },
+  { src: "/images/new/IMG_9843.JPG", alt: "נופי טבע אנגליים" },
+  { src: "/images/new/IMG_0348.JPG", alt: "כפר אנגלי ציורי" },
+  { src: "/images/new/IMG_0349.JPG", alt: "בתי אבן עתיקים" },
+  { src: "/images/new/IMG_0350.JPG", alt: "אווירה כפרית אותנטית" },
+  { src: "/images/new/IMG_0351.JPG", alt: "רחובות הכפר" },
+  { src: "/images/new/IMG_0352.JPG", alt: "מורשת אנגלית" },
+  { src: "/images/new/IMG_0353.JPG", alt: "נופים ירוקים" },
+  { src: "/images/new/IMG_0354.JPG", alt: "אדריכלות כפרית" },
+  { src: "/images/new/IMG_0355.JPG", alt: "קסם הכפר האנגלי" },
+  { src: "/images/new/IMG_0356.JPG", alt: "חוויה בלתי נשכחת" },
+  { src: "/images/new/IMG_0357.JPG", alt: "הכפרים האנגליים" },
 ];
 
 export default function GallerySection({ galleryImages }: GallerySectionProps) {
@@ -48,17 +50,17 @@ export default function GallerySection({ galleryImages }: GallerySectionProps) {
   };
 
   return (
-    <section id="gallery" className="py-8 sm:py-10 bg-sage-50">
+    <section id="gallery" className="py-10 sm:py-14 bg-sage-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-5 sm:mb-6">
-          <span className="inline-block text-nature-600 font-medium mb-1.5 text-xs">
+        <div className="text-center mb-6 sm:mb-8">
+          <span className="inline-block text-nature-600 font-semibold mb-2 text-base">
             גלריה
           </span>
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-2">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-900 mb-3">
             רגעים מהטיולים
             <span className="text-nature-600"> שלנו</span>
           </h2>
-          <p className="text-sm sm:text-base text-sage-600 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-sage-600 max-w-2xl mx-auto">
             תמונות אמיתיות מהכפרים שאנו מבקרים בהם — טבע, נופים וחוויות בלתי נשכחות
           </p>
         </div>
@@ -75,7 +77,8 @@ export default function GallerySection({ galleryImages }: GallerySectionProps) {
               <div className={`${index === 0 ? "aspect-square" : "aspect-[4/3]"}`}>
                 <img
                   src={image.src}
-                  alt="תמונה מהטיול"
+                  alt={image.alt || "תמונה מהטיול"}
+                  loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               </div>
@@ -85,10 +88,10 @@ export default function GallerySection({ galleryImages }: GallerySectionProps) {
         </div>
 
         {/* CTA Button */}
-        <div className="mt-4 text-center">
+        <div className="mt-6 text-center">
           <a
             href="#booking-form-section"
-            className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-6 py-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-sm"
+            className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-3.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-lg"
           >
             מתרגשים? הצטרפו לטיול
           </a>

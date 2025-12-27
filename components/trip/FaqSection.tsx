@@ -58,10 +58,10 @@ export default function FaqSection({ faqItems }: FaqSectionProps) {
 
   const renderAnswer = (answer: string | string[]) => {
     if (typeof answer === "string") {
-      return <p className="text-gray-700 leading-relaxed text-sm sm:text-base">{answer}</p>;
+      return <p className="text-gray-700 leading-relaxed text-lg">{answer}</p>;
     }
     return (
-      <div className="text-gray-700 leading-relaxed text-sm sm:text-base space-y-1.5">
+      <div className="text-gray-700 leading-relaxed text-lg space-y-2">
         {answer.map((line, i) => (
           <p key={i}>{line}</p>
         ))}
@@ -70,10 +70,10 @@ export default function FaqSection({ faqItems }: FaqSectionProps) {
   };
 
   return (
-    <section id="faq" className="py-8 sm:py-12 bg-white">
-      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="text-center mb-6 sm:mb-10">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+    <section id="faq" className="py-10 sm:py-14 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
             שאלות ותשובות
           </h2>
         </div>
@@ -100,13 +100,13 @@ export default function FaqSection({ faqItems }: FaqSectionProps) {
                   }}
                   aria-expanded={isOpen}
                   aria-controls={panelId}
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 text-right hover:bg-sage-100/50 transition-colors focus:outline-none focus:ring-2 focus:ring-nature-500 focus:ring-inset"
+                  className="w-full px-5 sm:px-7 py-4 sm:py-5 flex items-center justify-between gap-3 text-right hover:bg-sage-100/50 transition-colors focus:outline-none focus:ring-2 focus:ring-nature-500 focus:ring-inset"
                 >
-                  <span className="text-sm sm:text-base font-bold text-gray-900 flex-1 text-right">
+                  <span className="text-lg sm:text-xl font-bold text-gray-900 flex-1 text-right">
                     {faq.question}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 sm:w-6 sm:h-6 text-nature-600 flex-shrink-0 transition-transform duration-300 ${
+                    className={`w-6 h-6 sm:w-7 sm:h-7 text-nature-600 flex-shrink-0 transition-transform duration-300 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                     aria-hidden="true"
@@ -122,7 +122,7 @@ export default function FaqSection({ faqItems }: FaqSectionProps) {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="px-4 sm:px-6 pb-3 sm:pb-4 pt-1">
+                    <div className="px-5 sm:px-7 pb-4 sm:pb-5 pt-1">
                       {renderAnswer(faq.answer)}
                     </div>
                   </div>

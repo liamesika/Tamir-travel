@@ -64,15 +64,15 @@ export default function GuideSection({
     <section
       ref={sectionRef}
       id="guide"
-      className="py-8 sm:py-10 bg-gradient-to-b from-earth-50 to-sage-50"
+      className="py-10 sm:py-14 bg-gradient-to-b from-earth-50 to-sage-50"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-5 sm:mb-6">
-          <span className="inline-block text-nature-600 font-medium mb-1.5 text-xs">
+        <div className="text-center mb-6 sm:mb-8">
+          <span className="inline-block text-nature-600 font-semibold mb-2 text-base">
             מי עומד מאחורי הטיול
           </span>
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-sage-900 mb-2">
-            {guideTitle} 👋
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-900 mb-2">
+            {guideTitle}
           </h2>
         </div>
 
@@ -107,8 +107,8 @@ export default function GuideSection({
                 : "opacity-0 translate-x-10"
             }`}
           >
-            <div className="space-y-3 text-sage-700 leading-relaxed text-sm">
-              <h3 className="font-bold text-sage-900 text-base">למה יצרתי את הטיול הזה?</h3>
+            <div className="space-y-4 text-sage-700 leading-relaxed text-lg">
+              <h3 className="font-bold text-sage-900 text-xl">למה יצרתי את הטיול הזה?</h3>
 
               <p>
                 אחרי שנים על הקו תל אביב-לונדון, גיליתי שרוב הישראלים שמגיעים ללונדון מפספסים את הדבר הכי יפה שיש לה להציע — את הטבע שמקיף אותה.
@@ -122,7 +122,7 @@ export default function GuideSection({
                 כשסיפרתי לחברים על אזור הכפרים הם מאוד רצו לנסוע לבקר שם אך החליטו לוותר על כך מכמה סיבות:
               </p>
 
-              <ul className="list-disc list-inside space-y-1 text-sage-600">
+              <ul className="list-disc list-inside space-y-2 text-sage-600 text-lg">
                 <li>זה מצריך לשכור רכב בלונדון שזה דבר יקר מאוד.</li>
                 <li>הבעיה העיקרית היא שזה מאוד מסוכן ומפחיד לנסוע בצד השמאלי של הכביש, ממש הפוך מישראל.</li>
                 <li>נסיעה של שעתיים כל כיוון לא מתאימה לטיול ליום בודד, אי אפשר להספיק כלום.</li>
@@ -133,10 +133,10 @@ export default function GuideSection({
               </p>
 
               <p>
-                טיול שנותן לכם טבע, נחלים זורמים, בתי אבן עתיקים, חיות משק. טיול שיאפשר לכם לנשום אוויר צח ולשכוח קצת מהאתגרים היומיומיים בארץ, ולטיול הזה שילבתי יום קניות מרוכז באאוטלט ענק עם כל המותגים שאנחנו אוהבים במחירים של עד 70% הנחה שיחסוך לכם גם כסף וגם זמן של קניות בלונדון.
+                טיול שנותן לכם טבע, נחלים זורמים, בתי אבן עתיקים, חיות משק. טיול שיאפשר לכם לנשום אוויר צח ולשכוח קצת מהאתגרים היומיומיים בארץ, ולטיול הזה שילבתי יום קניות מרוכז באאוטלט ענק עם כל המותגים שאנחנו אוהבים במחירים של עד 40% הנחה שיחסוך לכם גם כסף וגם זמן של קניות בלונדון.
               </p>
 
-              <p className="font-medium text-sage-800">
+              <p className="font-semibold text-sage-800">
                 הטיול הזה נולד מתוך הרצון לחשוף את אנגליה האחרת — זו שגרמה לי להתאהב בה.
               </p>
 
@@ -146,35 +146,35 @@ export default function GuideSection({
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-3 mt-4">
+            <div className="grid grid-cols-3 gap-4 mt-6">
               <div className="text-center">
-                <div className="w-9 h-9 rounded-lg bg-nature-100 flex items-center justify-center mx-auto mb-1.5">
-                  <MapPin className="w-4 h-4 text-nature-600" />
+                <div className="w-12 h-12 rounded-xl bg-nature-100 flex items-center justify-center mx-auto mb-2">
+                  <MapPin className="w-6 h-6 text-nature-600" />
                 </div>
-                <div className="text-lg font-bold text-sage-900">10+</div>
-                <div className="text-xs text-sage-600">שנים באנגליה</div>
+                <div className="text-2xl font-bold text-sage-900">10+</div>
+                <div className="text-base text-sage-600">שנים באנגליה</div>
               </div>
               <div className="text-center">
-                <div className="w-9 h-9 rounded-lg bg-heritage-100 flex items-center justify-center mx-auto mb-1.5">
-                  <Users className="w-4 h-4 text-heritage-600" />
+                <div className="w-12 h-12 rounded-xl bg-heritage-100 flex items-center justify-center mx-auto mb-2">
+                  <Users className="w-6 h-6 text-heritage-600" />
                 </div>
-                <div className="text-lg font-bold text-sage-900">100+</div>
-                <div className="text-xs text-sage-600">משתתפים מרוצים</div>
+                <div className="text-2xl font-bold text-sage-900">100+</div>
+                <div className="text-base text-sage-600">משתתפים מרוצים</div>
               </div>
               <div className="text-center">
-                <div className="w-9 h-9 rounded-lg bg-earth-100 flex items-center justify-center mx-auto mb-1.5">
-                  <Heart className="w-4 h-4 text-earth-600" />
+                <div className="w-12 h-12 rounded-xl bg-earth-100 flex items-center justify-center mx-auto mb-2">
+                  <Heart className="w-6 h-6 text-earth-600" />
                 </div>
-                <div className="text-lg font-bold text-sage-900">100%</div>
-                <div className="text-xs text-sage-600">אהבה לטבע</div>
+                <div className="text-2xl font-bold text-sage-900">100%</div>
+                <div className="text-base text-sage-600">אהבה לטבע</div>
               </div>
             </div>
 
             {/* CTA Button */}
-            <div className="mt-4">
+            <div className="mt-6">
               <a
                 href="#faq"
-                className="inline-flex items-center gap-2 bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-5 py-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-sm"
+                className="inline-flex items-center gap-2 bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-7 py-3.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-lg"
               >
                 <span>יש שאלות? לשאלות נפוצות</span>
               </a>

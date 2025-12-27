@@ -47,14 +47,14 @@ export default function ContactSection() {
 
             {/* Email */}
             <a
-              href="mailto:tamirtours-uk@gmail.com"
+              href="mailto:tamirtours.uk@gmail.com"
               className="bg-sage-800 hover:bg-sage-700 rounded-lg p-3 text-white transition-all duration-300 hover:scale-105 text-center"
             >
               <div className="w-8 h-8 rounded-full bg-heritage-500/20 flex items-center justify-center mx-auto mb-1.5">
                 <Mail className="w-4 h-4 text-heritage-400" />
               </div>
               <h3 className="text-xs font-bold mb-0.5">דוא"ל</h3>
-              <p className="text-sage-300 text-xs hidden sm:block">tamirtours-uk@gmail.com</p>
+              <p className="text-sage-300 text-xs hidden sm:block">tamirtours.uk@gmail.com</p>
               <p className="text-sage-300 text-xs sm:hidden">שלחו מייל</p>
             </a>
 

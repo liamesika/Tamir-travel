@@ -10,8 +10,8 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({
-  heroTitle = "החוויה הזאת תיכנס לליבכם ותישאר שם",
-  heroSubtitle = "",
+  heroTitle = "רק שעתיים מלונדון — לונדון שלא הכרתם",
+  heroSubtitle = "הטיול שישדרג לכם את החופשה",
   heroImage = "/images/hero-poster.jpg",
 }: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -197,11 +197,17 @@ export default function HeroSection({
           }`}
         >
   
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5 leading-tight">
             {heroTitle}
           </h1>
 
-          <div className="text-sm sm:text-base lg:text-lg text-white/90 mb-4 max-w-3xl mx-auto leading-relaxed space-y-3">
+          {heroSubtitle && (
+            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-4 font-medium">
+              {heroSubtitle}
+            </p>
+          )}
+
+          <div className="text-base sm:text-lg lg:text-xl text-white/90 mb-5 max-w-3xl mx-auto leading-relaxed space-y-4">
             <p>
               מתכננים חופשה של 3-4 לילות בלונדון?
             </p>
@@ -211,26 +217,32 @@ export default function HeroSection({
             <p>
               רק שעתיים נסיעה מלונדון, לנשום את הטבע עוצר הנשימה, לבקר בכפרים ציוריים שהזמן פסק מלכת, לטייל בין בתי אבן עתיקים ונופים ירוקים ללון במלון מפנק בכפרים
             </p>
-            <p className="font-medium text-heritage-300">
+            <p className="font-semibold text-heritage-300">
               ולמחרת יום קניות מרוכז באאוטלט עם כל המותגים במחירים שאין בלונדון. השילוב המנצח, חוויה וחיסכון.
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-5">
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-5 py-3 mb-5 inline-block">
+            <p className="text-lg sm:text-xl text-white/95 font-medium">
+              לפני שסוגרים כרטיס טיסה, שווה לוודא שהתאריכים האלו פתוחים
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-5 sm:mb-6">
             {highlights.map((item, index) => {
               const Icon = item.icon;
               return (
                 <div
                   key={index}
-                  className={`flex items-center gap-1 bg-white/10 backdrop-blur-sm px-2.5 py-1.5 rounded-full border border-white/20 transition-all duration-500 ${
+                  className={`flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-full border border-white/20 transition-all duration-500 ${
                     isLoaded
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-5"
                   }`}
                   style={{ transitionDelay: `${(index + 1) * 100}ms` }}
                 >
-                  <Icon className="w-3.5 h-3.5 text-heritage-400" />
-                  <span className="text-white text-xs font-medium">{item.text}</span>
+                  <Icon className="w-4 h-4 text-heritage-400" />
+                  <span className="text-white text-sm sm:text-base font-medium">{item.text}</span>
                 </div>
               );
             })}
@@ -243,7 +255,7 @@ export default function HeroSection({
           >
             <a
               href="#booking"
-              className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-6 py-2.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-sm sm:text-base"
+              className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-3.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-lg sm:text-xl"
             >
               שריינו מקום לטיול
             </a>

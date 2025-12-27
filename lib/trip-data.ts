@@ -60,9 +60,10 @@ function safeParseJSON<T>(value: string | null, fallback: T): T {
 
 export async function getActiveTrip(): Promise<TripData | null> {
   try {
-    const trip = await prisma.trip.findFirst({
+    // First try to find an active trip
+    let trip = await prisma.trip.findFirst({
       where: { isActive: true },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { updatedAt: 'desc' },
       include: {
         tripDates: {
           where: { status: { not: 'CANCELLED' } },
@@ -71,7 +72,44 @@ export async function getActiveTrip(): Promise<TripData | null> {
       },
     })
 
-    if (!trip) return null
+    // If no active trip, check if there's only one trip (show it anyway)
+    if (!trip) {
+      const tripCount = await prisma.trip.count()
+      if (tripCount === 1) {
+        trip = await prisma.trip.findFirst({
+          include: {
+            tripDates: {
+              where: { status: { not: 'CANCELLED' } },
+              orderBy: { date: 'asc' },
+            },
+          },
+        })
+        if (trip) {
+          console.log(`[TRIP-DATA] Showing single trip (id: ${trip.id}, slug: ${trip.slug}) even though isActive=false`)
+        }
+      } else if (tripCount > 1) {
+        // Multiple trips but none active - get most recently updated
+        trip = await prisma.trip.findFirst({
+          orderBy: { updatedAt: 'desc' },
+          include: {
+            tripDates: {
+              where: { status: { not: 'CANCELLED' } },
+              orderBy: { date: 'asc' },
+            },
+          },
+        })
+        if (trip) {
+          console.log(`[TRIP-DATA] No active trip, falling back to most recent (id: ${trip.id}, slug: ${trip.slug})`)
+        }
+      }
+    }
+
+    if (!trip) {
+      console.log('[TRIP-DATA] No trips found in database, using default fallback')
+      return null
+    }
+
+    console.log(`[TRIP-DATA] Rendering trip: id=${trip.id}, slug=${trip.slug}, isActive=${trip.isActive}`)
 
     return {
       ...trip,
@@ -82,7 +120,7 @@ export async function getActiveTrip(): Promise<TripData | null> {
       galleryImages: safeParseJSON<GalleryImage[]>(trip.galleryImages || null, []),
     }
   } catch (error) {
-    console.error('Error fetching active trip:', error)
+    console.error('[TRIP-DATA] Error fetching active trip:', error)
     return null
   }
 }
@@ -176,15 +214,17 @@ export const defaultTripData: TripData = {
     },
   ],
   galleryImages: [
-    { src: '/images/trip/gallery-1.jpg', alt: 'נופי טבע אנגליים' },
-    { src: '/images/trip/gallery-2.jpg', alt: 'כפר מורשת היסטורי' },
-    { src: '/images/trip/gallery-3.jpg', alt: 'גבעות ירוקות' },
-    { src: '/images/trip/gallery-4.jpg', alt: 'שביל בטבע' },
-    { src: '/images/trip/gallery-5.jpg', alt: 'נקודת תצפית' },
-    { src: '/images/trip/gallery-6.jpg', alt: 'אווירה כפרית' },
-    { src: '/images/trip/gallery-7.jpg', alt: 'בית אבן עתיק' },
-    { src: '/images/trip/gallery-8.jpg', alt: 'שקיעה בכפר' },
-    { src: '/images/trip/gallery-9.jpg', alt: 'טבע אנגלי' },
+    { src: '/images/new/IMG_9843.JPG', alt: 'נופי טבע אנגליים' },
+    { src: '/images/new/IMG_0348.JPG', alt: 'כפר אנגלי ציורי' },
+    { src: '/images/new/IMG_0349.JPG', alt: 'בתי אבן עתיקים' },
+    { src: '/images/new/IMG_0350.JPG', alt: 'אווירה כפרית אותנטית' },
+    { src: '/images/new/IMG_0351.JPG', alt: 'רחובות הכפר' },
+    { src: '/images/new/IMG_0352.JPG', alt: 'מורשת אנגלית' },
+    { src: '/images/new/IMG_0353.JPG', alt: 'נופים ירוקים' },
+    { src: '/images/new/IMG_0354.JPG', alt: 'אדריכלות כפרית' },
+    { src: '/images/new/IMG_0355.JPG', alt: 'קסם הכפר האנגלי' },
+    { src: '/images/new/IMG_0356.JPG', alt: 'חוויה בלתי נשכחת' },
+    { src: '/images/new/IMG_0357.JPG', alt: 'הכפרים האנגליים' },
   ],
   isActive: true,
   tripDates: [],
