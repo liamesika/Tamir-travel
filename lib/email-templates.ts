@@ -22,6 +22,7 @@ export interface PaymentConfirmationData {
 export interface RemainingBalanceRequestData {
   fullName: string
   email: string
+  tripName?: string
   tripDate: string
   remainingAmount: number
   remainingDueDate: string
@@ -362,13 +363,15 @@ export function generatePaymentConfirmationEmail(data: PaymentConfirmationData):
 }
 
 export function generateRemainingBalanceRequestEmail(data: RemainingBalanceRequestData): string {
+  const tripName = data.tripName || 'טיול קוטסוולדס'
+
   return `
 <!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>תזכורת לתשלום יתרה</title>
+  <title>השלמת תשלום - ${tripName}</title>
 </head>
 <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; direction: rtl;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 40px 0;">
@@ -378,119 +381,90 @@ export function generateRemainingBalanceRequestEmail(data: RemainingBalanceReque
 
           <!-- Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px 30px; text-align: center;">
-              <div style="width: 80px; height: 80px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                <span style="font-size: 40px;">⏰</span>
-              </div>
-              <h1 style="color: #ffffff; font-size: 32px; margin: 0; font-weight: 700;">
-                תזכורת לתשלום יתרה
+            <td style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); padding: 50px 30px; text-align: center;">
+              <h1 style="color: #ffffff; font-size: 36px; margin: 0 0 15px 0; font-weight: 700;">
+                השלמת תשלום לטיול
               </h1>
-              <p style="color: #fef3c7; font-size: 16px; margin: 10px 0 0 0;">
-                הגיע הזמן להשלים את התשלום לטיול
+              <p style="color: #bfdbfe; font-size: 22px; margin: 0; font-weight: 500;">
+                ${tripName}
               </p>
             </td>
           </tr>
 
           <!-- Content -->
           <tr>
-            <td style="padding: 40px 30px;">
-              <p style="font-size: 18px; color: #1f2937; margin: 0 0 20px 0;">
+            <td style="padding: 50px 35px;">
+              <p style="font-size: 22px; color: #1f2937; margin: 0 0 25px 0; line-height: 1.5;">
                 שלום <strong>${data.fullName}</strong>,
               </p>
 
-              <p style="font-size: 16px; color: #4b5563; line-height: 1.6; margin: 0 0 30px 0;">
-                מתקרבים לטיול המרגש שלנו! כדי להבטיח את מקומך, נא להשלים את תשלום היתרה.
+              <p style="font-size: 20px; color: #4b5563; line-height: 1.7; margin: 0 0 35px 0;">
+                הגיע הזמן להשלים את התשלום לטיול שלנו!
+                <br />כדי להבטיח את מקומך, לחץ על הכפתור למטה.
               </p>
 
-              <!-- Payment Details Card -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; margin-bottom: 30px;">
+              <!-- Trip Info Card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f9ff; border-radius: 16px; margin-bottom: 35px; border: 2px solid #bfdbfe;">
                 <tr>
                   <td style="padding: 30px;">
-                    <div style="text-align: center; margin-bottom: 25px;">
-                      <div style="display: inline-block; background-color: #ffffff; padding: 20px 40px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                        <p style="color: #6b7280; font-size: 14px; margin: 0 0 5px 0;">סכום לתשלום</p>
-                        <p style="color: #92400e; font-size: 36px; font-weight: 700; margin: 0;">₪${data.remainingAmount}</p>
-                      </div>
-                    </div>
-
-                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 25px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #fbbf24;">
-                          <span style="color: #92400e; font-size: 14px;">תאריך טיול:</span>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #bfdbfe;">
+                          <span style="color: #1e40af; font-size: 18px;">שם הטיול:</span>
                         </td>
-                        <td style="padding: 10px 0; text-align: left; border-bottom: 1px solid #fbbf24;">
-                          <strong style="color: #92400e; font-size: 14px;">${data.tripDate}</strong>
+                        <td style="padding: 12px 0; text-align: left; border-bottom: 1px solid #bfdbfe;">
+                          <strong style="color: #1e3a8a; font-size: 20px;">${tripName}</strong>
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding: 10px 0; border-bottom: 1px solid #fbbf24;">
-                          <span style="color: #92400e; font-size: 14px;">תאריך פירעון:</span>
+                        <td style="padding: 12px 0;">
+                          <span style="color: #1e40af; font-size: 18px;">תאריך:</span>
                         </td>
-                        <td style="padding: 10px 0; text-align: left; border-bottom: 1px solid #fbbf24;">
-                          <strong style="color: #dc2626; font-size: 14px;">${data.remainingDueDate}</strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 10px 0;">
-                          <span style="color: #92400e; font-size: 14px;">מספר הזמנה:</span>
-                        </td>
-                        <td style="padding: 10px 0; text-align: left;">
-                          <strong style="color: #92400e; font-size: 14px;">${data.bookingId}</strong>
+                        <td style="padding: 12px 0; text-align: left;">
+                          <strong style="color: #1e3a8a; font-size: 20px;">${data.tripDate}</strong>
                         </td>
                       </tr>
                     </table>
-
-                    <!-- CTA Button -->
-                    <div style="text-align: center;">
-                      <a href="${data.paymentLink}" style="display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-size: 18px; font-weight: 700; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3); transition: all 0.3s;">
-                        💳 לתשלום עכשיו
-                      </a>
-                    </div>
                   </td>
                 </tr>
               </table>
 
-              <!-- Important Notice -->
-              <div style="background-color: #fee2e2; padding: 20px; border-radius: 12px; border-right: 4px solid #dc2626; margin-bottom: 30px;">
-                <h3 style="color: #991b1b; font-size: 16px; margin: 0 0 10px 0;">
-                  ⚠️ חשוב לדעת
-                </h3>
-                <p style="color: #991b1b; font-size: 14px; margin: 0; line-height: 1.5;">
-                  במידה והתשלום לא יתקבל עד ${data.remainingDueDate}, ההזמנה עלולה להתבטל ומקומך לא יהיה מובטח.
-                </p>
+              <!-- Amount Card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-radius: 16px; margin-bottom: 35px;">
+                <tr>
+                  <td style="padding: 40px; text-align: center;">
+                    <p style="color: #166534; font-size: 20px; margin: 0 0 10px 0;">סכום לתשלום:</p>
+                    <p style="color: #166534; font-size: 52px; font-weight: 700; margin: 0;">₪${data.remainingAmount}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <div style="text-align: center; margin-bottom: 40px;">
+                <a href="${data.paymentLink}" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; padding: 22px 60px; border-radius: 16px; font-size: 24px; font-weight: 700; box-shadow: 0 6px 12px rgba(22, 163, 74, 0.3);">
+                  לתשלום מאובטח
+                </a>
               </div>
 
-              <!-- Help Section -->
-              <div style="background-color: #eff6ff; padding: 20px; border-radius: 12px; border-right: 4px solid #3b82f6; margin-bottom: 30px;">
-                <h3 style="color: #1e3a8a; font-size: 16px; margin: 0 0 10px 0;">
-                  💬 צריך עזרה?
-                </h3>
-                <p style="color: #1e40af; font-size: 14px; margin: 0; line-height: 1.5;">
-                  אם יש לך שאלות או בעיות בתשלום, אנחנו כאן בשבילך! צור קשר איתנו בטלפון או בווטסאפ ונשמח לעזור.
+              <!-- Support Section -->
+              <div style="background-color: #f3f4f6; padding: 25px; border-radius: 12px; text-align: center;">
+                <p style="color: #4b5563; font-size: 18px; margin: 0 0 10px 0; line-height: 1.6;">
+                  יש שאלות? אנחנו כאן בשבילך!
+                </p>
+                <p style="margin: 0;">
+                  <a href="mailto:tamirtours.uk@gmail.com" style="color: #2563eb; font-size: 20px; font-weight: 600; text-decoration: none;">
+                    tamirtours.uk@gmail.com
+                  </a>
                 </p>
               </div>
-
-              <p style="font-size: 16px; color: #4b5563; line-height: 1.6; margin: 0 0 10px 0;">
-                מצפים לראותך בטיול! 🚀
-              </p>
-
-              <p style="font-size: 16px; color: #4b5563; line-height: 1.6; margin: 0;">
-                <strong>צוות תמיר טריפ</strong>
-              </p>
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
-                מייל זה נשלח אליך אוטומטית כתזכורת לתשלום
-              </p>
-              <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
-                <a href="mailto:tamirtours.uk@gmail.com" style="color: #3b82f6;">tamirtours.uk@gmail.com</a>
-              </p>
-              <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                © 2025 תמיר טריפ. כל הזכויות שמורות.
+            <td style="background-color: #1e3a8a; padding: 30px; text-align: center;">
+              <p style="color: #bfdbfe; font-size: 16px; margin: 0;">
+                © 2025 תמיר טריפ
               </p>
             </td>
           </tr>

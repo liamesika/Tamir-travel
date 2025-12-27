@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Calendar, Users, Mail, Phone, User, Loader2, AlertCircle, Info } from 'lucide-react';
+import { Calendar, Users, Mail, Phone, User, Loader2, AlertCircle } from 'lucide-react';
 
 interface TripDate {
   id: string;
@@ -13,16 +13,19 @@ interface TripDate {
   tripName?: string;
 }
 
-interface DebugInfo {
-  totalTrips: number;
-  totalDates: number;
+interface TripInfo {
+  id: string;
+  name: string;
+  slug: string;
+  isActive: boolean;
 }
 
 export default function BookingForm() {
   const [tripDates, setTripDates] = useState<TripDate[]>([]);
+  const [trips, setTrips] = useState<TripInfo[]>([]);
+  const [selectedTripId, setSelectedTripId] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [loadingDates, setLoadingDates] = useState(true);
-  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
   const [formData, setFormData] = useState({
     tripDateId: '',
     fullName: '',
@@ -35,23 +38,42 @@ export default function BookingForm() {
     fetch('/api/trip-dates')
       .then((res) => res.json())
       .then((data) => {
-        console.log('[BookingForm] Received trip dates:', data);
         if (data.tripDates) {
           setTripDates(data.tripDates);
           if (data.tripDates.length > 0) {
             setFormData((prev) => ({ ...prev, tripDateId: data.tripDates[0].id }));
+            if (data.tripDates[0].tripId) {
+              setSelectedTripId(data.tripDates[0].tripId);
+            }
           }
         }
-        if (data.debug) {
-          setDebugInfo(data.debug);
+        if (data.trips) {
+          setTrips(data.trips);
+          if (data.trips.length > 0 && !selectedTripId) {
+            setSelectedTripId(data.trips[0].id);
+          }
         }
         setLoadingDates(false);
       })
-      .catch((err) => {
-        console.error('Error fetching trip dates:', err);
+      .catch(() => {
         setLoadingDates(false);
       });
   }, []);
+
+  // Filter dates by selected trip when multiple trips exist
+  const filteredDates = trips.length > 1 && selectedTripId
+    ? tripDates.filter(d => d.tripId === selectedTripId)
+    : tripDates;
+
+  // Update selected date when trip changes
+  useEffect(() => {
+    if (trips.length > 1 && selectedTripId) {
+      const datesForTrip = tripDates.filter(d => d.tripId === selectedTripId);
+      if (datesForTrip.length > 0 && !datesForTrip.find(d => d.id === formData.tripDateId)) {
+        setFormData(prev => ({ ...prev, tripDateId: datesForTrip[0].id }));
+      }
+    }
+  }, [selectedTripId, tripDates, trips.length, formData.tripDateId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,9 +82,7 @@ export default function BookingForm() {
     try {
       const response = await fetch('/api/bookings', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -74,38 +94,8 @@ export default function BookingForm() {
         alert(data.error || 'שגיאה ביצירת ההזמנה');
         setLoading(false);
       }
-    } catch (error) {
-      console.error('Booking error:', error);
+    } catch {
       alert('שגיאה ביצירת ההזמנה');
-      setLoading(false);
-    }
-  };
-
-  const handleTestBooking = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/bookings/test', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(`✅ הזמנה נשמרה בהצלחה!\n\nפרטי ההזמנה:\nשם: ${data.booking.fullName}\nמזהה: ${data.booking.id}\nמשתתפים: ${data.booking.participantsCount}\nסטטוס: ממתין לתשלום`);
-        setLoading(false);
-      } else {
-        alert(data.error || 'שגיאה בשמירת ההזמנה');
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Test booking error:', error);
-      alert('שגיאה בשמירת ההזמנה');
       setLoading(false);
     }
   };
@@ -146,6 +136,31 @@ export default function BookingForm() {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Trip Selector - only show if multiple trips */}
+        {trips.length > 1 && (
+          <div>
+            <label className="block text-base font-semibold text-sage-700 mb-2">
+              בחר טיול
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {trips.map((trip) => (
+                <button
+                  key={trip.id}
+                  type="button"
+                  onClick={() => setSelectedTripId(trip.id)}
+                  className={`p-4 rounded-lg border-2 text-right transition-all ${
+                    selectedTripId === trip.id
+                      ? 'border-heritage-500 bg-heritage-50'
+                      : 'border-sage-200 hover:border-sage-300'
+                  }`}
+                >
+                  <span className="font-semibold text-sage-900">{trip.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div>
           <label className="block text-base font-semibold text-sage-700 mb-2">
             <Calendar className="inline w-5 h-5 ml-1.5" />
@@ -157,20 +172,19 @@ export default function BookingForm() {
             className="w-full px-4 py-3.5 border-2 border-sage-200 rounded-lg focus:border-nature-500 focus:outline-none transition text-lg"
             required
           >
-            {tripDates.map((date) => {
+            {filteredDates.map((date) => {
               const dateObj = new Date(date.date);
-              const availableSpots = date.capacity - date.reservedSpots;
-              const isLastSpots = date.reservedSpots >= 10;
-              const showTripName = debugInfo && debugInfo.totalTrips > 1 && date.tripName;
+              const spots = date.capacity - date.reservedSpots;
+              const isLastSpots = date.reservedSpots >= 10 && spots > 0;
               return (
-                <option key={date.id} value={date.id} disabled={availableSpots <= 0}>
-                  {showTripName ? `${date.tripName} - ` : ''}
+                <option key={date.id} value={date.id} disabled={spots <= 0}>
                   {dateObj.toLocaleDateString('he-IL', {
+                    weekday: 'long',
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                   })}
-                  {availableSpots <= 0
+                  {spots <= 0
                     ? ' - אזל המלאי'
                     : isLastSpots
                     ? ' - מקומות אחרונים!'
@@ -275,22 +289,6 @@ export default function BookingForm() {
             </>
           ) : (
             <>המשך לתשלום</>
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleTestBooking}
-          disabled={loading || availableSpots < formData.participantsCount}
-          className="w-full bg-nature-500 hover:bg-nature-600 text-white font-semibold text-lg py-3.5 rounded-full transition-all duration-300 hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              שומר...
-            </>
-          ) : (
-            <>שמור הזמנה ללא תשלום (בדיקה)</>
           )}
         </button>
 

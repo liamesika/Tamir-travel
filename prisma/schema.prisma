@@ -79,6 +79,10 @@ model Booking {
   paymentIntentId       String?
   remainingPaymentIntentId String?
   emailSent             Boolean   @default(false)
+  emailSentAt           DateTime?
+  emailLastTo           String?
+  emailLastType         String?   // deposit, remaining, confirmation
+  emailMessageId        String?
   whatsappSent          Boolean   @default(false)
   adminNotes            String?
   payments              Payment[]
