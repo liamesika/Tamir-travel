@@ -109,7 +109,7 @@ export default function HeroSection({
 
   const highlights = [
     { icon: Calendar, text: "יומיים חווייתיים" },
-    { icon: MapPin, text: "איסוף מלונדון וחזרה ללונדון" },
+    { icon: MapPin, text: "הלוך-חזור מלונדון" },
     { icon: Bus, text: "מיניבוס ונהג צמוד" },
     { icon: Bed, text: "לינה באזור הכפרים" },
     { icon: ShoppingBag, text: "יום שופינג באאוטלט מותגים" },
