@@ -6,7 +6,8 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const trip = await prisma.trip.findFirst({
+    // First try to find an active trip
+    let trip = await prisma.trip.findFirst({
       where: { isActive: true },
       orderBy: { createdAt: 'asc' },
       include: {
@@ -17,8 +18,46 @@ export async function GET() {
       },
     })
 
+    let fallbackReason: string | null = null
+
+    // If no active trip, check total count and fallback
     if (!trip) {
-      return NextResponse.json({ trip: null, message: 'No active trip found' })
+      const tripCount = await prisma.trip.count()
+
+      if (tripCount === 1) {
+        // Single trip - show it even if not active
+        trip = await prisma.trip.findFirst({
+          include: {
+            tripDates: {
+              where: { status: { not: 'CANCELLED' } },
+              orderBy: { date: 'asc' },
+            },
+          },
+        })
+        fallbackReason = 'single_trip_not_active'
+        console.log(`[TRIPS/ACTIVE] Showing single trip (id: ${trip?.id}) even though isActive=false`)
+      } else if (tripCount > 1) {
+        // Multiple trips - show most recent
+        trip = await prisma.trip.findFirst({
+          orderBy: { updatedAt: 'desc' },
+          include: {
+            tripDates: {
+              where: { status: { not: 'CANCELLED' } },
+              orderBy: { date: 'asc' },
+            },
+          },
+        })
+        fallbackReason = 'no_active_trip_fallback_to_recent'
+        console.log(`[TRIPS/ACTIVE] No active trip, falling back to most recent (id: ${trip?.id})`)
+      }
+    }
+
+    if (!trip) {
+      return NextResponse.json({
+        trip: null,
+        message: 'No trips found in database',
+        debug: { totalTrips: 0 }
+      })
     }
 
     // Parse JSON fields safely
@@ -31,7 +70,18 @@ export async function GET() {
       galleryImages: safeParseJSON(trip.galleryImages, []),
     }
 
-    return NextResponse.json({ trip: parsedTrip })
+    console.log(`[TRIPS/ACTIVE] Returning trip: id=${trip.id}, slug=${trip.slug}, isActive=${trip.isActive}`)
+
+    return NextResponse.json({
+      trip: parsedTrip,
+      debug: {
+        tripId: trip.id,
+        tripSlug: trip.slug,
+        isActive: trip.isActive,
+        tripDatesCount: trip.tripDates.length,
+        fallbackReason,
+      }
+    })
   } catch (error: any) {
     console.error('Error fetching active trip:', error)
     return NextResponse.json(

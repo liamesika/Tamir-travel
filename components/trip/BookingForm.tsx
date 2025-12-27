@@ -1,12 +1,28 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Calendar, Users, Mail, Phone, User, Loader2, AlertCircle } from 'lucide-react';
+import { Calendar, Users, Mail, Phone, User, Loader2, AlertCircle, Info } from 'lucide-react';
+
+interface TripDate {
+  id: string;
+  date: string;
+  capacity: number;
+  reservedSpots: number;
+  pricePerPerson: number;
+  tripId?: string;
+  tripName?: string;
+}
+
+interface DebugInfo {
+  totalTrips: number;
+  totalDates: number;
+}
 
 export default function BookingForm() {
-  const [tripDates, setTripDates] = useState<any[]>([]);
+  const [tripDates, setTripDates] = useState<TripDate[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingDates, setLoadingDates] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
   const [formData, setFormData] = useState({
     tripDateId: '',
     fullName: '',
@@ -19,11 +35,15 @@ export default function BookingForm() {
     fetch('/api/trip-dates')
       .then((res) => res.json())
       .then((data) => {
+        console.log('[BookingForm] Received trip dates:', data);
         if (data.tripDates) {
           setTripDates(data.tripDates);
           if (data.tripDates.length > 0) {
             setFormData((prev) => ({ ...prev, tripDateId: data.tripDates[0].id }));
           }
+        }
+        if (data.debug) {
+          setDebugInfo(data.debug);
         }
         setLoadingDates(false);
       })
@@ -141,8 +161,10 @@ export default function BookingForm() {
               const dateObj = new Date(date.date);
               const availableSpots = date.capacity - date.reservedSpots;
               const isLastSpots = date.reservedSpots >= 10;
+              const showTripName = debugInfo && debugInfo.totalTrips > 1 && date.tripName;
               return (
                 <option key={date.id} value={date.id} disabled={availableSpots <= 0}>
+                  {showTripName ? `${date.tripName} - ` : ''}
                   {dateObj.toLocaleDateString('he-IL', {
                     year: 'numeric',
                     month: 'long',

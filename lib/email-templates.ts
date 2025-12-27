@@ -194,6 +194,9 @@ export function generateBookingConfirmationEmail(data: BookingConfirmationData):
               <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
                 יש לך שאלות? צור קשר איתנו בכל עת
               </p>
+              <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
+                <a href="mailto:tamirtours.uk@gmail.com" style="color: #3b82f6;">tamirtours.uk@gmail.com</a>
+              </p>
               <p style="color: #9ca3af; font-size: 12px; margin: 0;">
                 © 2025 תמיר טריפ. כל הזכויות שמורות.
               </p>
@@ -340,6 +343,9 @@ export function generatePaymentConfirmationEmail(data: PaymentConfirmationData):
               <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
                 שמור את אישור התשלום הזה לתיעוד שלך
               </p>
+              <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
+                <a href="mailto:tamirtours.uk@gmail.com" style="color: #3b82f6;">tamirtours.uk@gmail.com</a>
+              </p>
               <p style="color: #9ca3af; font-size: 12px; margin: 0;">
                 © 2025 תמיר טריפ. כל הזכויות שמורות.
               </p>
@@ -479,6 +485,9 @@ export function generateRemainingBalanceRequestEmail(data: RemainingBalanceReque
             <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
               <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
                 מייל זה נשלח אליך אוטומטית כתזכורת לתשלום
+              </p>
+              <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
+                <a href="mailto:tamirtours.uk@gmail.com" style="color: #3b82f6;">tamirtours.uk@gmail.com</a>
               </p>
               <p style="color: #9ca3af; font-size: 12px; margin: 0;">
                 © 2025 תמיר טריפ. כל הזכויות שמורות.

@@ -216,6 +216,19 @@ export class PaymentService {
       const bookingId = session.metadata.bookingId
       const paymentType = session.metadata.paymentType || 'deposit'
 
+      // IDEMPOTENCY CHECK: Check if this payment was already processed
+      const existingPayment = await prisma.payment.findFirst({
+        where: {
+          stripeSessionId: session.id,
+          status: 'succeeded',
+        },
+      })
+
+      if (existingPayment) {
+        console.log(`[WEBHOOK] Payment already processed for session ${session.id}, skipping`)
+        return { status: 'ALREADY_PROCESSED', paymentId: existingPayment.id }
+      }
+
       const booking = await prisma.booking.findUnique({
         where: { id: bookingId },
         include: { tripDate: true },
@@ -223,6 +236,17 @@ export class PaymentService {
 
       if (!booking) {
         throw new Error('Booking not found')
+      }
+
+      // Check if booking was already paid (another idempotency check)
+      if (paymentType === 'deposit' && booking.depositStatus === 'PAID') {
+        console.log(`[WEBHOOK] Deposit already paid for booking ${bookingId}, skipping`)
+        return { status: 'ALREADY_PAID', bookingId }
+      }
+
+      if (paymentType === 'remaining' && booking.remainingStatus === 'PAID') {
+        console.log(`[WEBHOOK] Remaining already paid for booking ${bookingId}, skipping`)
+        return { status: 'ALREADY_PAID', bookingId }
       }
 
       // Create Payment record for successful payment

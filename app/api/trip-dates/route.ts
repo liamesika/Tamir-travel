@@ -6,18 +6,63 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const tripDates = await prisma.tripDate.findMany({
-      where: {
-        date: {
-          gte: new Date(),
+    // First, try to find active trips
+    let trips = await prisma.trip.findMany({
+      where: { isActive: true },
+      include: {
+        tripDates: {
+          where: {
+            date: { gte: new Date() },
+            status: { not: 'CANCELLED' },
+          },
+          orderBy: { date: 'asc' },
         },
       },
-      orderBy: {
-        date: 'asc',
-      },
+      orderBy: { createdAt: 'asc' },
     })
 
-    return NextResponse.json({ tripDates })
+    // If no active trips, check if there are any trips at all
+    if (trips.length === 0) {
+      const totalTrips = await prisma.trip.count()
+
+      if (totalTrips > 0) {
+        // Show all trips if none are active (fallback)
+        trips = await prisma.trip.findMany({
+          include: {
+            tripDates: {
+              where: {
+                date: { gte: new Date() },
+                status: { not: 'CANCELLED' },
+              },
+              orderBy: { date: 'asc' },
+            },
+          },
+          orderBy: { updatedAt: 'desc' },
+        })
+        console.log(`[TRIP-DATES] No active trips, showing all ${trips.length} trips as fallback`)
+      }
+    }
+
+    // Flatten trip dates with trip info for booking form
+    const tripDates = trips.flatMap(trip =>
+      trip.tripDates.map(td => ({
+        ...td,
+        tripId: trip.id,
+        tripName: trip.name,
+        tripSlug: trip.slug,
+      }))
+    )
+
+    console.log(`[TRIP-DATES] Returning ${tripDates.length} dates from ${trips.length} trips`)
+
+    return NextResponse.json({
+      tripDates,
+      trips: trips.map(t => ({ id: t.id, name: t.name, slug: t.slug, isActive: t.isActive })),
+      debug: {
+        totalTrips: trips.length,
+        totalDates: tripDates.length,
+      }
+    })
   } catch (error) {
     console.error('Fetch trip dates error:', error)
     return NextResponse.json(
