@@ -68,10 +68,23 @@ export async function POST(request: NextRequest) {
     const baseDepositAmount = data.participantsCount * 300 * 100
     if (coupon) {
       discountAmount = Math.round(baseDepositAmount * coupon.percentOff / 100)
+
+      // HARD VALIDATION: Ensure discount cannot exceed deposit amount (no negative payments)
+      if (discountAmount > baseDepositAmount) {
+        discountAmount = baseDepositAmount
+      }
+
+      // Log coupon usage attempt for audit trail
+      console.log(`[COUPON] Applying coupon ${coupon.code} (${coupon.percentOff}%) to booking. Discount: ${discountAmount / 100} ILS`)
     }
-    const depositAmount = baseDepositAmount - discountAmount
+
+    // Calculate final amounts with validation
+    const depositAmount = Math.max(0, baseDepositAmount - discountAmount) // Ensure never negative
     const totalPrice = data.participantsCount * tripDate.pricePerPerson * 100
-    const remainingAmount = totalPrice - depositAmount
+    const remainingAmount = Math.max(0, totalPrice - depositAmount) // Ensure never negative
+
+    // NOTE: No coupon stacking - schema only allows single couponCode per booking
+    // This is enforced by the data model (single couponId and couponCode fields)
 
     const booking = await prisma.booking.create({
       data: {
@@ -90,12 +103,15 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Increment coupon redemption count if used
-    if (couponId) {
+    // Increment coupon redemption count if used and log the usage
+    if (couponId && coupon) {
       await prisma.coupon.update({
         where: { id: couponId },
         data: { redemptionCount: { increment: 1 } }
       })
+
+      // Log successful coupon usage for audit
+      console.log(`[COUPON] Successfully applied coupon ${coupon.code} to booking ${booking.id}. Email: ${data.email}, Participants: ${data.participantsCount}, Discount: ${discountAmount / 100} ILS`)
     }
 
     const payment = await PaymentService.createDepositPayment({

@@ -77,7 +77,9 @@ export async function GET(request: NextRequest) {
         depositStatus: true,
         depositAmount: true,
         remainingStatus: true,
-        remainingAmount: true
+        remainingAmount: true,
+        couponCode: true,
+        discountAmount: true
       }
     })
 
@@ -90,13 +92,32 @@ export async function GET(request: NextRequest) {
 
     const upcomingDates = tripDates.filter(td => new Date(td.date) >= now && td.status !== 'CANCELLED').length
 
+    // Calculate coupon analytics
+    const couponBookings = allBookings.filter(b => b.couponCode && b.discountAmount)
+    const totalCouponBookings = couponBookings.length
+    const totalDiscountAmount = couponBookings.reduce((sum, b) => sum + (b.discountAmount || 0), 0)
+
+    // Get top used coupon
+    const couponUsage: { [code: string]: number } = {}
+    couponBookings.forEach(b => {
+      if (b.couponCode) {
+        couponUsage[b.couponCode] = (couponUsage[b.couponCode] || 0) + 1
+      }
+    })
+    const topCoupon = Object.entries(couponUsage).sort((a, b) => b[1] - a[1])[0] || null
+
     return NextResponse.json({
       tripDates: tripDatesWithStats,
       stats: {
         totalParticipants,
         totalRevenue,
         pendingPayments,
-        upcomingDates
+        upcomingDates,
+        couponStats: {
+          totalCouponBookings,
+          totalDiscountAmount,
+          topCoupon: topCoupon ? { code: topCoupon[0], count: topCoupon[1] } : null
+        }
       }
     })
   } catch (error) {

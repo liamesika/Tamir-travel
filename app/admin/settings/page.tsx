@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2, Play, Trash2, CheckCircle, XCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import AdminNav from '@/components/admin/AdminNav';
 
 interface Setting {
@@ -14,11 +14,24 @@ interface Setting {
   description: string | null;
 }
 
+interface E2ETestResult {
+  step: string;
+  status: 'success' | 'failed' | 'skipped';
+  message: string;
+  data?: any;
+}
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Setting[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState<string>('ALL');
+
+  // E2E Test state
+  const [runningE2E, setRunningE2E] = useState(false);
+  const [e2eResults, setE2eResults] = useState<E2ETestResult[] | null>(null);
+  const [e2ePaymentUrl, setE2ePaymentUrl] = useState<string | null>(null);
+  const [cleaningE2E, setCleaningE2E] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -64,6 +77,52 @@ export default function SettingsPage() {
 
   const categories = ['ALL', 'business', 'branding', 'payment', 'contact', 'advanced'];
 
+  // E2E Test handlers
+  const runE2ETest = async () => {
+    setRunningE2E(true);
+    setE2eResults(null);
+    setE2ePaymentUrl(null);
+
+    try {
+      const response = await fetch('/api/admin/e2e-test', {
+        method: 'POST'
+      });
+      const data = await response.json();
+
+      setE2eResults(data.results || []);
+      if (data.testPaymentUrl) {
+        setE2ePaymentUrl(data.testPaymentUrl);
+      }
+    } catch (error) {
+      setE2eResults([{
+        step: 'Connection Error',
+        status: 'failed',
+        message: 'Failed to connect to test API'
+      }]);
+    } finally {
+      setRunningE2E(false);
+    }
+  };
+
+  const cleanupE2ETests = async () => {
+    if (!confirm('האם אתה בטוח שברצונך למחוק את כל הזמנות הבדיקה?')) return;
+
+    setCleaningE2E(true);
+    try {
+      const response = await fetch('/api/admin/e2e-test', {
+        method: 'DELETE'
+      });
+      const data = await response.json();
+      alert(data.message || 'Cleanup completed');
+      setE2eResults(null);
+      setE2ePaymentUrl(null);
+    } catch (error) {
+      alert('Failed to cleanup test bookings');
+    } finally {
+      setCleaningE2E(false);
+    }
+  };
+
   const filteredSettings = filter === 'ALL'
     ? settings
     : settings.filter(setting => setting.category === filter);
@@ -97,6 +156,113 @@ export default function SettingsPage() {
               הגדרות כלליות
             </h1>
             <p className="text-gray-600">נהל את כל ההגדרות והמידע העסקי</p>
+          </div>
+
+          {/* E2E Test Section */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-md mb-6 p-6 border border-blue-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-blue-900 flex items-center gap-2">
+                  <Play className="w-5 h-5" />
+                  בדיקת מערכת (E2E Test)
+                </h2>
+                <p className="text-sm text-blue-700 mt-1">
+                  בדוק את כל תהליך ההזמנה: יצירת הזמנה, תשלום Stripe, שליחת מייל
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={runE2ETest}
+                  disabled={runningE2E}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition shadow-md"
+                >
+                  {runningE2E ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      מריץ בדיקה...
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4" />
+                      הרץ בדיקה
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={cleanupE2ETests}
+                  disabled={cleaningE2E}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 disabled:opacity-50 transition"
+                >
+                  {cleaningE2E ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                  נקה בדיקות
+                </button>
+              </div>
+            </div>
+
+            {/* E2E Results */}
+            {e2eResults && (
+              <div className="bg-white rounded-lg p-4 mt-4">
+                <h3 className="font-semibold text-gray-900 mb-3">תוצאות הבדיקה:</h3>
+                <div className="space-y-2">
+                  {e2eResults.map((result, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-start gap-3 p-3 rounded-lg ${
+                        result.status === 'success' ? 'bg-green-50' :
+                        result.status === 'failed' ? 'bg-red-50' :
+                        'bg-yellow-50'
+                      }`}
+                    >
+                      {result.status === 'success' ? (
+                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                      ) : result.status === 'failed' ? (
+                        <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      ) : (
+                        <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                      )}
+                      <div className="flex-1">
+                        <div className={`font-semibold ${
+                          result.status === 'success' ? 'text-green-700' :
+                          result.status === 'failed' ? 'text-red-700' :
+                          'text-yellow-700'
+                        }`}>
+                          {result.step}
+                        </div>
+                        <div className={`text-sm ${
+                          result.status === 'success' ? 'text-green-600' :
+                          result.status === 'failed' ? 'text-red-600' :
+                          'text-yellow-600'
+                        }`}>
+                          {result.message}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Open Stripe Payment Link */}
+                {e2ePaymentUrl && (
+                  <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                    <a
+                      href={e2ePaymentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-blue-700 font-semibold hover:text-blue-800"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      פתח דף תשלום Stripe (לבדיקה)
+                    </a>
+                    <p className="text-xs text-blue-600 mt-1">
+                      לחץ כדי לפתוח את דף התשלום ולבדוק את הזרימה המלאה
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="bg-white rounded-xl shadow mb-6 p-4">

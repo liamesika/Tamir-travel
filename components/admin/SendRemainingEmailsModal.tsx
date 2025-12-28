@@ -39,10 +39,11 @@ export default function SendRemainingEmailsModal({ tripDateId, tripDateLabel, is
   const [sending, setSending] = useState(false)
   const [resendingSingle, setResendingSingle] = useState<string | null>(null)
   const [recipients, setRecipients] = useState<Recipient[]>([])
-  const [summary, setSummary] = useState<{ canSend: number; alreadyPaid: number; previouslySent: number }>({ canSend: 0, alreadyPaid: 0, previouslySent: 0 })
+  const [summary, setSummary] = useState<{ canSend: number; alreadyPaid: number; previouslySent: number; notSentYet: number }>({ canSend: 0, alreadyPaid: 0, previouslySent: 0, notSentYet: 0 })
   const [error, setError] = useState<string | null>(null)
   const [sendResults, setSendResults] = useState<SendResult[] | null>(null)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [notSentOnlyMode, setNotSentOnlyMode] = useState(false)
 
   useEffect(() => {
     if (isOpen && tripDateId) {
@@ -72,7 +73,7 @@ export default function SendRemainingEmailsModal({ tripDateId, tripDateLabel, is
     }
   }
 
-  const handleSendAll = async () => {
+  const handleSendAll = async (notSentOnly: boolean = false) => {
     setSending(true)
     setError(null)
     setSendResults(null)
@@ -81,7 +82,7 @@ export default function SendRemainingEmailsModal({ tripDateId, tripDateLabel, is
       const res = await fetch(`/api/admin/trip-dates-dashboard/${tripDateId}/send-remaining-emails`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ unpaidOnly: true })
+        body: JSON.stringify({ unpaidOnly: true, notSentOnly })
       })
 
       const data = await res.json()
@@ -209,10 +210,14 @@ export default function SendRemainingEmailsModal({ tripDateId, tripDateLabel, is
               )}
 
               {/* Summary Cards */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-4 gap-3">
                 <div className="bg-green-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-green-600">{summary.canSend}</div>
                   <div className="text-sm text-green-700">לשליחה</div>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-purple-600">{summary.notSentYet}</div>
+                  <div className="text-sm text-purple-700">לא נשלח עדיין</div>
                 </div>
                 <div className="bg-blue-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-blue-600">{summary.alreadyPaid}</div>
@@ -289,17 +294,29 @@ export default function SendRemainingEmailsModal({ tripDateId, tripDateLabel, is
           </button>
 
           {!showConfirm ? (
-            <button
-              onClick={() => setShowConfirm(true)}
-              disabled={summary.canSend === 0 || sending}
-              className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
-            >
-              <Send className="w-4 h-4" />
-              שלח לכל הממתינים ({summary.canSend})
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => { setNotSentOnlyMode(true); setShowConfirm(true); }}
+                disabled={summary.notSentYet === 0 || sending}
+                className="px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2 text-sm"
+              >
+                <Send className="w-4 h-4" />
+                לא נשלחו בלבד ({summary.notSentYet})
+              </button>
+              <button
+                onClick={() => { setNotSentOnlyMode(false); setShowConfirm(true); }}
+                disabled={summary.canSend === 0 || sending}
+                className="px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2 text-sm"
+              >
+                <Send className="w-4 h-4" />
+                כל הממתינים ({summary.canSend})
+              </button>
+            </div>
           ) : (
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-600">לשלוח ל-{summary.canSend} נמענים?</span>
+              <span className="text-sm text-gray-600">
+                לשלוח ל-{notSentOnlyMode ? summary.notSentYet : summary.canSend} נמענים{notSentOnlyMode ? ' (לא נשלחו בלבד)' : ''}?
+              </span>
               <button
                 onClick={() => setShowConfirm(false)}
                 className="px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition"
@@ -307,9 +324,11 @@ export default function SendRemainingEmailsModal({ tripDateId, tripDateLabel, is
                 ביטול
               </button>
               <button
-                onClick={handleSendAll}
+                onClick={() => handleSendAll(notSentOnlyMode)}
                 disabled={sending}
-                className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition flex items-center gap-2"
+                className={`px-6 py-2.5 text-white rounded-lg disabled:opacity-50 transition flex items-center gap-2 ${
+                  notSentOnlyMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-green-600 hover:bg-green-700'
+                }`}
               >
                 {sending ? (
                   <>

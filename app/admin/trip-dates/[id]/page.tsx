@@ -21,7 +21,8 @@ import {
   MoreVertical,
   Trash2,
   Eye,
-  MessageCircle
+  MessageCircle,
+  Tag
 } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
 import AdminNav from '@/components/admin/AdminNav';
@@ -43,6 +44,10 @@ interface Booking {
   paymentToken: string;
   createdAt: string;
   adminNotes: string | null;
+  remainingEmailSentAt: string | null;
+  remainingEmailMessageId: string | null;
+  couponCode: string | null;
+  discountAmount: number | null;
 }
 
 interface TripDateDetail {
@@ -422,17 +427,19 @@ export default function TripDateDetailPage() {
                 <tr>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">לקוח</th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">משתתפים</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">קופון</th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">מקדמה</th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">יתרה</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">מייל יתרה</th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">סה"כ</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">תאריך הזמנה</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">תאריך</th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">פעולות</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredBookings.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                    <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                       אין הזמנות
                     </td>
                   </tr>
@@ -448,6 +455,21 @@ export default function TripDateDetailPage() {
                         <span className="font-semibold">{booking.participantsCount}</span>
                       </td>
                       <td className="px-4 py-3">
+                        {booking.couponCode ? (
+                          <div className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                            <Tag className="w-3 h-3" />
+                            {booking.couponCode}
+                            {booking.discountAmount && (
+                              <span className="text-purple-500">
+                                (-{formatCurrency(booking.discountAmount)})
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-400">-</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
                         <div className="flex flex-col gap-1">
                           {getStatusBadge(booking.depositStatus)}
                           <span className="text-xs text-gray-500">{formatCurrency(booking.depositAmount)}</span>
@@ -458,6 +480,24 @@ export default function TripDateDetailPage() {
                           {getStatusBadge(booking.remainingStatus)}
                           <span className="text-xs text-gray-500">{formatCurrency(booking.remainingAmount)}</span>
                         </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        {booking.remainingEmailSentAt ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-green-500">🟢</span>
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-green-700">נשלח</span>
+                              <span className="text-xs text-gray-500">
+                                {new Date(booking.remainingEmailSentAt).toLocaleDateString('he-IL')}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-gray-300">⚪</span>
+                            <span className="text-xs text-gray-500">לא נשלח</span>
+                          </div>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <span className="font-bold text-primary-600">{formatCurrency(booking.totalPrice)}</span>
@@ -541,7 +581,20 @@ export default function TripDateDetailPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 mb-3">
+                  {/* Coupon badge */}
+                  {booking.couponCode && (
+                    <div className="mb-2">
+                      <div className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                        <Tag className="w-3 h-3" />
+                        {booking.couponCode}
+                        {booking.discountAmount && (
+                          <span className="text-purple-500">(-{formatCurrency(booking.discountAmount)})</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2 mb-2">
                     <div className="bg-gray-50 rounded-lg p-2">
                       <div className="text-xs text-gray-500 mb-1">מקדמה</div>
                       <div className="flex items-center justify-between">
@@ -556,6 +609,18 @@ export default function TripDateDetailPage() {
                         <span className="text-xs font-medium">{formatCurrency(booking.remainingAmount)}</span>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Remaining email status */}
+                  <div className="flex items-center gap-2 mb-3 text-xs">
+                    <span className="text-gray-500">מייל יתרה:</span>
+                    {booking.remainingEmailSentAt ? (
+                      <span className="text-green-600 font-medium">
+                        🟢 נשלח {new Date(booking.remainingEmailSentAt).toLocaleDateString('he-IL')}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">⚪ לא נשלח</span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">

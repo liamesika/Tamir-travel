@@ -17,7 +17,8 @@ import {
   MoreVertical,
   Trash2,
   MessageCircle,
-  ExternalLink
+  ExternalLink,
+  Tag
 } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
 import AdminNav from '@/components/admin/AdminNav';
@@ -40,6 +41,8 @@ interface Booking {
   adminNotes: string | null;
   paymentToken: string;
   createdAt: string;
+  couponCode: string | null;
+  discountAmount: number | null;
   tripDate: {
     id: string;
     date: string;
@@ -351,6 +354,9 @@ export default function AdminBookingsPage() {
                       טיול
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                      קופון
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
                       תשלום
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
@@ -367,7 +373,7 @@ export default function AdminBookingsPage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {bookings.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                      <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                         לא נמצאו הזמנות
                       </td>
                     </tr>
@@ -397,6 +403,21 @@ export default function AdminBookingsPage() {
                             <Calendar className="w-3 h-3" />
                             {new Date(booking.tripDate.date).toLocaleDateString('he-IL')}
                           </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          {booking.couponCode ? (
+                            <div className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                              <Tag className="w-3 h-3" />
+                              {booking.couponCode}
+                              {booking.discountAmount && (
+                                <span className="text-purple-500">
+                                  (-{formatCurrency(booking.discountAmount)})
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
                         </td>
                         <td className="px-4 py-4">
                           <div className="space-y-1">
@@ -545,6 +566,19 @@ export default function AdminBookingsPage() {
                         {booking.participantsCount}
                       </span>
                     </div>
+
+                    {/* Coupon Badge */}
+                    {booking.couponCode && (
+                      <div className="mb-3">
+                        <div className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                          <Tag className="w-3 h-3" />
+                          {booking.couponCode}
+                          {booking.discountAmount && (
+                            <span className="text-purple-500">(-{formatCurrency(booking.discountAmount)})</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Payment Grid */}
                     <div className="grid grid-cols-3 gap-2 mb-4">

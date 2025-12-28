@@ -15,7 +15,8 @@ import {
   AlertCircle,
   UserCheck,
   Ban,
-  X
+  X,
+  Tag
 } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
 import AdminNav from '@/components/admin/AdminNav';
@@ -42,6 +43,11 @@ interface DashboardStats {
   totalRevenue: number;
   pendingPayments: number;
   upcomingDates: number;
+  couponStats?: {
+    totalCouponBookings: number;
+    totalDiscountAmount: number;
+    topCoupon: { code: string; count: number } | null;
+  };
 }
 
 export default function AdminDashboardPage() {
@@ -311,55 +317,92 @@ export default function AdminDashboardPage() {
 
           {/* Stats Cards */}
           {stats && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-gray-500 font-medium">משתתפים בטיפול</div>
-                    <div className="text-2xl font-bold text-gray-900 mt-1">{stats.totalParticipants}</div>
+            <>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
+                <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-gray-500 font-medium">משתתפים בטיפול</div>
+                      <div className="text-2xl font-bold text-gray-900 mt-1">{stats.totalParticipants}</div>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-blue-600" />
+                    </div>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Users className="w-5 h-5 text-blue-600" />
+                </div>
+
+                <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-gray-500 font-medium">הכנסות שנתקבלו</div>
+                      <div className="text-xl font-bold text-green-600 mt-1">{formatCurrency(stats.totalRevenue)}</div>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                      <CreditCard className="w-5 h-5 text-green-600" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-gray-500 font-medium">תשלומים בהמתנה</div>
+                      <div className="text-xl font-bold text-yellow-600 mt-1">{formatCurrency(stats.pendingPayments)}</div>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-yellow-600" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-gray-500 font-medium">תאריכים קרובים</div>
+                      <div className="text-2xl font-bold text-purple-600 mt-1">{stats.upcomingDates}</div>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-purple-600" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-gray-500 font-medium">הכנסות שנתקבלו</div>
-                    <div className="text-xl font-bold text-green-600 mt-1">{formatCurrency(stats.totalRevenue)}</div>
+              {/* Coupon Analytics Widget */}
+              {stats.couponStats && (stats.couponStats.totalCouponBookings > 0 || stats.couponStats.totalDiscountAmount > 0) && (
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl shadow-md p-4 border border-purple-200 mb-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Tag className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <h3 className="font-bold text-purple-900">סטטיסטיקת קופונים</h3>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-green-600" />
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-white/70 rounded-lg p-3 text-center">
+                      <div className="text-xs text-purple-600 font-medium">הזמנות עם קופון</div>
+                      <div className="text-2xl font-bold text-purple-700 mt-1">{stats.couponStats.totalCouponBookings}</div>
+                    </div>
+                    <div className="bg-white/70 rounded-lg p-3 text-center">
+                      <div className="text-xs text-purple-600 font-medium">סה"כ הנחות</div>
+                      <div className="text-xl font-bold text-purple-700 mt-1">{formatCurrency(stats.couponStats.totalDiscountAmount)}</div>
+                    </div>
+                    <div className="bg-white/70 rounded-lg p-3 text-center">
+                      <div className="text-xs text-purple-600 font-medium">קופון פופולרי</div>
+                      <div className="text-lg font-bold text-purple-700 mt-1">
+                        {stats.couponStats.topCoupon ? (
+                          <span className="flex items-center justify-center gap-1">
+                            {stats.couponStats.topCoupon.code}
+                            <span className="text-xs text-purple-500">({stats.couponStats.topCoupon.count})</span>
+                          </span>
+                        ) : (
+                          '-'
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-gray-500 font-medium">תשלומים בהמתנה</div>
-                    <div className="text-xl font-bold text-yellow-600 mt-1">{formatCurrency(stats.pendingPayments)}</div>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-yellow-600" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-gray-500 font-medium">תאריכים קרובים</div>
-                    <div className="text-2xl font-bold text-purple-600 mt-1">{stats.upcomingDates}</div>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-purple-600" />
-                  </div>
-                </div>
-              </div>
-            </div>
+              )}
+            </>
           )}
 
           {/* Filters */}

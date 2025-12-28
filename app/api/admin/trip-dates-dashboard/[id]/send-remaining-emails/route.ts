@@ -29,7 +29,7 @@ export async function POST(
   try {
     const { id: tripDateId } = await params
     const body = await request.json()
-    const { unpaidOnly = true, bookingIds } = body
+    const { unpaidOnly = true, notSentOnly = false, bookingIds } = body
 
     // Fetch trip date with bookings
     const tripDate = await prisma.tripDate.findUnique({
@@ -74,6 +74,11 @@ export async function POST(
     // If unpaidOnly, filter to only those who haven't paid remaining
     if (unpaidOnly) {
       bookingsToEmail = bookingsToEmail.filter(b => b.remainingStatus !== 'PAID')
+    }
+
+    // If notSentOnly, filter to only those who haven't received email yet
+    if (notSentOnly) {
+      bookingsToEmail = bookingsToEmail.filter(b => !b.remainingEmailSentAt)
     }
 
     if (bookingsToEmail.length === 0) {
@@ -269,6 +274,11 @@ export async function GET(
       recipients = recipients.filter(r => r.canSend)
     }
 
+    // Calculate not sent yet - those who can receive email AND haven't received one before
+    const notSentYet = tripDate.bookings.filter(
+      b => b.remainingStatus !== 'PAID' && b.remainingAmount > 0 && !b.remainingEmailSentAt
+    ).length
+
     return NextResponse.json({
       tripDateId,
       tripName: tripDate.trip?.name || 'טיול קוטסוולדס',
@@ -277,8 +287,9 @@ export async function GET(
       recipients,
       summary: {
         canSend: recipients.filter(r => r.canSend).length,
+        notSentYet,
         alreadyPaid: tripDate.bookings.filter(b => b.remainingStatus === 'PAID').length,
-        previouslySent: tripDate.bookings.filter(b => b.remainingEmailSentAt).length
+        previouslySent: tripDate.bookings.filter(b => b.remainingEmailSentAt && b.remainingStatus !== 'PAID').length
       }
     })
   } catch (error) {
