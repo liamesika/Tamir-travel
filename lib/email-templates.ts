@@ -30,6 +30,17 @@ export interface RemainingBalanceRequestData {
   bookingId: string
 }
 
+export interface TripCancellationData {
+  fullName: string
+  email: string
+  tripName: string
+  tripDate: string
+  refundAmount: number
+  bookingId: string
+  supportEmail: string
+  supportPhone: string
+}
+
 export function generateBookingConfirmationEmail(data: BookingConfirmationData): string {
   return `
 <!DOCTYPE html>
@@ -465,6 +476,150 @@ export function generateRemainingBalanceRequestEmail(data: RemainingBalanceReque
             <td style="background-color: #1e3a8a; padding: 30px; text-align: center;">
               <p style="color: #bfdbfe; font-size: 16px; margin: 0;">
                 © 2025 תמיר טריפ
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim()
+}
+
+export function generateTripCancellationEmail(data: TripCancellationData): string {
+  const refundAmountFormatted = (data.refundAmount / 100).toLocaleString('he-IL')
+
+  return `
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>הטיול בוטל – החזר כספי מלא בוצע</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; direction: rtl;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 40px 30px; text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 15px;">😔</div>
+              <h1 style="color: #ffffff; font-size: 28px; margin: 0; font-weight: 700;">
+                הטיול בוטל
+              </h1>
+              <p style="color: #fecaca; font-size: 16px; margin: 10px 0 0 0;">
+                החזר כספי מלא בוצע לחשבונך
+              </p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <p style="font-size: 18px; color: #1f2937; margin: 0 0 20px 0;">
+                שלום <strong>${data.fullName}</strong>,
+              </p>
+
+              <p style="font-size: 16px; color: #4b5563; line-height: 1.7; margin: 0 0 25px 0;">
+                אנו מצטערים להודיע כי הטיול <strong>${data.tripName}</strong> בתאריך <strong>${data.tripDate}</strong> בוטל.
+              </p>
+
+              <p style="font-size: 16px; color: #4b5563; line-height: 1.7; margin: 0 0 30px 0;">
+                ביצענו עבורך החזר כספי מלא. הכסף יוחזר לאמצעי התשלום שבו השתמשת תוך 5-10 ימי עסקים.
+              </p>
+
+              <!-- Refund Card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-radius: 12px; margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 30px; text-align: center;">
+                    <p style="color: #166534; font-size: 16px; margin: 0 0 10px 0; font-weight: 500;">
+                      ✅ סכום ההחזר
+                    </p>
+                    <p style="color: #166534; font-size: 42px; font-weight: 700; margin: 0;">
+                      ₪${refundAmountFormatted}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Booking Details -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; border-radius: 12px; margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 25px;">
+                    <h3 style="color: #374151; font-size: 16px; margin: 0 0 15px 0; font-weight: 600;">
+                      פרטי ההזמנה שבוטלה
+                    </h3>
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                          <span style="color: #6b7280; font-size: 14px;">מספר הזמנה:</span>
+                        </td>
+                        <td style="padding: 8px 0; text-align: left; border-bottom: 1px solid #e5e7eb;">
+                          <strong style="color: #1f2937; font-size: 14px;">${data.bookingId}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                          <span style="color: #6b7280; font-size: 14px;">שם הטיול:</span>
+                        </td>
+                        <td style="padding: 8px 0; text-align: left; border-bottom: 1px solid #e5e7eb;">
+                          <strong style="color: #1f2937; font-size: 14px;">${data.tripName}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0;">
+                          <span style="color: #6b7280; font-size: 14px;">תאריך הטיול:</span>
+                        </td>
+                        <td style="padding: 8px 0; text-align: left;">
+                          <strong style="color: #1f2937; font-size: 14px;">${data.tripDate}</strong>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Apology Note -->
+              <div style="background-color: #fef3c7; padding: 20px; border-radius: 12px; border-right: 4px solid #f59e0b; margin-bottom: 30px;">
+                <p style="color: #92400e; font-size: 15px; margin: 0; line-height: 1.6;">
+                  <strong>אנחנו מצטערים!</strong><br>
+                  נשמח לארח אותך בטיול אחר בעתיד. עקוב אחרי התאריכים הפתוחים באתר שלנו.
+                </p>
+              </div>
+
+              <!-- Contact Support -->
+              <div style="background-color: #f0f9ff; padding: 25px; border-radius: 12px; text-align: center;">
+                <p style="color: #1e40af; font-size: 16px; margin: 0 0 15px 0; font-weight: 600;">
+                  יש שאלות? אנחנו כאן בשבילך!
+                </p>
+                <p style="margin: 0 0 10px 0;">
+                  <a href="mailto:${data.supportEmail}" style="color: #2563eb; font-size: 16px; text-decoration: none;">
+                    📧 ${data.supportEmail}
+                  </a>
+                </p>
+                <p style="margin: 0;">
+                  <a href="https://wa.me/${data.supportPhone.replace(/\D/g, '')}" style="color: #16a34a; font-size: 16px; text-decoration: none;">
+                    📱 WhatsApp: ${data.supportPhone}
+                  </a>
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
+                שמור את אישור הביטול הזה לתיעוד שלך
+              </p>
+              <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                © 2025 תמיר טריפ. כל הזכויות שמורות.
               </p>
             </td>
           </tr>

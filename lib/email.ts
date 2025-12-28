@@ -3,9 +3,11 @@ import {
   generateBookingConfirmationEmail,
   generatePaymentConfirmationEmail,
   generateRemainingBalanceRequestEmail,
+  generateTripCancellationEmail,
   BookingConfirmationData,
   PaymentConfirmationData,
   RemainingBalanceRequestData,
+  TripCancellationData,
 } from './email-templates'
 
 export interface EmailResponse {
@@ -317,6 +319,18 @@ export class EmailService {
     return this.sendEmail({
       to: data.email,
       subject: 'תזכורת לתשלום יתרה - תמיר טריפ',
+      html,
+    })
+  }
+
+  /**
+   * Send trip cancellation email with refund confirmation
+   */
+  static async sendTripCancellation(data: TripCancellationData): Promise<EmailResponse> {
+    const html = generateTripCancellationEmail(data)
+    return this.sendEmail({
+      to: data.email,
+      subject: 'הטיול בוטל – החזר כספי מלא בוצע',
       html,
     })
   }

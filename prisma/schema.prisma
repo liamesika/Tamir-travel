@@ -83,11 +83,14 @@ model Booking {
   emailSent              Boolean              @default(false)
   emailSentAt            DateTime?
   emailLastTo            String?
-  emailLastType          String?              // deposit, remaining, confirmation
+  emailLastType          String?              // deposit, remaining, confirmation, cancellation
   emailMessageId         String?
   whatsappSent           Boolean              @default(false)
   adminNotes             String?
   cancelledAt            DateTime?
+  cancelReason           String?              // e.g., "Trip date cancelled by organizer"
+  refundedAt             DateTime?
+  refundAmount           Int?                 // Total refunded amount in agorot
   payments               Payment[]
   bulkEmailRecipients    BulkEmailRecipient[]
   createdAt              DateTime             @default(now())
@@ -104,6 +107,7 @@ model Payment {
   currency              String   @default("ILS")
   stripePaymentIntentId String?
   stripeSessionId       String?
+  stripeRefundId        String?  // For refund payments
   status                String   @default("pending") // pending, succeeded, failed, refunded
   metadata              String?
   createdAt             DateTime @default(now())
