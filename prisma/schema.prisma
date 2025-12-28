@@ -41,6 +41,7 @@ model TripDate {
   minReachedAt    DateTime?        // Timestamp when minimum was reached
   maxReachedAt    DateTime?        // Timestamp when capacity was reached (SOLD OUT)
   status          String           @default("OPEN") // OPEN, CLOSED, SOLD_OUT, CANCELLED
+  cancelledAt     DateTime?        // Soft-delete timestamp
   bookings        Booking[]
   bulkEmailBatches BulkEmailBatch[]
   createdAt       DateTime         @default(now())

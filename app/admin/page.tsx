@@ -15,7 +15,6 @@ import {
   AlertCircle,
   UserCheck,
   Ban,
-  Trash2,
   X
 } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
@@ -167,18 +166,37 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleDeleteTripDate = async (id: string) => {
-    if (!confirm('האם למחוק את תאריך הטיול?')) return;
+  const handleCancelTripDate = async (id: string) => {
+    if (!confirm('האם לבטל את תאריך הטיול? פעולה זו תסתיר את התאריך מהאתר.')) return;
 
     try {
       const res = await fetch(`/api/admin/trip-dates-dashboard/${id}`, {
         method: 'DELETE'
       });
 
-      if (!res.ok) throw new Error('Failed to delete');
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Handle specific error codes
+        if (data.code === 'HAS_ACTIVE_BOOKINGS') {
+          alert(`לא ניתן לבטל תאריך זה.\n\nיש ${data.bookingsCount} הזמנות פעילות עם ${data.participantsCount} משתתפים.\n\nיש לבטל את ההזמנות לפני ביטול התאריך.`);
+        } else if (data.code === 'ALREADY_CANCELLED') {
+          alert('תאריך זה כבר בוטל.');
+          fetchData(); // Refresh to show updated status
+        } else if (data.code === 'NOT_FOUND') {
+          alert('תאריך הטיול לא נמצא.');
+          fetchData();
+        } else {
+          alert(data.error || 'שגיאה בביטול התאריך');
+        }
+        return;
+      }
+
+      alert(data.message || 'התאריך בוטל בהצלחה');
       fetchData();
     } catch (err) {
-      alert('שגיאה במחיקת תאריך');
+      console.error('Error cancelling trip date:', err);
+      alert('שגיאת תקשורת. נסה שוב.');
     }
   };
 
@@ -198,10 +216,11 @@ export default function AdminDashboardPage() {
   };
 
   const filteredDates = tripDates.filter(td => {
-    if (statusFilter === 'ALL') return true;
+    if (statusFilter === 'ALL') return td.status !== 'CANCELLED'; // Hide cancelled by default
     if (statusFilter === 'OPEN') return td.status === 'OPEN';
-    if (statusFilter === 'MIN_REACHED') return td.participants >= td.minParticipants;
-    if (statusFilter === 'SOLD_OUT') return td.status === 'SOLD_OUT' || td.participants >= td.capacity;
+    if (statusFilter === 'MIN_REACHED') return td.participants >= td.minParticipants && td.status !== 'CANCELLED';
+    if (statusFilter === 'SOLD_OUT') return (td.status === 'SOLD_OUT' || td.participants >= td.capacity) && td.status !== 'CANCELLED';
+    if (statusFilter === 'CANCELLED') return td.status === 'CANCELLED';
     return true;
   });
 
@@ -320,7 +339,8 @@ export default function AdminDashboardPage() {
                 { value: 'ALL', label: 'הכל' },
                 { value: 'OPEN', label: 'פתוחים' },
                 { value: 'MIN_REACHED', label: 'הגיעו למינימום' },
-                { value: 'SOLD_OUT', label: 'אזלו' }
+                { value: 'SOLD_OUT', label: 'אזלו' },
+                { value: 'CANCELLED', label: 'בוטלו' }
               ].map(filter => (
                 <button
                   key={filter.value}
@@ -416,13 +436,15 @@ export default function AdminDashboardPage() {
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
-                          <button
-                            onClick={() => handleDeleteTripDate(tripDate.id)}
-                            className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition"
-                            title="מחק"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {tripDate.status !== 'CANCELLED' && (
+                            <button
+                              onClick={() => handleCancelTripDate(tripDate.id)}
+                              className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition"
+                              title="בטל תאריך"
+                            >
+                              <Ban className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -488,12 +510,15 @@ export default function AdminDashboardPage() {
                       <Eye className="w-4 h-4" />
                       פרטים והזמנות
                     </Link>
-                    <button
-                      onClick={() => handleDeleteTripDate(tripDate.id)}
-                      className="p-2 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 transition"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {tripDate.status !== 'CANCELLED' && (
+                      <button
+                        onClick={() => handleCancelTripDate(tripDate.id)}
+                        className="p-2 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 transition"
+                        title="בטל תאריך"
+                      >
+                        <Ban className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))

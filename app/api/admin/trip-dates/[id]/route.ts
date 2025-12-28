@@ -124,27 +124,79 @@ export async function DELETE(
   try {
     const { id } = await params
 
-    // Check if trip date has bookings
-    const bookingsCount = await prisma.booking.count({
-      where: { tripDateId: id }
+    // Check if TripDate exists
+    const tripDate = await prisma.tripDate.findUnique({
+      where: { id },
+      include: {
+        bookings: {
+          where: {
+            cancelledAt: null // Only count non-cancelled bookings
+          },
+          select: {
+            id: true,
+            participantsCount: true
+          }
+        }
+      }
     })
 
-    if (bookingsCount > 0) {
+    if (!tripDate) {
       return NextResponse.json(
-        { error: 'לא ניתן למחוק תאריך טיול עם הזמנות קיימות' },
+        { error: 'תאריך טיול לא נמצא', code: 'NOT_FOUND' },
+        { status: 404 }
+      )
+    }
+
+    // Already cancelled
+    if (tripDate.cancelledAt) {
+      return NextResponse.json(
+        { error: 'תאריך זה כבר בוטל', code: 'ALREADY_CANCELLED' },
         { status: 400 }
       )
     }
 
-    await prisma.tripDate.delete({
-      where: { id }
+    // Check for active bookings (non-cancelled)
+    const activeBookings = tripDate.bookings
+    if (activeBookings.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'לא ניתן לבטל תאריך עם הזמנות פעילות',
+          code: 'HAS_ACTIVE_BOOKINGS',
+          bookingsCount: activeBookings.length,
+          participantsCount: activeBookings.reduce((sum, b) => sum + b.participantsCount, 0)
+        },
+        { status: 409 }
+      )
+    }
+
+    // Soft-delete: set cancelledAt and update status
+    const updatedTripDate = await prisma.tripDate.update({
+      where: { id },
+      data: {
+        cancelledAt: new Date(),
+        status: 'CANCELLED'
+      }
     })
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({
+      success: true,
+      tripDate: updatedTripDate,
+      message: 'תאריך הטיול בוטל בהצלחה'
+    })
   } catch (error) {
-    console.error('Error deleting trip date:', error)
+    console.error('Error cancelling trip date:', error)
+
+    if (error instanceof Error) {
+      if (error.message.includes('Record to update not found')) {
+        return NextResponse.json(
+          { error: 'תאריך טיול לא נמצא', code: 'NOT_FOUND' },
+          { status: 404 }
+        )
+      }
+    }
+
     return NextResponse.json(
-      { error: 'שגיאה במחיקת תאריך טיול' },
+      { error: 'שגיאה בביטול תאריך טיול', code: 'INTERNAL_ERROR' },
       { status: 500 }
     )
   }

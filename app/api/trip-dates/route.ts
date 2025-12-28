@@ -14,6 +14,7 @@ export async function GET() {
           where: {
             date: { gte: new Date() },
             status: { not: 'CANCELLED' },
+            cancelledAt: null, // Exclude soft-deleted dates
           },
           orderBy: { date: 'asc' },
         },
