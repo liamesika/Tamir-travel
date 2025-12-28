@@ -10,8 +10,8 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({
-  heroTitle = "רק שעתיים מלונדון — לונדון שלא הכרתם",
-  heroSubtitle = "הטיול שישדרג לכם את החופשה",
+  heroTitle = "מחוץ ללונדון",
+  heroSubtitle = "טיול אל הכפרים הציוריים – יומיים עם לינה",
   heroImage = "/images/hero-poster.jpg",
 }: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -298,17 +298,21 @@ export default function HeroSection({
           </h1>
 
           {heroSubtitle && (
-            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-6 sm:mb-8 font-medium leading-relaxed">
+            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-4 sm:mb-6 font-medium leading-relaxed">
               {heroSubtitle}
             </p>
           )}
 
+          <p className="text-base sm:text-lg text-heritage-300 mb-6 sm:mb-8 font-medium">
+            החופשה שתישמר בליבכם לעד
+          </p>
+
           <div className="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed sm:leading-loose">
             <p>
-              החליפו לילה יקר במלון בלונדון בטיול בן יומיים עם לינה כפרית — כפרים ציוריים, נופים ירוקים, ויום קניות באאוטלט מותגים במחירים שאין בעיר.
+              רק שעתיים נסיעה מלונדון, ננשום את הטבע עוצר הנשימה, נבקר בכפרים ציוריים שהזמן פסק מלכת, נטייל בין בתי אבן עתיקים, נחלים זורמים ונופים ירוקים, נלון במלון מפנק בכפרים ולמחרת יום קניות מרוכז באאוטלט עם כל המותגים במחירים שאין בלונדון.
             </p>
-            <p className="mt-4 sm:mt-5 text-white/80">
-              לפני שסוגרים כרטיס טיסה, שווה לוודא שהתאריכים האלו פנויים
+            <p className="mt-4 sm:mt-5 font-semibold text-heritage-300">
+              השילוב המנצח, חוויה וחיסכון.
             </p>
           </div>
 
