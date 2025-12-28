@@ -28,7 +28,7 @@ export default function BookingCancelledPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href="https://wa.me/972501234567"
+              href="https://wa.me/972502823333"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-xl transition"
@@ -36,7 +36,7 @@ export default function BookingCancelledPage() {
               שלח הודעת וואטסאפ
             </a>
             <a
-              href="tel:0501234567"
+              href="tel:0502823333"
               className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-3 rounded-xl transition"
             >
               התקשר אלינו

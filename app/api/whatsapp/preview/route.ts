@@ -98,6 +98,6 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     type,
     message,
-    formatted_phone: '+972501234567',
+    formatted_phone: '+972502823333',
   })
 }

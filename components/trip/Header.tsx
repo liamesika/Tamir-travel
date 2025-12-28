@@ -91,7 +91,7 @@ export default function Header() {
           {/* WhatsApp Button - Desktop */}
           <div className="hidden lg:flex items-center">
             <a
-              href="https://wa.me/972501234567"
+              href="https://wa.me/972502823333"
               target="_blank"
               rel="noopener noreferrer"
               className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors text-sm ${
@@ -139,7 +139,7 @@ export default function Header() {
             ))}
             <div className="border-t border-sage-200 my-3" />
             <a
-              href="https://wa.me/972501234567"
+              href="https://wa.me/972502823333"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setIsMobileMenuOpen(false)}
