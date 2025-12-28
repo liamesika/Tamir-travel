@@ -29,21 +29,22 @@ model Trip {
 }
 
 model TripDate {
-  id              String    @id @default(cuid())
+  id              String           @id @default(cuid())
   tripId          String?
-  trip            Trip?     @relation(fields: [tripId], references: [id])
+  trip            Trip?            @relation(fields: [tripId], references: [id])
   date            DateTime
-  capacity        Int       @default(30)
-  reservedSpots   Int       @default(0)
+  capacity        Int              @default(30)
+  reservedSpots   Int              @default(0)
   pricePerPerson  Int
-  depositAmount   Int       @default(30000) // 300 ILS in agorot
-  minParticipants Int       @default(15)
-  minReachedAt    DateTime? // Timestamp when minimum was reached
-  maxReachedAt    DateTime? // Timestamp when capacity was reached (SOLD OUT)
-  status          String    @default("OPEN") // OPEN, CLOSED, SOLD_OUT, CANCELLED
+  depositAmount   Int              @default(30000) // 300 ILS in agorot
+  minParticipants Int              @default(15)
+  minReachedAt    DateTime?        // Timestamp when minimum was reached
+  maxReachedAt    DateTime?        // Timestamp when capacity was reached (SOLD OUT)
+  status          String           @default("OPEN") // OPEN, CLOSED, SOLD_OUT, CANCELLED
   bookings        Booking[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  bulkEmailBatches BulkEmailBatch[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model User {
@@ -59,35 +60,37 @@ model User {
 }
 
 model Booking {
-  id                    String    @id @default(cuid())
-  tripDateId            String
-  tripDate              TripDate  @relation(fields: [tripDateId], references: [id])
-  userId                String?
-  user                  User?     @relation(fields: [userId], references: [id])
-  fullName              String
-  email                 String
-  phone                 String
-  participantsCount     Int
-  totalPrice            Int
-  depositAmount         Int
-  depositStatus         String    @default("PENDING") // PENDING, PAID, CANCELLED, REFUNDED
-  remainingAmount       Int       @default(0)
-  remainingStatus       String    @default("PENDING") // PENDING, PAID, CANCELLED, REFUNDED
-  remainingDueDate      DateTime?
-  remainingPaidAt       DateTime?
-  paymentToken          String    @unique @default(cuid())
-  paymentIntentId       String?
+  id                     String               @id @default(cuid())
+  tripDateId             String
+  tripDate               TripDate             @relation(fields: [tripDateId], references: [id])
+  userId                 String?
+  user                   User?                @relation(fields: [userId], references: [id])
+  fullName               String
+  email                  String
+  phone                  String
+  participantsCount      Int
+  totalPrice             Int
+  depositAmount          Int
+  depositStatus          String               @default("PENDING") // PENDING, PAID, CANCELLED, REFUNDED
+  remainingAmount        Int                  @default(0)
+  remainingStatus        String               @default("PENDING") // PENDING, PAID, CANCELLED, REFUNDED
+  remainingDueDate       DateTime?
+  remainingPaidAt        DateTime?
+  paymentToken           String               @unique @default(cuid())
+  paymentIntentId        String?
   remainingPaymentIntentId String?
-  emailSent             Boolean   @default(false)
-  emailSentAt           DateTime?
-  emailLastTo           String?
-  emailLastType         String?   // deposit, remaining, confirmation
-  emailMessageId        String?
-  whatsappSent          Boolean   @default(false)
-  adminNotes            String?
-  payments              Payment[]
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  emailSent              Boolean              @default(false)
+  emailSentAt            DateTime?
+  emailLastTo            String?
+  emailLastType          String?              // deposit, remaining, confirmation
+  emailMessageId         String?
+  whatsappSent           Boolean              @default(false)
+  adminNotes             String?
+  cancelledAt            DateTime?
+  payments               Payment[]
+  bulkEmailRecipients    BulkEmailRecipient[]
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
 }
 
 model Payment {
@@ -107,13 +110,14 @@ model Payment {
 }
 
 model Admin {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      String   @default("admin") // admin, viewer
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String           @id @default(cuid())
+  email            String           @unique
+  password         String
+  name             String
+  role             String           @default("admin") // admin, viewer
+  bulkEmailBatches BulkEmailBatch[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 model ContentBlock {
@@ -162,4 +166,40 @@ model Media {
   alt         String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model BulkEmailBatch {
+  id                 String               @id @default(cuid())
+  tripDateId         String
+  tripDate           TripDate             @relation(fields: [tripDateId], references: [id])
+  createdByAdminId   String?
+  createdByAdmin     Admin?               @relation(fields: [createdByAdminId], references: [id])
+  subject            String
+  body               String
+  includePaymentLink Boolean              @default(false)
+  totalRecipients    Int                  @default(0)
+  sentCount          Int                  @default(0)
+  failedCount        Int                  @default(0)
+  status             String               @default("PENDING") // PENDING, SENDING, COMPLETED, FAILED
+  errorMessage       String?
+  sentAt             DateTime?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  recipients         BulkEmailRecipient[]
+}
+
+model BulkEmailRecipient {
+  id                String          @id @default(cuid())
+  batchId           String
+  batch             BulkEmailBatch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  bookingId         String?
+  booking           Booking?        @relation(fields: [bookingId], references: [id])
+  email             String
+  fullName          String?
+  status            String          @default("PENDING") // PENDING, SENT, FAILED
+  providerMessageId String?
+  errorMessage      String?
+  sentAt            DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }

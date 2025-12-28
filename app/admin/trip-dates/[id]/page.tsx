@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
 import AdminNav from '@/components/admin/AdminNav';
+import BulkEmailModal from '@/components/admin/BulkEmailModal';
 import Link from 'next/link';
 
 interface Booking {
@@ -76,6 +77,7 @@ export default function TripDateDetailPage() {
   const [filter, setFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [sendingPaymentLink, setSendingPaymentLink] = useState<string | null>(null);
+  const [showBulkEmailModal, setShowBulkEmailModal] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -269,6 +271,13 @@ export default function TripDateDetailPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowBulkEmailModal(true)}
+                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+                >
+                  <Mail className="w-4 h-4" />
+                  מייל תפוצה
+                </button>
                 <button
                   onClick={exportToCSV}
                   className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition"
@@ -587,6 +596,14 @@ export default function TripDateDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Bulk Email Modal */}
+      <BulkEmailModal
+        tripDateId={id}
+        tripDateLabel={tripDate ? formatDate(tripDate.date) : ''}
+        isOpen={showBulkEmailModal}
+        onClose={() => setShowBulkEmailModal(false)}
+      />
     </>
   );
 }
