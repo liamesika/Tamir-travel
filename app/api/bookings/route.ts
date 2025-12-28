@@ -12,6 +12,7 @@ const BookingSchema = z.object({
   email: z.string().email(),
   phone: z.string().min(9),
   participantsCount: z.number().int().min(1).max(10),
+  couponCode: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -39,19 +40,63 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const depositAmount = data.participantsCount * 300 * 100
+    // Validate and apply coupon if provided
+    let coupon = null
+    let discountAmount = 0
+    let couponId = null
+
+    if (data.couponCode) {
+      coupon = await prisma.coupon.findUnique({
+        where: { code: data.couponCode.toUpperCase() }
+      })
+
+      if (coupon) {
+        // Validate coupon is still valid
+        const isValid = coupon.isActive &&
+          (!coupon.expiresAt || new Date(coupon.expiresAt) > new Date()) &&
+          (!coupon.maxRedemptions || coupon.redemptionCount < coupon.maxRedemptions) &&
+          (!coupon.minParticipants || data.participantsCount >= coupon.minParticipants)
+
+        if (isValid) {
+          couponId = coupon.id
+        } else {
+          coupon = null // Invalid coupon, don't apply
+        }
+      }
+    }
+
+    const baseDepositAmount = data.participantsCount * 300 * 100
+    if (coupon) {
+      discountAmount = Math.round(baseDepositAmount * coupon.percentOff / 100)
+    }
+    const depositAmount = baseDepositAmount - discountAmount
     const totalPrice = data.participantsCount * tripDate.pricePerPerson * 100
     const remainingAmount = totalPrice - depositAmount
 
     const booking = await prisma.booking.create({
       data: {
-        ...data,
+        tripDateId: data.tripDateId,
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        participantsCount: data.participantsCount,
         totalPrice,
         depositAmount,
         remainingAmount,
         depositStatus: 'PENDING',
+        couponId,
+        couponCode: coupon?.code || null,
+        discountAmount: discountAmount > 0 ? discountAmount : null,
       },
     })
+
+    // Increment coupon redemption count if used
+    if (couponId) {
+      await prisma.coupon.update({
+        where: { id: couponId },
+        data: { redemptionCount: { increment: 1 } }
+      })
+    }
 
     const payment = await PaymentService.createDepositPayment({
       bookingId: booking.id,

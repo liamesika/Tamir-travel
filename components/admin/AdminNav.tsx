@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Calendar, FileText, LogOut, Users, Settings, Menu, X } from 'lucide-react';
+import { Calendar, FileText, LogOut, Users, Settings, Menu, X, Tag } from 'lucide-react';
 
 export default function AdminNav() {
   const pathname = usePathname();
@@ -22,6 +22,7 @@ export default function AdminNav() {
     { name: 'תאריכי טיול', href: '/admin', icon: Calendar },
     { name: 'הזמנות', href: '/admin/bookings', icon: FileText },
     { name: 'לקוחות', href: '/admin/users', icon: Users },
+    { name: 'קופונים', href: '/admin/coupons', icon: Tag },
     { name: 'הגדרות', href: '/admin/settings', icon: Settings },
   ];
 

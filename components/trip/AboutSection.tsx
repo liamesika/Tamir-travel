@@ -86,14 +86,14 @@ export default function AboutSection() {
             return (
               <div
                 key={index}
-                className={`bg-white rounded-xl p-4 sm:p-5 shadow-md hover:shadow-lg transition-all duration-500 border border-sage-100 ${
+                className={`bg-white rounded-xl p-4 sm:p-5 shadow-md hover:shadow-lg transition-all duration-500 border border-sage-100 text-center ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
                 }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-nature-100 flex items-center justify-center mb-3">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-nature-100 flex items-center justify-center mb-3 mx-auto">
                   <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-nature-600" />
                 </div>
                 <h4 className="text-base sm:text-lg font-bold text-sage-900 mb-1">

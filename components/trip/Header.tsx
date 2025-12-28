@@ -65,9 +65,9 @@ export default function Header() {
               isScrolled || isMobileMenuOpen ? "text-nature-800" : "text-white"
             }`}
           >
-            <span className="block leading-tight">לונדון</span>
+            <span className="block leading-tight">מחוץ</span>
             <span className={`text-xs font-normal ${isScrolled || isMobileMenuOpen ? "text-sage-600" : "text-white/80"}`}>
-              שלא הכרתם
+              ללונדון
             </span>
           </a>
 

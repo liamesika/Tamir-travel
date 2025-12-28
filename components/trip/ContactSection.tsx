@@ -77,7 +77,7 @@ export default function ContactSection() {
             {/* Logo */}
             <div className="text-center md:text-right">
               <div className="text-base font-bold text-white mb-0.5">
-                לונדון שלא הכרתם
+                מחוץ ללונדון
               </div>
               <p className="text-sage-400 text-xs">
                 טיול טבע ומורשת ייחודי באנגליה
@@ -113,7 +113,7 @@ export default function ContactSection() {
 
           <div className="mt-3 pt-3 border-t border-sage-800 text-center">
             <p className="text-sage-500 text-xs">
-              © {new Date().getFullYear()} לונדון שלא הכרתם | כל הזכויות שמורות
+              © {new Date().getFullYear()} מחוץ ללונדון | כל הזכויות שמורות
             </p>
             <p className="text-sage-600 text-xs mt-0.5 max-w-2xl mx-auto">
               האתר והתכנים בו הינם לצרכי מידע בלבד. התמונות באתר הן מטיולים אמיתיים.

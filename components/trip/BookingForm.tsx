@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Calendar, Users, Mail, Phone, User, Loader2, AlertCircle } from 'lucide-react';
+import { Calendar, Users, Mail, Phone, User, Loader2, AlertCircle, Tag, Check, X } from 'lucide-react';
 
 interface TripDate {
   id: string;
@@ -32,7 +32,19 @@ export default function BookingForm() {
     email: '',
     phone: '',
     participantsCount: 1,
+    couponCode: '',
   });
+
+  // Coupon state
+  const [couponInput, setCouponInput] = useState('');
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: string;
+    code: string;
+    percentOff: number;
+    description?: string;
+  } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/trip-dates')
@@ -75,6 +87,44 @@ export default function BookingForm() {
     }
   }, [selectedTripId, tripDates, trips.length, formData.tripDateId]);
 
+  const validateCoupon = async () => {
+    if (!couponInput.trim()) return;
+
+    setValidatingCoupon(true);
+    setCouponError(null);
+
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: couponInput,
+          participantsCount: formData.participantsCount
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.valid && data.coupon) {
+        setAppliedCoupon(data.coupon);
+        setFormData(prev => ({ ...prev, couponCode: data.coupon.code }));
+        setCouponInput('');
+      } else {
+        setCouponError(data.error || 'קופון לא תקין');
+      }
+    } catch {
+      setCouponError('שגיאה באימות קופון');
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setFormData(prev => ({ ...prev, couponCode: '' }));
+    setCouponError(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -104,7 +154,11 @@ export default function BookingForm() {
   const availableSpots = selectedDate
     ? selectedDate.capacity - selectedDate.reservedSpots
     : 0;
-  const depositAmount = formData.participantsCount * 300;
+  const baseDepositAmount = formData.participantsCount * 300;
+  const discountAmount = appliedCoupon
+    ? Math.round(baseDepositAmount * appliedCoupon.percentOff / 100)
+    : 0;
+  const depositAmount = baseDepositAmount - discountAmount;
 
   if (loadingDates) {
     return (
@@ -264,13 +318,85 @@ export default function BookingForm() {
           />
         </div>
 
+        {/* Coupon Code */}
+        <div>
+          <label className="block text-base font-semibold text-sage-700 mb-2">
+            <Tag className="inline w-5 h-5 ml-1.5" />
+            קוד קופון (אופציונלי)
+          </label>
+          {appliedCoupon ? (
+            <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+              <Check className="w-5 h-5 text-green-600" />
+              <div className="flex-1">
+                <span className="font-bold text-green-700">{appliedCoupon.code}</span>
+                <span className="text-green-600 mr-2">- {appliedCoupon.percentOff}% הנחה</span>
+                {appliedCoupon.description && (
+                  <span className="text-green-600 text-sm block">{appliedCoupon.description}</span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={removeCoupon}
+                className="p-1 hover:bg-green-100 rounded transition"
+              >
+                <X className="w-5 h-5 text-green-600" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponInput}
+                onChange={(e) => {
+                  setCouponInput(e.target.value.toUpperCase());
+                  setCouponError(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    validateCoupon();
+                  }
+                }}
+                className="flex-1 px-4 py-3 border-2 border-sage-200 rounded-lg focus:border-nature-500 focus:outline-none transition text-lg font-mono uppercase"
+                placeholder="הזן קוד קופון"
+                dir="ltr"
+              />
+              <button
+                type="button"
+                onClick={validateCoupon}
+                disabled={validatingCoupon || !couponInput.trim()}
+                className="px-6 py-3 bg-sage-100 hover:bg-sage-200 text-sage-700 font-semibold rounded-lg transition disabled:opacity-50"
+              >
+                {validatingCoupon ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  'החל'
+                )}
+              </button>
+            </div>
+          )}
+          {couponError && (
+            <p className="mt-2 text-red-600 text-sm">{couponError}</p>
+          )}
+        </div>
+
         <div className="bg-gradient-to-br from-heritage-50 to-earth-50 rounded-lg p-5 border border-heritage-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sage-700 font-semibold text-lg">מקדמה לתשלום:</span>
-            <span className="text-3xl font-bold text-heritage-600">₪{depositAmount}</span>
+            <div className="text-left">
+              {discountAmount > 0 && (
+                <span className="text-sage-400 line-through text-xl ml-2">₪{baseDepositAmount}</span>
+              )}
+              <span className="text-3xl font-bold text-heritage-600">₪{depositAmount}</span>
+            </div>
           </div>
           <p className="text-base text-sage-600">
             300 ₪ למשתתף × {formData.participantsCount} משתתפים
+            {discountAmount > 0 && (
+              <span className="text-green-600 font-medium mr-2">
+                (הנחה: ₪{discountAmount})
+              </span>
+            )}
           </p>
         </div>
 

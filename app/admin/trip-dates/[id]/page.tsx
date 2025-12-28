@@ -26,6 +26,7 @@ import {
 import { SiWhatsapp } from 'react-icons/si';
 import AdminNav from '@/components/admin/AdminNav';
 import BulkEmailModal from '@/components/admin/BulkEmailModal';
+import SendRemainingEmailsModal from '@/components/admin/SendRemainingEmailsModal';
 import Link from 'next/link';
 
 interface Booking {
@@ -78,6 +79,7 @@ export default function TripDateDetailPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sendingPaymentLink, setSendingPaymentLink] = useState<string | null>(null);
   const [showBulkEmailModal, setShowBulkEmailModal] = useState(false);
+  const [showRemainingEmailsModal, setShowRemainingEmailsModal] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -270,7 +272,14 @@ export default function TripDateDetailPage() {
                   {formatCurrency(tripDate.pricePerPerson)} לאדם • מקדמה {formatCurrency(tripDate.depositAmount)}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => setShowRemainingEmailsModal(true)}
+                  className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition"
+                >
+                  <Send className="w-4 h-4" />
+                  שלח מייל יתרה
+                </button>
                 <button
                   onClick={() => setShowBulkEmailModal(true)}
                   className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
@@ -603,6 +612,14 @@ export default function TripDateDetailPage() {
         tripDateLabel={tripDate ? formatDate(tripDate.date) : ''}
         isOpen={showBulkEmailModal}
         onClose={() => setShowBulkEmailModal(false)}
+      />
+
+      {/* Send Remaining Emails Modal */}
+      <SendRemainingEmailsModal
+        tripDateId={id}
+        tripDateLabel={tripDate ? formatDate(tripDate.date) : ''}
+        isOpen={showRemainingEmailsModal}
+        onClose={() => setShowRemainingEmailsModal(false)}
       />
     </>
   );
