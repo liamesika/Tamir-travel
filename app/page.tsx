@@ -29,12 +29,12 @@ export default async function TripPage() {
         heroImage={trip.heroImage}
       />
       <AboutSection />
+      <ItinerarySection itinerarySteps={trip.itinerarySteps} />
       <GuideSection
         guideTitle={trip.guideTitle}
         guideContent={trip.guideContent}
         guideImage={trip.guideImage}
       />
-      <ItinerarySection itinerarySteps={trip.itinerarySteps} />
       <IncludedSection
         includedItems={trip.includedItems}
         notIncludedItems={trip.notIncludedItems}
