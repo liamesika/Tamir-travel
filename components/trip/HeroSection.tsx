@@ -20,76 +20,154 @@ export default function HeroSection({
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const playAttemptRef = useRef(0);
+  const hasUserInteractedRef = useRef(false);
 
-  // Attempt autoplay with all necessary workarounds for iOS
+  // Robust autoplay with multiple retry strategies for iOS/Android/Desktop
   const attemptAutoplay = useCallback(async () => {
     const video = videoRef.current;
     if (!video || prefersReducedMotion || videoFailed) return;
 
-    // iOS requires these to be set before play attempt
+    playAttemptRef.current += 1;
+    const currentAttempt = playAttemptRef.current;
+
+    // Ensure all autoplay-required attributes are set
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
-    video.setAttribute("muted", "true");
-    video.setAttribute("playsinline", "true");
-    video.setAttribute("webkit-playsinline", "true");
     video.volume = 0;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
 
-    // Small delay for iOS to recognize the attributes
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // For iOS Safari low-power mode
+    video.setAttribute("x-webkit-airplay", "deny");
+    video.disableRemotePlayback = true;
 
-    try {
-      // Load the video first
-      video.load();
-
-      // Wait for video to be ready
-      await new Promise<void>((resolve, reject) => {
-        const onCanPlay = () => {
-          video.removeEventListener('canplay', onCanPlay);
-          video.removeEventListener('error', onError);
-          resolve();
-        };
-        const onError = () => {
-          video.removeEventListener('canplay', onCanPlay);
-          video.removeEventListener('error', onError);
-          reject(new Error('Video load error'));
-        };
-
-        if (video.readyState >= 3) {
-          resolve();
-        } else {
-          video.addEventListener('canplay', onCanPlay);
-          video.addEventListener('error', onError);
+    const tryPlay = async (): Promise<boolean> => {
+      try {
+        // Reset video position for clean start
+        if (video.currentTime > 0) {
+          video.currentTime = 0;
         }
-      });
 
-      await video.play();
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+        }
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    // Strategy 1: Direct play attempt
+    if (await tryPlay()) {
       setIsPlaying(true);
       setAutoplayBlocked(false);
-    } catch (err) {
-      console.warn("HERO VIDEO: Autoplay blocked", err);
-      setAutoplayBlocked(true);
+      return;
     }
+
+    // Strategy 2: Wait for canplaythrough then try
+    if (video.readyState < 4) {
+      await new Promise<void>((resolve) => {
+        const onReady = () => {
+          video.removeEventListener('canplaythrough', onReady);
+          resolve();
+        };
+        video.addEventListener('canplaythrough', onReady, { once: true });
+        // Timeout fallback
+        setTimeout(resolve, 3000);
+      });
+
+      if (currentAttempt !== playAttemptRef.current) return;
+
+      if (await tryPlay()) {
+        setIsPlaying(true);
+        setAutoplayBlocked(false);
+        return;
+      }
+    }
+
+    // Strategy 3: Small delay and retry (helps on some Android devices)
+    await new Promise(resolve => setTimeout(resolve, 200));
+    if (currentAttempt !== playAttemptRef.current) return;
+
+    if (await tryPlay()) {
+      setIsPlaying(true);
+      setAutoplayBlocked(false);
+      return;
+    }
+
+    // Strategy 4: Reload and try (last resort for stubborn browsers)
+    video.load();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    if (currentAttempt !== playAttemptRef.current) return;
+
+    if (await tryPlay()) {
+      setIsPlaying(true);
+      setAutoplayBlocked(false);
+      return;
+    }
+
+    // Autoplay truly blocked - show play button
+    setAutoplayBlocked(true);
   }, [prefersReducedMotion, videoFailed]);
 
+  // Manual play handler with user gesture context
   const handleManualPlay = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
 
+    hasUserInteractedRef.current = true;
     video.muted = true;
-    video.setAttribute("muted", "");
+    video.volume = 0;
 
     try {
       await video.play();
       setIsPlaying(true);
       setAutoplayBlocked(false);
-    } catch (err) {
-      console.error("HERO VIDEO: Manual play failed", err);
+    } catch {
+      // If still fails, try with load first
+      video.load();
+      try {
+        await video.play();
+        setIsPlaying(true);
+        setAutoplayBlocked(false);
+      } catch {
+        // Complete failure - hide video, show poster only
+        setVideoFailed(true);
+      }
     }
   }, []);
 
+  // Listen for any user interaction to retry autoplay
+  useEffect(() => {
+    if (!autoplayBlocked || hasUserInteractedRef.current) return;
+
+    const handleInteraction = () => {
+      hasUserInteractedRef.current = true;
+      attemptAutoplay();
+      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('scroll', handleInteraction);
+    };
+
+    document.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
+    document.addEventListener('click', handleInteraction, { once: true });
+    document.addEventListener('scroll', handleInteraction, { once: true, passive: true });
+
+    return () => {
+      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('scroll', handleInteraction);
+    };
+  }, [autoplayBlocked, attemptAutoplay]);
+
   useEffect(() => {
     setIsLoaded(true);
+
+    // Check reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
 
@@ -101,9 +179,12 @@ export default function HeroSection({
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
+  // Initial autoplay attempt after mount
   useEffect(() => {
     if (!prefersReducedMotion && !videoFailed) {
-      attemptAutoplay();
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(attemptAutoplay, 100);
+      return () => clearTimeout(timer);
     }
   }, [attemptAutoplay, prefersReducedMotion, videoFailed]);
 
@@ -133,14 +214,19 @@ export default function HeroSection({
           muted
           loop
           playsInline
-          // @ts-ignore - webkit-playsinline is needed for older iOS
-          webkit-playsinline="true"
+          disablePictureInPicture
           preload="auto"
           poster={posterImage}
           onError={() => setVideoFailed(true)}
+          onLoadedData={() => {
+            // Attempt play as soon as data is loaded
+            if (videoRef.current && !isPlaying && !autoplayBlocked) {
+              videoRef.current.play().catch(() => {});
+            }
+          }}
           onCanPlayThrough={() => {
-            // Try to play when video is ready
-            if (videoRef.current && !isPlaying) {
+            // Retry play when fully buffered
+            if (videoRef.current && !isPlaying && !autoplayBlocked) {
               videoRef.current.play().catch(() => {});
             }
           }}
@@ -148,15 +234,25 @@ export default function HeroSection({
             setIsPlaying(true);
             setAutoplayBlocked(false);
           }}
+          onWaiting={() => {
+            // Video stalled - don't mark as not playing yet
+          }}
           onPause={() => {
+            // Only mark as not playing if video truly ended
             if (videoRef.current && videoRef.current.ended) {
               setIsPlaying(false);
+            }
+          }}
+          onStalled={() => {
+            // Try to recover from stall
+            if (videoRef.current && !videoRef.current.paused) {
+              videoRef.current.play().catch(() => {});
             }
           }}
           className="absolute inset-0 w-full h-full object-cover"
           style={{ zIndex: 0 }}
         >
-          <source src="/videos/hero-video.mp4" type="video/mp4" />
+          <source src="/videos/hero-video.mp4" type="video/mp4; codecs=avc1.42E01E" />
         </video>
       )}
 
