@@ -262,9 +262,6 @@ export default function BookingForm() {
             className="w-full px-4 py-3.5 border-2 border-sage-200 rounded-lg focus:border-nature-500 focus:outline-none transition text-lg"
             required
           />
-          <p className="text-base text-sage-500 mt-2">
-            מקסימום {Math.min(10, availableSpots)} משתתפים
-          </p>
         </div>
 
         <div className="bg-gradient-to-br from-heritage-50 to-earth-50 rounded-lg p-5 border border-heritage-200">
