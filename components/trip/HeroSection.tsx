@@ -284,7 +284,7 @@ export default function HeroSection({
       )}
 
       <div
-        className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 sm:pt-20"
+        className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 sm:pt-24 lg:pt-28"
         style={{ zIndex: 20 }}
       >
         <div
@@ -292,39 +292,27 @@ export default function HeroSection({
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-  
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5 leading-tight">
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 sm:mb-8 leading-tight lg:leading-snug">
             {heroTitle}
           </h1>
 
           {heroSubtitle && (
-            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-4 font-medium">
+            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-6 sm:mb-8 font-medium leading-relaxed">
               {heroSubtitle}
             </p>
           )}
 
-          <div className="text-base sm:text-lg lg:text-xl text-white/90 mb-5 max-w-3xl mx-auto leading-relaxed space-y-4">
+          <div className="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed sm:leading-loose">
             <p>
-              מתכננים חופשה של 3-4 לילות בלונדון?
+              החליפו לילה יקר במלון בלונדון בטיול בן יומיים עם לינה כפרית — כפרים ציוריים, נופים ירוקים, ויום קניות באאוטלט מותגים במחירים שאין בעיר.
             </p>
-            <p>
-              למה שלא תחליפו לילה אחד יקר במלון בלונדון, בטיול בן יומיים עם לינה של לילה במלון כפרי? טיול שמתאים בדיוק לנו הישראלים!
-            </p>
-            <p>
-              רק שעתיים נסיעה מלונדון, לנשום את הטבע עוצר הנשימה, לבקר בכפרים ציוריים שהזמן פסק מלכת, לטייל בין בתי אבן עתיקים ונופים ירוקים ללון במלון מפנק בכפרים
-            </p>
-            <p className="font-semibold text-heritage-300">
-              ולמחרת יום קניות מרוכז באאוטלט עם כל המותגים במחירים שאין בלונדון. השילוב המנצח, חוויה וחיסכון.
+            <p className="mt-4 sm:mt-5 text-white/80">
+              לפני שסוגרים כרטיס טיסה, שווה לוודא שהתאריכים האלו פנויים
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-5 py-3 mb-5 inline-block">
-            <p className="text-lg sm:text-xl text-white/95 font-medium">
-              לפני שסוגרים כרטיס טיסה, שווה לוודא שהתאריכים האלו פתוחים
-            </p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-5 sm:mb-6">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
             {highlights.map((item, index) => {
               const Icon = item.icon;
               return (
@@ -345,13 +333,13 @@ export default function HeroSection({
           </div>
 
           <div
-            className={`transition-all duration-1000 delay-500 ${
+            className={`transition-all duration-1000 delay-500 pb-[10px] ${
               isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
             <a
               href="#booking"
-              className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-3.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-lg sm:text-xl"
+              className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-lg sm:text-xl"
             >
               שריינו מקום לטיול
             </a>
