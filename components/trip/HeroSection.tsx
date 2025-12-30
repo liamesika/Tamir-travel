@@ -3,10 +3,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Calendar, MapPin, Bed, ShoppingBag, Users, Play, Bus } from "lucide-react";
 
-// Video sources - MP4 format for maximum browser compatibility
-const MOBILE_VIDEO_SRC = "/videos/mobile.mp4";
-const DESKTOP_VIDEO_SRC = "/videos/hero-video.mp4";
-
 interface HeroSectionProps {
   heroTitle?: string;
   heroSubtitle?: string;
@@ -25,7 +21,6 @@ export default function HeroSection({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const mobileVideoRef = useRef<HTMLVideoElement>(null);
 
   // Configure video element for autoplay (iOS/Android compatible)
   const configureVideoForAutoplay = useCallback((video: HTMLVideoElement) => {
@@ -43,29 +38,47 @@ export default function HeroSection({
     (video as HTMLVideoElement & { playsInline: boolean }).playsInline = true;
   }, []);
 
-  // Try to play video silently
-  const tryPlay = useCallback(async (video: HTMLVideoElement | null) => {
+  // Try to play video with retries at 300ms and 800ms
+  const tryPlayWithRetries = useCallback(async (video: HTMLVideoElement | null) => {
     if (!video) return;
     configureVideoForAutoplay(video);
-    try {
-      await video.play();
-      setIsPlaying(true);
-      setAutoplayBlocked(false);
-    } catch {
-      // Silently ignore - will retry on interaction
-    }
+
+    const attemptPlay = async (): Promise<boolean> => {
+      try {
+        await video.play();
+        setIsPlaying(true);
+        setAutoplayBlocked(false);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    // First attempt
+    if (await attemptPlay()) return;
+
+    // Retry after 300ms
+    setTimeout(async () => {
+      if (await attemptPlay()) return;
+
+      // Retry after 800ms
+      setTimeout(async () => {
+        if (!(await attemptPlay())) {
+          console.log("Video autoplay failed after all attempts");
+          setAutoplayBlocked(true);
+        }
+      }, 500); // 300 + 500 = 800ms total
+    }, 300);
   }, [configureVideoForAutoplay]);
 
   // iOS Safari hardening - comprehensive autoplay strategy
   useEffect(() => {
     if (prefersReducedMotion || videoFailed) return;
 
-    const mobileVideo = mobileVideoRef.current;
-    const desktopVideo = videoRef.current;
+    const video = videoRef.current;
 
     const tryPlayAll = () => {
-      if (mobileVideo) tryPlay(mobileVideo);
-      if (desktopVideo) tryPlay(desktopVideo);
+      if (video) tryPlayWithRetries(video);
     };
 
     // Visibility change handler (tab becomes visible)
@@ -92,15 +105,6 @@ export default function HeroSection({
       tryPlayAll();
     });
 
-    // Additional delayed attempts
-    setTimeout(tryPlayAll, 100);
-    setTimeout(tryPlayAll, 500);
-    setTimeout(() => {
-      if (!isPlaying) {
-        setAutoplayBlocked(true);
-      }
-    }, 2000);
-
     // Add event listeners
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("pageshow", handlePageShow);
@@ -113,7 +117,7 @@ export default function HeroSection({
       document.removeEventListener("touchstart", unlock);
       document.removeEventListener("click", unlock);
     };
-  }, [prefersReducedMotion, videoFailed, tryPlay, isPlaying]);
+  }, [prefersReducedMotion, videoFailed, tryPlayWithRetries]);
 
   // Initialize on mount
   useEffect(() => {
@@ -132,30 +136,19 @@ export default function HeroSection({
 
   // Manual play handler
   const handleManualPlay = useCallback(async () => {
-    const mobileVideo = mobileVideoRef.current;
-    const desktopVideo = videoRef.current;
+    const video = videoRef.current;
 
-    if (mobileVideo) {
-      configureVideoForAutoplay(mobileVideo);
+    if (video) {
+      configureVideoForAutoplay(video);
       try {
-        await mobileVideo.play();
+        await video.play();
         setIsPlaying(true);
         setAutoplayBlocked(false);
         return;
-      } catch {}
+      } catch {
+        setVideoFailed(true);
+      }
     }
-
-    if (desktopVideo) {
-      configureVideoForAutoplay(desktopVideo);
-      try {
-        await desktopVideo.play();
-        setIsPlaying(true);
-        setAutoplayBlocked(false);
-        return;
-      } catch {}
-    }
-
-    setVideoFailed(true);
   }, [configureVideoForAutoplay]);
 
   const highlights = [
@@ -177,36 +170,9 @@ export default function HeroSection({
       id="hero"
       className="relative flex items-center justify-center"
     >
-      {/* Mobile Video Layer - visible only on mobile (< md breakpoint) */}
+      {/* Single Video Layer with responsive sources */}
       {showVideo && (
-        <div className="hero-video-layer pointer-events-none block md:hidden">
-          <video
-            ref={mobileVideoRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            disablePictureInPicture
-            preload="auto"
-            poster={posterImage}
-            aria-hidden="true"
-            className={`transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
-            onError={() => setVideoFailed(true)}
-            onCanPlay={() => setVideoReady(true)}
-            onPlaying={() => {
-              setIsPlaying(true);
-              setAutoplayBlocked(false);
-              setVideoReady(true);
-            }}
-          >
-            <source src={MOBILE_VIDEO_SRC} type="video/mp4" />
-          </video>
-        </div>
-      )}
-
-      {/* Desktop Video Layer - hidden on mobile, visible from md and up */}
-      {showVideo && (
-        <div className="hero-video-layer pointer-events-none hidden md:block">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
           <video
             ref={videoRef}
             autoPlay
@@ -217,7 +183,7 @@ export default function HeroSection({
             preload="auto"
             poster={posterImage}
             aria-hidden="true"
-            className={`transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
             onError={() => setVideoFailed(true)}
             onCanPlay={() => setVideoReady(true)}
             onPlaying={() => {
@@ -226,7 +192,10 @@ export default function HeroSection({
               setVideoReady(true);
             }}
           >
-            <source src={DESKTOP_VIDEO_SRC} type="video/mp4" />
+            {/* Mobile source first (max-width: 768px) */}
+            <source media="(max-width: 768px)" src="/videos/mobile.mp4" type="video/mp4" />
+            {/* Desktop source */}
+            <source src="/videos/hero-video.mp4" type="video/mp4" />
           </video>
         </div>
       )}
@@ -234,8 +203,8 @@ export default function HeroSection({
       {/* Poster Layer - fallback when video not playing */}
       {showPoster && (
         <div
-          className="hero-poster-layer"
-          style={{ backgroundImage: `url('${posterImage}')` }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${posterImage}')`, zIndex: 1 }}
         />
       )}
 
@@ -257,14 +226,14 @@ export default function HeroSection({
         </button>
       )}
 
-      <div className="hero-content container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 sm:pt-24 lg:pt-28">
+      <div className="hero-content container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 sm:pt-24 lg:pt-28 pb-[20px]">
         <div
           className={`pt-[50px] transition-all duration-1000 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 sm:mb-10 leading-tight lg:leading-snug">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 leading-tight lg:leading-snug">
             {heroTitle}
           </h1>
 
@@ -314,21 +283,21 @@ export default function HeroSection({
               isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
-            <a
-              href="#booking"
-              className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-lg sm:text-xl"
-            >
-              שריינו מקום לטיול
-            </a>
-
-            {/* Info Banner */}
-            <div className="mt-4 sm:mt-5">
+            {/* Info Banner ABOVE the CTA button */}
+            <div className="mb-4 sm:mb-5">
               <div className="inline-block bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2.5 sm:py-3 rounded-full border border-white/20 max-w-[90vw] sm:max-w-xl">
                 <p className="text-white/90 text-sm sm:text-base font-medium leading-snug">
                   שימו ❤️ בחורף המחירים נמוכים יותר, הודות לעלויות זולות יותר של מלונות ומיניבוסים
                 </p>
               </div>
             </div>
+
+            <a
+              href="#booking"
+              className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-lg sm:text-xl"
+            >
+              שריינו מקום לטיול
+            </a>
           </div>
 
         </div>

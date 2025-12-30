@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Footer from '@/components/Footer'
 
 export const metadata = {
   title: 'מדיניות פרטיות | Tamir Tours',
@@ -7,7 +8,7 @@ export const metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gray-50 flex flex-col" dir="rtl">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-6">
@@ -18,7 +19,7 @@ export default function PrivacyPolicyPage() {
       </header>
 
       {/* Content */}
-      <main className="max-w-4xl mx-auto px-4 py-12">
+      <main className="max-w-4xl mx-auto px-4 py-12 flex-1">
         <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-10">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center">
             מדיניות פרטיות
@@ -73,22 +74,7 @@ export default function PrivacyPolicyPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-8 mt-12">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="flex justify-center gap-6 mb-4">
-            <Link href="/privacy-policy" className="hover:text-white transition">
-              מדיניות פרטיות
-            </Link>
-            <Link href="/terms-of-use" className="hover:text-white transition">
-              תנאי שימוש
-            </Link>
-          </div>
-          <p className="text-sm">
-            © {new Date().getFullYear()} Tamir Tours. כל הזכויות שמורות.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
