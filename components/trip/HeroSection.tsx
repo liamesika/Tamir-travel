@@ -3,8 +3,9 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Calendar, MapPin, Bed, ShoppingBag, Users, Play, Bus } from "lucide-react";
 
-// Video fit mode: "cover" crops to fill (default), "contain" shows full frame with letterboxing
-const HERO_VIDEO_FIT_MODE: "cover" | "contain" = "cover";
+// Video sources - separate files for mobile and desktop
+const MOBILE_VIDEO_SRC = "/videos/mobile.mov";
+const DESKTOP_VIDEO_SRC = "/videos/hero-video.mp4";
 
 interface HeroSectionProps {
   heroTitle?: string;
@@ -23,6 +24,7 @@ export default function HeroSection({
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const playAttemptRef = useRef(0);
   const hasUserInteractedRef = useRef(false);
 
@@ -210,9 +212,33 @@ export default function HeroSection({
       id="hero"
       className="relative flex items-center justify-center"
     >
-      {/* Video Layer - uses CSS classes from globals.css */}
+      {/* Mobile Video Layer - visible only on mobile (< md breakpoint) */}
       {showVideo && (
-        <div className="hero-video-layer pointer-events-none">
+        <div className="hero-video-layer pointer-events-none block md:hidden">
+          <video
+            ref={mobileVideoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            disablePictureInPicture
+            preload="metadata"
+            poster={posterImage}
+            onError={() => setVideoFailed(true)}
+            onPlaying={() => {
+              setIsPlaying(true);
+              setAutoplayBlocked(false);
+            }}
+          >
+            <source src={MOBILE_VIDEO_SRC} type="video/quicktime" />
+            <source src={MOBILE_VIDEO_SRC} type="video/mp4" />
+          </video>
+        </div>
+      )}
+
+      {/* Desktop Video Layer - hidden on mobile, visible from md and up */}
+      {showVideo && (
+        <div className="hero-video-layer pointer-events-none hidden md:block">
           <video
             ref={videoRef}
             autoPlay
@@ -222,7 +248,6 @@ export default function HeroSection({
             disablePictureInPicture
             preload="metadata"
             poster={posterImage}
-            style={{ objectFit: HERO_VIDEO_FIT_MODE }}
             onError={() => setVideoFailed(true)}
             onLoadedData={() => {
               // Attempt play as soon as data is loaded
@@ -256,7 +281,7 @@ export default function HeroSection({
               }
             }}
           >
-            <source src="/videos/hero-video.mp4" type="video/mp4; codecs=avc1.42E01E" />
+            <source src={DESKTOP_VIDEO_SRC} type="video/mp4" />
           </video>
         </div>
       )}
