@@ -3,6 +3,9 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Calendar, MapPin, Bed, ShoppingBag, Users, Play, Bus } from "lucide-react";
 
+// Video fit mode: "cover" crops to fill (default), "contain" shows full frame with letterboxing
+const HERO_VIDEO_FIT_MODE: "cover" | "contain" = "cover";
+
 interface HeroSectionProps {
   heroTitle?: string;
   heroSubtitle?: string;
@@ -205,67 +208,68 @@ export default function HeroSection({
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative flex items-center justify-center"
     >
+      {/* Video Layer - uses CSS classes from globals.css */}
       {showVideo && (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          disablePictureInPicture
-          preload="auto"
-          poster={posterImage}
-          onError={() => setVideoFailed(true)}
-          onLoadedData={() => {
-            // Attempt play as soon as data is loaded
-            if (videoRef.current && !isPlaying && !autoplayBlocked) {
-              videoRef.current.play().catch(() => {});
-            }
-          }}
-          onCanPlayThrough={() => {
-            // Retry play when fully buffered
-            if (videoRef.current && !isPlaying && !autoplayBlocked) {
-              videoRef.current.play().catch(() => {});
-            }
-          }}
-          onPlaying={() => {
-            setIsPlaying(true);
-            setAutoplayBlocked(false);
-          }}
-          onWaiting={() => {
-            // Video stalled - don't mark as not playing yet
-          }}
-          onPause={() => {
-            // Only mark as not playing if video truly ended
-            if (videoRef.current && videoRef.current.ended) {
-              setIsPlaying(false);
-            }
-          }}
-          onStalled={() => {
-            // Try to recover from stall
-            if (videoRef.current && !videoRef.current.paused) {
-              videoRef.current.play().catch(() => {});
-            }
-          }}
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ zIndex: 0 }}
-        >
-          <source src="/videos/hero-video.mp4" type="video/mp4; codecs=avc1.42E01E" />
-        </video>
+        <div className="hero-video-layer pointer-events-none">
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            disablePictureInPicture
+            preload="metadata"
+            poster={posterImage}
+            style={{ objectFit: HERO_VIDEO_FIT_MODE }}
+            onError={() => setVideoFailed(true)}
+            onLoadedData={() => {
+              // Attempt play as soon as data is loaded
+              if (videoRef.current && !isPlaying && !autoplayBlocked) {
+                videoRef.current.play().catch(() => {});
+              }
+            }}
+            onCanPlayThrough={() => {
+              // Retry play when fully buffered
+              if (videoRef.current && !isPlaying && !autoplayBlocked) {
+                videoRef.current.play().catch(() => {});
+              }
+            }}
+            onPlaying={() => {
+              setIsPlaying(true);
+              setAutoplayBlocked(false);
+            }}
+            onWaiting={() => {
+              // Video stalled - don't mark as not playing yet
+            }}
+            onPause={() => {
+              // Only mark as not playing if video truly ended
+              if (videoRef.current && videoRef.current.ended) {
+                setIsPlaying(false);
+              }
+            }}
+            onStalled={() => {
+              // Try to recover from stall
+              if (videoRef.current && !videoRef.current.paused) {
+                videoRef.current.play().catch(() => {});
+              }
+            }}
+          >
+            <source src="/videos/hero-video.mp4" type="video/mp4; codecs=avc1.42E01E" />
+          </video>
+        </div>
       )}
 
+      {/* Poster Layer - fallback when video not playing */}
       {showPoster && (
         <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{
-            backgroundImage: `url('${posterImage}')`,
-            zIndex: 0
-          }}
+          className="hero-poster-layer"
+          style={{ backgroundImage: `url('${posterImage}')` }}
         />
       )}
 
+      {/* Gradient overlay */}
       <div
         className="absolute inset-0 bg-gradient-to-b from-nature-950/60 via-nature-900/50 to-nature-950/70"
         style={{ zIndex: 10 }}
@@ -283,10 +287,7 @@ export default function HeroSection({
         </button>
       )}
 
-      <div
-        className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 sm:pt-24 lg:pt-28"
-        style={{ zIndex: 20 }}
-      >
+      <div className="hero-content container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 sm:pt-24 lg:pt-28">
         <div
           className={`transition-all duration-1000 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"

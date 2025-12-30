@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Calendar, Users, Mail, Phone, User, Loader2, AlertCircle, Tag, Check, X } from 'lucide-react';
+import { Calendar, Users, Mail, Phone, User, Loader2, AlertCircle, Tag, Check, X, FileText } from 'lucide-react';
+import Link from 'next/link';
 
 interface TripDate {
   id: string;
@@ -45,6 +46,9 @@ export default function BookingForm() {
     description?: string;
   } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
+
+  // Terms acceptance state
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     fetch('/api/trip-dates')
@@ -400,9 +404,42 @@ export default function BookingForm() {
           </p>
         </div>
 
+        {/* Terms and Privacy Policy Checkbox */}
+        <div className="bg-sage-50 rounded-lg p-4 border border-sage-200">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="w-5 h-5 mt-0.5 rounded border-2 border-sage-300 text-heritage-600 focus:ring-heritage-500 cursor-pointer"
+              required
+            />
+            <span className="text-sage-700 text-base leading-relaxed">
+              קראתי ואני מסכים/ה ל
+              <Link
+                href="/terms-of-use"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-heritage-600 hover:text-heritage-700 font-semibold underline mx-1"
+              >
+                תנאי השימוש
+              </Link>
+              ול
+              <Link
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-heritage-600 hover:text-heritage-700 font-semibold underline mx-1"
+              >
+                מדיניות הפרטיות
+              </Link>
+            </span>
+          </label>
+        </div>
+
         <button
           type="submit"
-          disabled={loading || availableSpots < formData.participantsCount}
+          disabled={loading || availableSpots < formData.participantsCount || !termsAccepted}
           className="w-full bg-heritage-500 hover:bg-heritage-600 text-white font-bold text-xl py-4 rounded-full transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
         >
           {loading ? (

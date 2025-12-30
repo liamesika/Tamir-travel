@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Save, Loader2, Play, Trash2, CheckCircle, XCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import { Save, Loader2, Play, Trash2, CheckCircle, XCircle, AlertCircle, ExternalLink, Mail } from 'lucide-react';
 import AdminNav from '@/components/admin/AdminNav';
 
 interface Setting {
@@ -21,6 +21,15 @@ interface E2ETestResult {
   data?: any;
 }
 
+interface EmailHealthStatus {
+  resendConfigured: boolean;
+  fromConfigured: boolean;
+  valid: boolean;
+  instanceCreated: boolean;
+  instanceError: string | null;
+  errors: string[];
+}
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Setting[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +41,10 @@ export default function SettingsPage() {
   const [e2eResults, setE2eResults] = useState<E2ETestResult[] | null>(null);
   const [e2ePaymentUrl, setE2ePaymentUrl] = useState<string | null>(null);
   const [cleaningE2E, setCleaningE2E] = useState(false);
+
+  // Email health check state
+  const [checkingEmailHealth, setCheckingEmailHealth] = useState(false);
+  const [emailHealth, setEmailHealth] = useState<EmailHealthStatus | null>(null);
 
   useEffect(() => {
     fetchSettings();
@@ -76,6 +89,29 @@ export default function SettingsPage() {
   };
 
   const categories = ['ALL', 'business', 'branding', 'payment', 'contact', 'advanced'];
+
+  // Email health check handler
+  const checkEmailHealth = async () => {
+    setCheckingEmailHealth(true);
+    setEmailHealth(null);
+
+    try {
+      const response = await fetch('/api/admin/email/health');
+      const data = await response.json();
+      setEmailHealth(data);
+    } catch (error) {
+      setEmailHealth({
+        resendConfigured: false,
+        fromConfigured: false,
+        valid: false,
+        instanceCreated: false,
+        instanceError: 'Failed to connect to health check API',
+        errors: ['Connection failed']
+      });
+    } finally {
+      setCheckingEmailHealth(false);
+    }
+  };
 
   // E2E Test handlers
   const runE2ETest = async () => {
@@ -156,6 +192,111 @@ export default function SettingsPage() {
               הגדרות כלליות
             </h1>
             <p className="text-gray-600">נהל את כל ההגדרות והמידע העסקי</p>
+          </div>
+
+          {/* Email Health Check Section */}
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl shadow-md mb-6 p-6 border border-green-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-green-900 flex items-center gap-2">
+                  <Mail className="w-5 h-5" />
+                  בדיקת שירות מייל (Email Health)
+                </h2>
+                <p className="text-sm text-green-700 mt-1">
+                  בדוק שהגדרות Resend תקינות ושירות המייל פעיל
+                </p>
+              </div>
+              <button
+                onClick={checkEmailHealth}
+                disabled={checkingEmailHealth}
+                className="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 transition shadow-md"
+              >
+                {checkingEmailHealth ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    בודק...
+                  </>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4" />
+                    בדוק עכשיו
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Email Health Results */}
+            {emailHealth && (
+              <div className="bg-white rounded-lg p-4 mt-4">
+                <h3 className="font-semibold text-gray-900 mb-3">תוצאות בדיקה:</h3>
+                <div className="space-y-2">
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${emailHealth.resendConfigured ? 'bg-green-50' : 'bg-red-50'}`}>
+                    {emailHealth.resendConfigured ? (
+                      <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <div className={`font-semibold ${emailHealth.resendConfigured ? 'text-green-700' : 'text-red-700'}`}>
+                        RESEND_API_KEY
+                      </div>
+                      <div className={`text-sm ${emailHealth.resendConfigured ? 'text-green-600' : 'text-red-600'}`}>
+                        {emailHealth.resendConfigured ? 'מוגדר כראוי' : 'לא מוגדר או לא תקין'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${emailHealth.fromConfigured ? 'bg-green-50' : 'bg-red-50'}`}>
+                    {emailHealth.fromConfigured ? (
+                      <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <div className={`font-semibold ${emailHealth.fromConfigured ? 'text-green-700' : 'text-red-700'}`}>
+                        RESEND_FROM_EMAIL
+                      </div>
+                      <div className={`text-sm ${emailHealth.fromConfigured ? 'text-green-600' : 'text-red-600'}`}>
+                        {emailHealth.fromConfigured ? 'מוגדר כראוי' : 'לא מוגדר או לא תקין'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${emailHealth.instanceCreated ? 'bg-green-50' : 'bg-red-50'}`}>
+                    {emailHealth.instanceCreated ? (
+                      <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <div className={`font-semibold ${emailHealth.instanceCreated ? 'text-green-700' : 'text-red-700'}`}>
+                        Resend Instance
+                      </div>
+                      <div className={`text-sm ${emailHealth.instanceCreated ? 'text-green-600' : 'text-red-600'}`}>
+                        {emailHealth.instanceCreated ? 'נוצר בהצלחה' : emailHealth.instanceError || 'נכשל'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {emailHealth.errors && emailHealth.errors.length > 0 && (
+                    <div className="bg-red-50 p-3 rounded-lg mt-2">
+                      <div className="font-semibold text-red-700 mb-1">שגיאות:</div>
+                      <ul className="list-disc list-inside text-sm text-red-600">
+                        {emailHealth.errors.map((err, idx) => (
+                          <li key={idx}>{err}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {emailHealth.valid && (
+                    <div className="bg-green-100 p-3 rounded-lg mt-2 text-center">
+                      <span className="text-green-800 font-bold">שירות המייל מוכן לשימוש</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* E2E Test Section */}

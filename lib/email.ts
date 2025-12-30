@@ -1,4 +1,3 @@
-import { Resend } from 'resend'
 import {
   generateBookingConfirmationEmail,
   generatePaymentConfirmationEmail,
@@ -9,6 +8,7 @@ import {
   RemainingBalanceRequestData,
   TripCancellationData,
 } from './email-templates'
+import { getResendInstance, getFromEmail, isEmailConfigured } from './resend'
 
 export interface EmailResponse {
   success: boolean
@@ -31,21 +31,6 @@ export interface AdminAlertData {
  * Email Service using Resend
  */
 export class EmailService {
-  private static getResend(): Resend | null {
-    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_your_resend_api_key_here') {
-      return null
-    }
-    return new Resend(process.env.RESEND_API_KEY)
-  }
-
-  private static isConfigured(): boolean {
-    return !!process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_your_resend_api_key_here'
-  }
-
-  private static getFromEmail(): string {
-    return process.env.ALERT_EMAIL_FROM || 'Tamir Trip <onboarding@resend.dev>'
-  }
-
   private static getAdminEmail(): string {
     return process.env.ALERT_EMAIL_TO || ''
   }
@@ -243,12 +228,12 @@ export class EmailService {
     html: string
     text?: string
   }): Promise<EmailResponse> {
-    if (!this.isConfigured()) {
-      console.log('📧 [EMAIL PREVIEW]')
-      console.log('To:', to)
-      console.log('Subject:', subject)
-      console.log('---')
-      console.log('Preview:', html.substring(0, 300) + '...')
+    // Check if email is configured
+    if (!isEmailConfigured()) {
+      console.log('[EMAIL] Not configured - logging preview')
+      console.log('[EMAIL PREVIEW] To:', to)
+      console.log('[EMAIL PREVIEW] Subject:', subject)
+      console.log('[EMAIL PREVIEW] Content:', html.substring(0, 200) + '...')
 
       return {
         success: true,
@@ -258,13 +243,13 @@ export class EmailService {
     }
 
     try {
-      const resend = this.getResend()
-      if (!resend) {
-        return { success: false, error: 'Resend not configured' }
-      }
+      const resend = getResendInstance()
+      const fromEmail = getFromEmail()
+
+      console.log('[EMAIL] Sending to:', to, 'from:', fromEmail)
 
       const result = await resend.emails.send({
-        from: this.getFromEmail(),
+        from: fromEmail,
         to,
         subject,
         html,
@@ -272,14 +257,14 @@ export class EmailService {
       })
 
       if (result.error) {
-        console.error('Resend error:', result.error)
+        console.error('[EMAIL] Resend API error:', result.error)
         return { success: false, error: result.error.message }
       }
 
-      console.log('📧 Email sent successfully:', result.data?.id)
+      console.log('[EMAIL] Sent successfully, messageId:', result.data?.id)
       return { success: true, messageId: result.data?.id }
     } catch (error) {
-      console.error('Email send error:', error)
+      console.error('[EMAIL] Send error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

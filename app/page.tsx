@@ -12,6 +12,7 @@ import FaqSection from "@/components/trip/FaqSection";
 import ContactSection from "@/components/trip/ContactSection";
 import FloatingWhatsApp from "@/components/trip/FloatingWhatsApp";
 import FloatingReserveButton from "@/components/trip/FloatingReserveButton";
+import Footer from "@/components/Footer";
 import { getActiveTrip, defaultTripData } from "@/lib/trip-data";
 
 export const dynamic = 'force-dynamic'
@@ -45,6 +46,7 @@ export default async function TripPage() {
       <BookingSection />
       <FaqSection faqItems={trip.faqItems} />
       <ContactSection />
+      <Footer />
       <FloatingWhatsApp />
       <FloatingReserveButton />
     </main>

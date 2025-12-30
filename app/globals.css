@@ -80,9 +80,69 @@ main, section, div {
   max-width: 100%;
 }
 
-img, video {
+img {
   max-width: 100%;
   height: auto;
+}
+
+/* ========================================
+   HERO VIDEO - Single authoritative source
+   Standard inset-0 approach (no distortion)
+   ======================================== */
+
+/* Hero section root - stable height across all viewports */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for iOS Safari */
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: #052e16; /* nature-950 fallback - prevents white gaps */
+}
+
+/* Video layer container - catches any edge gaps */
+#hero .hero-video-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: #052e16; /* Same fallback color */
+  z-index: 0;
+}
+
+/* Hero video - standard cover approach, NO distortion */
+#hero video {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover; /* Cover mode - crops to fill, maintains aspect ratio */
+  object-position: center;
+  /* iOS Safari rendering stability */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Poster fallback layer */
+#hero .hero-poster-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: #052e16;
+  z-index: 0;
+}
+
+/* Content layer - always above video */
+#hero .hero-content {
+  position: relative;
+  z-index: 20;
 }
 
 /* Custom scrollbar for nature theme */

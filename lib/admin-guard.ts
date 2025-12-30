@@ -19,10 +19,22 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     const sessionCookie = cookieStore.get('admin-session')
 
     if (!sessionCookie?.value) {
+      console.log('[ADMIN-GUARD] No admin-session cookie found')
       return null
     }
 
-    const session = JSON.parse(sessionCookie.value) as AdminSession
+    let session: AdminSession
+    try {
+      session = JSON.parse(sessionCookie.value) as AdminSession
+    } catch (parseError) {
+      console.error('[ADMIN-GUARD] Failed to parse session cookie:', parseError)
+      return null
+    }
+
+    if (!session.id) {
+      console.log('[ADMIN-GUARD] Session cookie has no id field')
+      return null
+    }
 
     // Verify the admin still exists in the database
     const admin = await prisma.admin.findUnique({
@@ -31,9 +43,11 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     })
 
     if (!admin) {
+      console.log('[ADMIN-GUARD] Admin not found in database for id:', session.id)
       return null
     }
 
+    console.log('[ADMIN-GUARD] Session verified for:', admin.email)
     return {
       id: admin.id,
       email: admin.email,
@@ -41,7 +55,7 @@ export async function getAdminSession(): Promise<AdminSession | null> {
       role: admin.role
     }
   } catch (error) {
-    console.error('Error getting admin session:', error)
+    console.error('[ADMIN-GUARD] Error getting admin session:', error)
     return null
   }
 }
@@ -54,6 +68,7 @@ export async function requireAdmin(): Promise<{ session: AdminSession } | { erro
   const session = await getAdminSession()
 
   if (!session) {
+    console.log('[ADMIN-GUARD] requireAdmin failed - no valid session')
     return {
       error: NextResponse.json(
         { error: 'לא מורשה - נדרשת התחברות מנהל' },
