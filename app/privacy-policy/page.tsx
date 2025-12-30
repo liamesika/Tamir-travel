@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
             </p>
 
             <p className="font-semibold text-primary-600">
-              support@tamirtours.co.il
+              tamirtours.uk@gmail.com
             </p>
           </div>
         </div>

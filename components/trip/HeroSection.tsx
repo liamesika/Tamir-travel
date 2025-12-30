@@ -369,8 +369,11 @@ export default function HeroSection({
             </p>
           )}
 
-          <p className="text-base sm:text-lg text-heritage-300 mb-6 sm:mb-8 font-medium">
-            החופשה שתישמר בליבכם לעד
+          <p className="text-base sm:text-lg text-heritage-300 mb-2 sm:mb-3 font-medium">
+            החופשה שתישמר בליבכם לעד ❤️
+          </p>
+          <p className="text-sm sm:text-base text-white/60 mb-6 sm:mb-8 font-light">
+            -עם הלב-
           </p>
 
           <div className="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed sm:leading-loose">
