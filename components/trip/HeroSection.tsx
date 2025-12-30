@@ -259,7 +259,7 @@ export default function HeroSection({
 
       <div className="hero-content container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 sm:pt-24 lg:pt-28">
         <div
-          className={`transition-all duration-1000 ${
+          className={`pt-[50px] transition-all duration-1000 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
