@@ -23,133 +23,102 @@ export default function HeroSection({
   const [isPlaying, setIsPlaying] = useState(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
-  const hasSetupListenersRef = useRef(false);
 
   // Configure video element for autoplay (iOS/Android compatible)
   const configureVideoForAutoplay = useCallback((video: HTMLVideoElement) => {
-    // Set all required attributes programmatically
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
+    video.autoplay = true;
+    video.loop = true;
     video.volume = 0;
-
-    // Set attributes for iOS Safari
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
-
-    // Disable features that can block autoplay
     video.setAttribute("x-webkit-airplay", "deny");
     video.disableRemotePlayback = true;
-
-    // Cast for playsInline property
     (video as HTMLVideoElement & { playsInline: boolean }).playsInline = true;
   }, []);
 
-  // Force play with retry logic
-  const forcePlay = useCallback(async (video: HTMLVideoElement): Promise<boolean> => {
+  // Try to play video silently
+  const tryPlay = useCallback(async (video: HTMLVideoElement | null) => {
+    if (!video) return;
     configureVideoForAutoplay(video);
-
     try {
-      video.load();
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        await playPromise;
-      }
-      return true;
+      await video.play();
+      setIsPlaying(true);
+      setAutoplayBlocked(false);
     } catch {
-      return false;
+      // Silently ignore - will retry on interaction
     }
   }, [configureVideoForAutoplay]);
 
-  // Autoplay handler for a specific video element
-  const attemptVideoAutoplay = useCallback(async (video: HTMLVideoElement | null) => {
-    if (!video || prefersReducedMotion || videoFailed) return;
-
-    configureVideoForAutoplay(video);
-
-    // Strategy 1: Direct play
-    try {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        await playPromise;
-        setIsPlaying(true);
-        setAutoplayBlocked(false);
-        return;
-      }
-    } catch {
-      // Continue to retry strategies
-    }
-
-    // Strategy 2: Retry after short delay
-    setTimeout(async () => {
-      try {
-        await video.play();
-        setIsPlaying(true);
-        setAutoplayBlocked(false);
-      } catch {
-        // Strategy 3: Retry after longer delay
-        setTimeout(async () => {
-          try {
-            await video.play();
-            setIsPlaying(true);
-            setAutoplayBlocked(false);
-          } catch {
-            // Autoplay blocked - set up user interaction fallback
-            setAutoplayBlocked(true);
-          }
-        }, 1000);
-      }
-    }, 250);
-  }, [configureVideoForAutoplay, prefersReducedMotion, videoFailed]);
-
-  // User interaction fallback for autoplay
+  // iOS Safari hardening - comprehensive autoplay strategy
   useEffect(() => {
-    if (hasSetupListenersRef.current) return;
     if (prefersReducedMotion || videoFailed) return;
 
-    const tryPlayOnce = () => {
-      const mobileVideo = mobileVideoRef.current;
-      const desktopVideo = videoRef.current;
+    const mobileVideo = mobileVideoRef.current;
+    const desktopVideo = videoRef.current;
 
-      if (mobileVideo) {
-        forcePlay(mobileVideo).then((success) => {
-          if (success) {
-            setIsPlaying(true);
-            setAutoplayBlocked(false);
-          }
-        });
-      }
+    const tryPlayAll = () => {
+      if (mobileVideo) tryPlay(mobileVideo);
+      if (desktopVideo) tryPlay(desktopVideo);
+    };
 
-      if (desktopVideo) {
-        forcePlay(desktopVideo).then((success) => {
-          if (success) {
-            setIsPlaying(true);
-            setAutoplayBlocked(false);
-          }
-        });
+    // Visibility change handler (tab becomes visible)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        tryPlayAll();
       }
     };
 
-    // Set up one-time listeners for user interaction fallback
-    document.addEventListener("touchstart", tryPlayOnce, { once: true, passive: true });
-    document.addEventListener("click", tryPlayOnce, { once: true });
+    // Page show handler (bfcache restore)
+    const handlePageShow = () => {
+      tryPlayAll();
+    };
 
-    hasSetupListenersRef.current = true;
+    // User interaction unlock (one-time)
+    const unlock = () => {
+      tryPlayAll();
+      document.removeEventListener("touchstart", unlock);
+      document.removeEventListener("click", unlock);
+    };
+
+    // Initial play attempt with requestAnimationFrame
+    requestAnimationFrame(() => {
+      tryPlayAll();
+    });
+
+    // Additional delayed attempts
+    setTimeout(tryPlayAll, 100);
+    setTimeout(tryPlayAll, 500);
+    setTimeout(() => {
+      if (!isPlaying) {
+        setAutoplayBlocked(true);
+      }
+    }, 2000);
+
+    // Add event listeners
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("touchstart", unlock, { passive: true });
+    document.addEventListener("click", unlock);
 
     return () => {
-      document.removeEventListener("touchstart", tryPlayOnce);
-      document.removeEventListener("click", tryPlayOnce);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("touchstart", unlock);
+      document.removeEventListener("click", unlock);
     };
-  }, [forcePlay, prefersReducedMotion, videoFailed]);
+  }, [prefersReducedMotion, videoFailed, tryPlay, isPlaying]);
 
   // Initialize on mount
   useEffect(() => {
     setIsLoaded(true);
 
-    // Check reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
 
@@ -161,60 +130,33 @@ export default function HeroSection({
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  // Mobile video autoplay on mount
-  useEffect(() => {
-    if (prefersReducedMotion || videoFailed) return;
-
-    const mobileVideo = mobileVideoRef.current;
-    if (mobileVideo) {
-      // Small delay to ensure DOM is ready
-      const timer = setTimeout(() => {
-        attemptVideoAutoplay(mobileVideo);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [attemptVideoAutoplay, prefersReducedMotion, videoFailed]);
-
-  // Desktop video autoplay on mount
-  useEffect(() => {
-    if (prefersReducedMotion || videoFailed) return;
-
-    const desktopVideo = videoRef.current;
-    if (desktopVideo) {
-      // Small delay to ensure DOM is ready
-      const timer = setTimeout(() => {
-        attemptVideoAutoplay(desktopVideo);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [attemptVideoAutoplay, prefersReducedMotion, videoFailed]);
-
   // Manual play handler
   const handleManualPlay = useCallback(async () => {
     const mobileVideo = mobileVideoRef.current;
     const desktopVideo = videoRef.current;
 
     if (mobileVideo) {
-      const success = await forcePlay(mobileVideo);
-      if (success) {
+      configureVideoForAutoplay(mobileVideo);
+      try {
+        await mobileVideo.play();
         setIsPlaying(true);
         setAutoplayBlocked(false);
         return;
-      }
+      } catch {}
     }
 
     if (desktopVideo) {
-      const success = await forcePlay(desktopVideo);
-      if (success) {
+      configureVideoForAutoplay(desktopVideo);
+      try {
+        await desktopVideo.play();
         setIsPlaying(true);
         setAutoplayBlocked(false);
         return;
-      }
+      } catch {}
     }
 
-    // Complete failure
     setVideoFailed(true);
-  }, [forcePlay]);
+  }, [configureVideoForAutoplay]);
 
   const highlights = [
     { icon: Calendar, text: "יומיים חווייתיים" },
@@ -227,7 +169,7 @@ export default function HeroSection({
 
   const showVideo = !prefersReducedMotion && !videoFailed;
   const showPlayButton = showVideo && autoplayBlocked && !isPlaying;
-  const showPoster = !showVideo || !isPlaying;
+  const showPoster = !showVideo || (!isPlaying && !videoReady);
   const posterImage = heroImage || "/images/hero-poster.jpg";
 
   return (
@@ -248,25 +190,13 @@ export default function HeroSection({
             preload="auto"
             poster={posterImage}
             aria-hidden="true"
+            className={`transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
             onError={() => setVideoFailed(true)}
+            onCanPlay={() => setVideoReady(true)}
             onPlaying={() => {
               setIsPlaying(true);
               setAutoplayBlocked(false);
-            }}
-            onLoadedData={() => {
-              // Attempt play as soon as data is loaded
-              const video = mobileVideoRef.current;
-              if (video && !isPlaying) {
-                configureVideoForAutoplay(video);
-                video.play().catch(() => {});
-              }
-            }}
-            onCanPlayThrough={() => {
-              // Retry play when fully buffered
-              const video = mobileVideoRef.current;
-              if (video && !isPlaying) {
-                video.play().catch(() => {});
-              }
+              setVideoReady(true);
             }}
           >
             <source src={MOBILE_VIDEO_SRC} type="video/mp4" />
@@ -287,38 +217,13 @@ export default function HeroSection({
             preload="auto"
             poster={posterImage}
             aria-hidden="true"
+            className={`transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
             onError={() => setVideoFailed(true)}
-            onLoadedData={() => {
-              // Attempt play as soon as data is loaded
-              const video = videoRef.current;
-              if (video && !isPlaying) {
-                configureVideoForAutoplay(video);
-                video.play().catch(() => {});
-              }
-            }}
-            onCanPlayThrough={() => {
-              // Retry play when fully buffered
-              const video = videoRef.current;
-              if (video && !isPlaying) {
-                video.play().catch(() => {});
-              }
-            }}
+            onCanPlay={() => setVideoReady(true)}
             onPlaying={() => {
               setIsPlaying(true);
               setAutoplayBlocked(false);
-            }}
-            onPause={() => {
-              // Only mark as not playing if video truly ended
-              if (videoRef.current && videoRef.current.ended) {
-                setIsPlaying(false);
-              }
-            }}
-            onStalled={() => {
-              // Try to recover from stall
-              const video = videoRef.current;
-              if (video && !video.paused) {
-                video.play().catch(() => {});
-              }
+              setVideoReady(true);
             }}
           >
             <source src={DESKTOP_VIDEO_SRC} type="video/mp4" />
@@ -359,28 +264,28 @@ export default function HeroSection({
           }`}
         >
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 sm:mb-8 leading-tight lg:leading-snug">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 sm:mb-10 leading-tight lg:leading-snug">
             {heroTitle}
           </h1>
 
           {heroSubtitle && (
-            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-4 sm:mb-6 font-medium leading-relaxed">
+            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-6 sm:mb-8 font-medium leading-relaxed">
               {heroSubtitle}
             </p>
           )}
 
-          <p className="text-base sm:text-lg text-heritage-300 mb-2 sm:mb-3 font-medium">
-            החופשה שתישמר בליבכם לעד ❤️
-          </p>
-          <p className="text-sm sm:text-base text-white/60 mb-6 sm:mb-8 font-light">
-          </p>
-
           <div className="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed sm:leading-loose">
+            <p className="text-heritage-300 font-medium mb-4">
+              החופשה שתישמר בליבכם לעד ❤️
+            </p>
             <p>
               רק שעתיים נסיעה מלונדון, ננשום את הטבע עוצר הנשימה, נבקר בכפרים ציוריים שהזמן פסק מלכת, נטייל בין בתי אבן עתיקים, נחלים זורמים ונופים ירוקים, נלון במלון מפנק בכפרים ולמחרת יום קניות מרוכז באאוטלט עם כל המותגים במחירים שאין בלונדון.
             </p>
             <p className="mt-4 sm:mt-5 font-semibold text-heritage-300">
-              השילוב המנצח, חוויה וחיסכון.
+              השילוב המנצח, חוויה וחיסכון,
+            </p>
+            <p className="font-semibold text-heritage-300">
+              ובנוסף תחסכו לילה יקר במלון בלונדון
             </p>
           </div>
 
@@ -405,7 +310,7 @@ export default function HeroSection({
           </div>
 
           <div
-            className={`transition-all duration-1000 delay-500 pb-[10px] ${
+            className={`transition-all duration-1000 delay-500 ${
               isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
@@ -415,9 +320,18 @@ export default function HeroSection({
             >
               שריינו מקום לטיול
             </a>
-          </div>
-        </div>
 
+            {/* Info Banner */}
+            <div className="mt-4 sm:mt-5">
+              <div className="inline-block bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2.5 sm:py-3 rounded-full border border-white/20 max-w-[90vw] sm:max-w-xl">
+                <p className="text-white/90 text-sm sm:text-base font-medium leading-snug">
+                  שימו ❤️ בחורף המחירים נמוכים יותר, הודות לעלויות זולות יותר של מלונות ומיניבוסים
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   );

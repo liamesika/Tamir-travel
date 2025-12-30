@@ -56,7 +56,7 @@ export default function CtaSection() {
               </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-900 mb-2">
                 מוכנים לגלות את
-                <span className="text-nature-600"> לונדון האחרת?</span>
+                <span className="text-nature-600"> הכפרים מחוץ ללונדון.</span>
               </h2>
               <p className="text-lg sm:text-xl text-sage-600 max-w-2xl mx-auto">
                 שמרו את מקומכם עכשיו וצאו איתנו לחוויה בלתי נשכחת
