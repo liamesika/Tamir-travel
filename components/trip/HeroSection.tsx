@@ -3,8 +3,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Calendar, MapPin, Bed, ShoppingBag, Users, Play, Bus } from "lucide-react";
 
-// Video sources - separate files for mobile and desktop
-const MOBILE_VIDEO_SRC = "/videos/mobile.mov";
+// Video sources - MP4 format for maximum browser compatibility
+const MOBILE_VIDEO_SRC = "/videos/mobile.mp4";
 const DESKTOP_VIDEO_SRC = "/videos/hero-video.mp4";
 
 interface HeroSectionProps {
@@ -25,150 +25,127 @@ export default function HeroSection({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
-  const playAttemptRef = useRef(0);
-  const hasUserInteractedRef = useRef(false);
+  const hasSetupListenersRef = useRef(false);
 
-  // Robust autoplay with multiple retry strategies for iOS/Android/Desktop
-  const attemptAutoplay = useCallback(async () => {
-    const video = videoRef.current;
-    if (!video || prefersReducedMotion || videoFailed) return;
-
-    playAttemptRef.current += 1;
-    const currentAttempt = playAttemptRef.current;
-
-    // Ensure all autoplay-required attributes are set
+  // Configure video element for autoplay (iOS/Android compatible)
+  const configureVideoForAutoplay = useCallback((video: HTMLVideoElement) => {
+    // Set all required attributes programmatically
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
     video.volume = 0;
+
+    // Set attributes for iOS Safari
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
 
-    // For iOS Safari low-power mode
+    // Disable features that can block autoplay
     video.setAttribute("x-webkit-airplay", "deny");
     video.disableRemotePlayback = true;
 
-    const tryPlay = async (): Promise<boolean> => {
-      try {
-        // Reset video position for clean start
-        if (video.currentTime > 0) {
-          video.currentTime = 0;
-        }
+    // Cast for playsInline property
+    (video as HTMLVideoElement & { playsInline: boolean }).playsInline = true;
+  }, []);
 
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-        }
-        return true;
-      } catch {
-        return false;
+  // Force play with retry logic
+  const forcePlay = useCallback(async (video: HTMLVideoElement): Promise<boolean> => {
+    configureVideoForAutoplay(video);
+
+    try {
+      video.load();
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        await playPromise;
       }
-    };
-
-    // Strategy 1: Direct play attempt
-    if (await tryPlay()) {
-      setIsPlaying(true);
-      setAutoplayBlocked(false);
-      return;
+      return true;
+    } catch {
+      return false;
     }
+  }, [configureVideoForAutoplay]);
 
-    // Strategy 2: Wait for canplaythrough then try
-    if (video.readyState < 4) {
-      await new Promise<void>((resolve) => {
-        const onReady = () => {
-          video.removeEventListener('canplaythrough', onReady);
-          resolve();
-        };
-        video.addEventListener('canplaythrough', onReady, { once: true });
-        // Timeout fallback
-        setTimeout(resolve, 3000);
-      });
+  // Autoplay handler for a specific video element
+  const attemptVideoAutoplay = useCallback(async (video: HTMLVideoElement | null) => {
+    if (!video || prefersReducedMotion || videoFailed) return;
 
-      if (currentAttempt !== playAttemptRef.current) return;
+    configureVideoForAutoplay(video);
 
-      if (await tryPlay()) {
+    // Strategy 1: Direct play
+    try {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        await playPromise;
         setIsPlaying(true);
         setAutoplayBlocked(false);
         return;
       }
-    }
-
-    // Strategy 3: Small delay and retry (helps on some Android devices)
-    await new Promise(resolve => setTimeout(resolve, 200));
-    if (currentAttempt !== playAttemptRef.current) return;
-
-    if (await tryPlay()) {
-      setIsPlaying(true);
-      setAutoplayBlocked(false);
-      return;
-    }
-
-    // Strategy 4: Reload and try (last resort for stubborn browsers)
-    video.load();
-    await new Promise(resolve => setTimeout(resolve, 300));
-    if (currentAttempt !== playAttemptRef.current) return;
-
-    if (await tryPlay()) {
-      setIsPlaying(true);
-      setAutoplayBlocked(false);
-      return;
-    }
-
-    // Autoplay truly blocked - show play button
-    setAutoplayBlocked(true);
-  }, [prefersReducedMotion, videoFailed]);
-
-  // Manual play handler with user gesture context
-  const handleManualPlay = useCallback(async () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    hasUserInteractedRef.current = true;
-    video.muted = true;
-    video.volume = 0;
-
-    try {
-      await video.play();
-      setIsPlaying(true);
-      setAutoplayBlocked(false);
     } catch {
-      // If still fails, try with load first
-      video.load();
+      // Continue to retry strategies
+    }
+
+    // Strategy 2: Retry after short delay
+    setTimeout(async () => {
       try {
         await video.play();
         setIsPlaying(true);
         setAutoplayBlocked(false);
       } catch {
-        // Complete failure - hide video, show poster only
-        setVideoFailed(true);
+        // Strategy 3: Retry after longer delay
+        setTimeout(async () => {
+          try {
+            await video.play();
+            setIsPlaying(true);
+            setAutoplayBlocked(false);
+          } catch {
+            // Autoplay blocked - set up user interaction fallback
+            setAutoplayBlocked(true);
+          }
+        }, 1000);
       }
-    }
-  }, []);
+    }, 250);
+  }, [configureVideoForAutoplay, prefersReducedMotion, videoFailed]);
 
-  // Listen for any user interaction to retry autoplay
+  // User interaction fallback for autoplay
   useEffect(() => {
-    if (!autoplayBlocked || hasUserInteractedRef.current) return;
+    if (hasSetupListenersRef.current) return;
+    if (prefersReducedMotion || videoFailed) return;
 
-    const handleInteraction = () => {
-      hasUserInteractedRef.current = true;
-      attemptAutoplay();
-      document.removeEventListener('touchstart', handleInteraction);
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('scroll', handleInteraction);
+    const tryPlayOnce = () => {
+      const mobileVideo = mobileVideoRef.current;
+      const desktopVideo = videoRef.current;
+
+      if (mobileVideo) {
+        forcePlay(mobileVideo).then((success) => {
+          if (success) {
+            setIsPlaying(true);
+            setAutoplayBlocked(false);
+          }
+        });
+      }
+
+      if (desktopVideo) {
+        forcePlay(desktopVideo).then((success) => {
+          if (success) {
+            setIsPlaying(true);
+            setAutoplayBlocked(false);
+          }
+        });
+      }
     };
 
-    document.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
-    document.addEventListener('click', handleInteraction, { once: true });
-    document.addEventListener('scroll', handleInteraction, { once: true, passive: true });
+    // Set up one-time listeners for user interaction fallback
+    document.addEventListener("touchstart", tryPlayOnce, { once: true, passive: true });
+    document.addEventListener("click", tryPlayOnce, { once: true });
+
+    hasSetupListenersRef.current = true;
 
     return () => {
-      document.removeEventListener('touchstart', handleInteraction);
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('scroll', handleInteraction);
+      document.removeEventListener("touchstart", tryPlayOnce);
+      document.removeEventListener("click", tryPlayOnce);
     };
-  }, [autoplayBlocked, attemptAutoplay]);
+  }, [forcePlay, prefersReducedMotion, videoFailed]);
 
+  // Initialize on mount
   useEffect(() => {
     setIsLoaded(true);
 
@@ -184,14 +161,60 @@ export default function HeroSection({
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  // Initial autoplay attempt after mount
+  // Mobile video autoplay on mount
   useEffect(() => {
-    if (!prefersReducedMotion && !videoFailed) {
+    if (prefersReducedMotion || videoFailed) return;
+
+    const mobileVideo = mobileVideoRef.current;
+    if (mobileVideo) {
       // Small delay to ensure DOM is ready
-      const timer = setTimeout(attemptAutoplay, 100);
+      const timer = setTimeout(() => {
+        attemptVideoAutoplay(mobileVideo);
+      }, 100);
       return () => clearTimeout(timer);
     }
-  }, [attemptAutoplay, prefersReducedMotion, videoFailed]);
+  }, [attemptVideoAutoplay, prefersReducedMotion, videoFailed]);
+
+  // Desktop video autoplay on mount
+  useEffect(() => {
+    if (prefersReducedMotion || videoFailed) return;
+
+    const desktopVideo = videoRef.current;
+    if (desktopVideo) {
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        attemptVideoAutoplay(desktopVideo);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [attemptVideoAutoplay, prefersReducedMotion, videoFailed]);
+
+  // Manual play handler
+  const handleManualPlay = useCallback(async () => {
+    const mobileVideo = mobileVideoRef.current;
+    const desktopVideo = videoRef.current;
+
+    if (mobileVideo) {
+      const success = await forcePlay(mobileVideo);
+      if (success) {
+        setIsPlaying(true);
+        setAutoplayBlocked(false);
+        return;
+      }
+    }
+
+    if (desktopVideo) {
+      const success = await forcePlay(desktopVideo);
+      if (success) {
+        setIsPlaying(true);
+        setAutoplayBlocked(false);
+        return;
+      }
+    }
+
+    // Complete failure
+    setVideoFailed(true);
+  }, [forcePlay]);
 
   const highlights = [
     { icon: Calendar, text: "יומיים חווייתיים" },
@@ -222,15 +245,30 @@ export default function HeroSection({
             loop
             playsInline
             disablePictureInPicture
-            preload="metadata"
+            preload="auto"
             poster={posterImage}
+            aria-hidden="true"
             onError={() => setVideoFailed(true)}
             onPlaying={() => {
               setIsPlaying(true);
               setAutoplayBlocked(false);
             }}
+            onLoadedData={() => {
+              // Attempt play as soon as data is loaded
+              const video = mobileVideoRef.current;
+              if (video && !isPlaying) {
+                configureVideoForAutoplay(video);
+                video.play().catch(() => {});
+              }
+            }}
+            onCanPlayThrough={() => {
+              // Retry play when fully buffered
+              const video = mobileVideoRef.current;
+              if (video && !isPlaying) {
+                video.play().catch(() => {});
+              }
+            }}
           >
-            <source src={MOBILE_VIDEO_SRC} type="video/quicktime" />
             <source src={MOBILE_VIDEO_SRC} type="video/mp4" />
           </video>
         </div>
@@ -246,27 +284,28 @@ export default function HeroSection({
             loop
             playsInline
             disablePictureInPicture
-            preload="metadata"
+            preload="auto"
             poster={posterImage}
+            aria-hidden="true"
             onError={() => setVideoFailed(true)}
             onLoadedData={() => {
               // Attempt play as soon as data is loaded
-              if (videoRef.current && !isPlaying && !autoplayBlocked) {
-                videoRef.current.play().catch(() => {});
+              const video = videoRef.current;
+              if (video && !isPlaying) {
+                configureVideoForAutoplay(video);
+                video.play().catch(() => {});
               }
             }}
             onCanPlayThrough={() => {
               // Retry play when fully buffered
-              if (videoRef.current && !isPlaying && !autoplayBlocked) {
-                videoRef.current.play().catch(() => {});
+              const video = videoRef.current;
+              if (video && !isPlaying) {
+                video.play().catch(() => {});
               }
             }}
             onPlaying={() => {
               setIsPlaying(true);
               setAutoplayBlocked(false);
-            }}
-            onWaiting={() => {
-              // Video stalled - don't mark as not playing yet
             }}
             onPause={() => {
               // Only mark as not playing if video truly ended
@@ -276,8 +315,9 @@ export default function HeroSection({
             }}
             onStalled={() => {
               // Try to recover from stall
-              if (videoRef.current && !videoRef.current.paused) {
-                videoRef.current.play().catch(() => {});
+              const video = videoRef.current;
+              if (video && !video.paused) {
+                video.play().catch(() => {});
               }
             }}
           >
