@@ -168,9 +168,9 @@ export default function HeroSection({
   return (
     <section
       id="hero"
-      className="relative flex items-center justify-center"
+      className="relative min-h-[100dvh]"
     >
-      {/* Single Video Layer with responsive sources */}
+      {/* Video background container - ONLY this has overflow-hidden */}
       {showVideo && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
           <video
@@ -226,9 +226,21 @@ export default function HeroSection({
         </button>
       )}
 
-      <div className="hero-content container mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 sm:pt-24 lg:pt-28 pb-[20px]">
+      {/* Content wrapper - relative z-10, flex column, min-h-[100dvh] */}
+      {/* paddingTop: header (80px) + 50px gap = 130px */}
+      {/* paddingBottom: 40px + safe-area-inset-bottom */}
+      <div
+        className="relative z-20 flex flex-col min-h-[100dvh] container mx-auto px-4 sm:px-6 lg:px-8 text-center"
+        style={{
+          paddingTop: 'calc(80px + 50px)',
+          paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))'
+        }}
+      >
+        {/* Spacer to push content to center */}
+        <div className="flex-1" />
+
         <div
-          className={`pt-[50px] transition-all duration-1000 ${
+          className={`transition-all duration-1000 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
@@ -301,6 +313,9 @@ export default function HeroSection({
           </div>
 
         </div>
+
+        {/* Spacer to push content to center */}
+        <div className="flex-1" />
       </div>
     </section>
   );
