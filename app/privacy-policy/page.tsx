@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Footer from '@/components/Footer'
 
 export const metadata = {
   title: 'מדיניות פרטיות | Tamir Tours',
@@ -74,7 +73,23 @@ export default function PrivacyPolicyPage() {
         </div>
       </main>
 
-      <Footer />
+      {/* Simple Footer */}
+      <footer className="bg-sage-900 border-t border-sage-800 py-4">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="flex justify-center gap-4 mb-3 text-sm text-sage-400">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">
+              מדיניות פרטיות
+            </Link>
+            <span className="text-sage-700">•</span>
+            <Link href="/terms-of-use" className="hover:text-white transition-colors">
+              תנאי שימוש
+            </Link>
+          </div>
+          <p className="text-sage-500 text-xs">
+            © {new Date().getFullYear()} מחוץ ללונדון | כל הזכויות שמורות
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

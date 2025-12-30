@@ -2,6 +2,7 @@
 
 import { Phone, Mail, MapPin } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
+import Link from "next/link";
 
 export default function ContactSection() {
   return (
@@ -86,17 +87,13 @@ export default function ContactSection() {
 
             {/* Links */}
             <div className="flex flex-wrap justify-center gap-2 sm:gap-3 text-xs text-sage-400">
-              <a href="#" className="hover:text-white transition-colors">
+              <Link href="/terms-of-use" className="hover:text-white transition-colors">
                 תנאי שימוש
-              </a>
+              </Link>
               <span className="text-sage-700 hidden sm:inline">•</span>
-              <a href="#" className="hover:text-white transition-colors">
+              <Link href="/privacy-policy" className="hover:text-white transition-colors">
                 מדיניות פרטיות
-              </a>
-              <span className="text-sage-700 hidden sm:inline">•</span>
-              <a href="#" className="hover:text-white transition-colors">
-                נגישות
-              </a>
+              </Link>
             </div>
 
             {/* WhatsApp Button */}
