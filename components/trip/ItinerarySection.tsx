@@ -115,29 +115,31 @@ export default function ItinerarySection({ itinerarySteps }: ItinerarySectionPro
                 }`}
                 style={{ transitionDelay: `${dayIndex * 200}ms` }}
               >
-                <div className="bg-gradient-to-r from-nature-600 to-nature-700 rounded-t-xl p-3 text-white">
-                  <span className="text-nature-200 text-xs font-medium">
+                {/* Day Header - increased font sizes */}
+                <div className="bg-gradient-to-r from-nature-600 to-nature-700 rounded-t-xl p-3 sm:p-4 text-white">
+                  <span className="text-nature-200 text-sm sm:text-base font-medium">
                     {day.day}
                   </span>
-                  <h3 className="text-lg sm:text-xl font-bold">{day.title}</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold leading-tight">{day.title}</h3>
                 </div>
 
-                <div className="bg-white rounded-b-xl shadow-lg border border-sage-100 p-3 space-y-2.5">
+                {/* Day Content - increased font sizes and spacing */}
+                <div className="bg-white rounded-b-xl shadow-lg border border-sage-100 p-4 sm:p-5 space-y-3 sm:space-y-4">
                   {day.activities.map((activity, actIndex) => {
                     const Icon = iconMap[activity.icon] || MapPin;
                     return (
                       <div
                         key={actIndex}
-                        className="flex gap-2.5 items-start group"
+                        className="flex gap-3 items-start group"
                       >
-                        <div className="w-9 h-9 rounded-lg bg-nature-100 flex items-center justify-center flex-shrink-0 group-hover:bg-nature-200 transition-colors">
-                          <Icon className="w-4 h-4 text-nature-600" />
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-nature-100 flex items-center justify-center flex-shrink-0 group-hover:bg-nature-200 transition-colors">
+                          <Icon className="w-5 h-5 text-nature-600" />
                         </div>
-                        <div>
-                          <h4 className="font-bold text-sage-900 text-sm mb-0.5">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-sage-900 text-base sm:text-lg mb-1 leading-snug">
                             {activity.title}
                           </h4>
-                          <p className="text-sage-600 text-xs leading-snug">
+                          <p className="text-sage-600 text-sm sm:text-base leading-relaxed">
                             {activity.description}
                           </p>
                         </div>
