@@ -17,13 +17,14 @@ const defaultImages: GalleryImage[] = [
   { src: "/new/IMG_0348.JPG", alt: "כפר אנגלי ציורי" },
   { src: "/new/IMG_0349.JPG", alt: "בתי אבן עתיקים" },
   { src: "/new/IMG_0350.JPG", alt: "אווירה כפרית אותנטית" },
-  { src: "/images/gallery/new1.jpg", alt: "רחובות הכפר" },
+  { src: "/images/add/IMG_0245.JPG", alt: "רחובות הכפר" },
   { src: "/new/IMG_0352.JPG", alt: "מורשת אנגלית" },
   { src: "/new/IMG_0353.JPG", alt: "נופים ירוקים" },
-  { src: "/new/IMG_0354.JPG", alt: "אדריכלות כפרית" },
+  { src: "/images/add/IMG_0260.JPG", alt: "אדריכלות כפרית" },
   { src: "/new/IMG_0355.JPG", alt: "קסם הכפר האנגלי" },
   { src: "/new/IMG_0356.JPG", alt: "חוויה בלתי נשכחת" },
-  { src: "/images/gallery/new2.png", alt: "הכפרים האנגליים" },
+  { src: "/images/add/IMG_0262.JPG", alt: "הכפרים האנגליים" },
+  { src: "/new/IMG_0354.JPG", alt: "נוף כפרי מרהיב" },
 ];
 
 export default function GallerySection({ galleryImages }: GallerySectionProps) {
