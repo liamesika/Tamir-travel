@@ -46,7 +46,7 @@ export default function SeasonalBanner() {
         </div>
         <div className="flex-1 pl-6">
           <p className="text-lg sm:text-xl font-semibold text-sky-900 leading-relaxed">
-            שימו לב: בחורף המחירים לרוב זולים יותר מהקיץ עקב תנאי מזג אוויר וזמינות.
+            שימו ❤️ בחורף המחירים נמוכים יותר, הודות לעלויות זולות יותר של מלונות ומיניבוסים
           </p>
         </div>
       </div>

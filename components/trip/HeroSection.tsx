@@ -295,15 +295,6 @@ export default function HeroSection({
               isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
           >
-            {/* Info Banner ABOVE the CTA button */}
-            <div className="mb-4 sm:mb-5">
-              <div className="inline-block bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2.5 sm:py-3 rounded-full border border-white/20 max-w-[90vw] sm:max-w-xl">
-                <p className="text-white/90 text-sm sm:text-base font-medium leading-snug">
-                  שימו ❤️ בחורף המחירים נמוכים יותר, הודות לעלויות זולות יותר של מלונות ומיניבוסים
-                </p>
-              </div>
-            </div>
-
             <a
               href="#booking"
               className="inline-block bg-heritage-500 hover:bg-heritage-600 text-white font-bold px-8 py-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-heritage-500/30 text-center text-lg sm:text-xl"
