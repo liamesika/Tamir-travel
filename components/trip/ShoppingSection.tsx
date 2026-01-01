@@ -131,7 +131,7 @@ export default function ShoppingSection() {
               אאוטלט ענק עם כל המותגים שאנחנו אוהבים —
               <span className="text-heritage-600"> במחירים שלא תמצאו בלונדון</span>
             </h2>
-            <p className="text-sm text-sage-700 mb-4 leading-relaxed">
+            <p className="text-base sm:text-lg text-sage-700 mb-4 leading-relaxed sm:leading-loose">
               יום מרוכז של שופינג באאוטלט ענק, אחד הנחשבים באנגליה, יש בו 150 מותגים, האאוטלט ממוקם באזור הכפרים שנבקר בהם. מותגים בינלאומיים במחירים שפשוט לא קיימים בחנויות של מרכז לונדון.
             </p>
 

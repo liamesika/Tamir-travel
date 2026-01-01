@@ -226,14 +226,14 @@ export default function HeroSection({
         </button>
       )}
 
-      {/* Content wrapper - relative z-10, flex column, min-h-[100dvh] */}
-      {/* paddingTop: header (80px) + 50px gap = 130px */}
-      {/* paddingBottom: 40px + safe-area-inset-bottom */}
+      {/* Content wrapper - tighter spacing for centered, balanced hero */}
+      {/* paddingTop: header (80px) + 32px gap = 112px */}
+      {/* paddingBottom: 32px + safe-area-inset-bottom */}
       <div
         className="relative z-20 flex flex-col min-h-[100dvh] container mx-auto px-4 sm:px-6 lg:px-8 text-center"
         style={{
-          paddingTop: 'calc(80px + 50px)',
-          paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))'
+          paddingTop: 'calc(80px + 32px)',
+          paddingBottom: 'calc(32px + env(safe-area-inset-bottom, 0px))'
         }}
       >
         {/* Spacer to push content to center */}
@@ -245,24 +245,24 @@ export default function HeroSection({
           }`}
         >
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 leading-tight lg:leading-snug">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-3 leading-tight lg:leading-snug">
             {heroTitle}
           </h1>
 
           {heroSubtitle && (
-            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-6 sm:mb-8 font-medium leading-relaxed">
+            <p className="text-xl sm:text-2xl lg:text-3xl text-white/95 mb-4 sm:mb-6 font-medium leading-relaxed">
               {heroSubtitle}
             </p>
           )}
 
-          <div className="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed sm:leading-loose">
-            <p className="text-heritage-300 font-medium mb-4">
+          <div className="text-base sm:text-lg lg:text-xl text-white/90 mb-4 sm:mb-6 max-w-3xl mx-auto leading-relaxed sm:leading-loose">
+            <p className="text-heritage-300 font-medium mb-3">
               החופשה שתישמר בליבכם לעד ❤️
             </p>
             <p>
               רק שעתיים נסיעה מלונדון, ננשום את הטבע עוצר הנשימה, נבקר בכפרים ציוריים שהזמן פסק מלכת, נטייל בין בתי אבן עתיקים, נחלים זורמים ונופים ירוקים, נלון במלון מפנק בכפרים ולמחרת יום קניות מרוכז באאוטלט עם כל המותגים במחירים שאין בלונדון.
             </p>
-            <p className="mt-4 sm:mt-5 font-semibold text-heritage-300">
+            <p className="mt-3 sm:mt-4 font-semibold text-heritage-300">
               השילוב המנצח, חוויה וחיסכון,
             </p>
             <p className="font-semibold text-heritage-300">
@@ -270,13 +270,13 @@ export default function HeroSection({
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5 mb-4 sm:mb-6">
             {highlights.map((item, index) => {
               const Icon = item.icon;
               return (
                 <div
                   key={index}
-                  className={`flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-full border border-white/20 transition-all duration-500 ${
+                  className={`flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 sm:py-2 rounded-full border border-white/20 transition-all duration-500 ${
                     isLoaded
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-5"
