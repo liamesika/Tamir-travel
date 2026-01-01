@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
         data: {
           name: 'לונדון שלא הכרתם',
           slug: 'london-nature',
-          heroTitle: 'לונדון שלא הכרתם',
+          heroTitle: 'מחוץ ללונדון',
           heroSubtitle: 'טיול טבע ומורשת ייחודי באנגליה',
           guideTitle: 'תמיר',
           guideContent: 'מדריך טיולים מנוסה',
