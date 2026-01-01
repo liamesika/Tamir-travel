@@ -270,21 +270,21 @@ export default function HeroSection({
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5 mb-4 sm:mb-6">
+          <div className="grid grid-cols-2 gap-2 mb-4 sm:mb-6 md:flex md:flex-wrap md:justify-center md:gap-2.5">
             {highlights.map((item, index) => {
               const Icon = item.icon;
               return (
                 <div
                   key={index}
-                  className={`flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 sm:py-2 rounded-full border border-white/20 transition-all duration-500 ${
+                  className={`flex items-center justify-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 sm:py-2 rounded-full border border-white/20 transition-all duration-500 ${
                     isLoaded
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-5"
                   }`}
                   style={{ transitionDelay: `${(index + 1) * 100}ms` }}
                 >
-                  <Icon className="w-4 h-4 text-heritage-400" />
-                  <span className="text-white text-sm sm:text-base font-medium">{item.text}</span>
+                  <Icon className="w-4 h-4 text-heritage-400 flex-shrink-0" />
+                  <span className="text-white text-sm sm:text-base font-medium text-center">{item.text}</span>
                 </div>
               );
             })}
