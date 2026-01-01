@@ -130,8 +130,8 @@ export const defaultTripData: TripData = {
   id: 'default',
   name: 'טיול לכפר האנגלי',
   slug: 'english-countryside',
-  heroTitle: 'לונדון האחרת —\nחוויה שתישאר בלב',
-  heroSubtitle: 'חופשה של יומיים בכפרים האנגליים + לילה במלון כפרי + יום שופינג באאוטלט מותגים',
+  heroTitle: 'מחוץ ללונדון',
+  heroSubtitle: 'טיול אל הכפרים הציוריים – יומיים עם לינה',
   heroImage: '/images/hero-poster.jpg',
   guideTitle: 'תמיר ארמאני',
   guideContent: `חי על הקו תל אביב–לונדון כבר למעלה מעשור, ומכיר את אנגליה כמו את כף היד.
